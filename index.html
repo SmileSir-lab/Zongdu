@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI Operation Daily Report & Monitoring Dashboard (4 Layers Complete)</title>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
-<!-- SheetJS สำหรับอ่านไฟล์ Excel/CSV -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- Chart.js สำหรับวาดกราฟโดนัท -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -91,11 +89,6 @@ body { background: var(--page); color: var(--ink); padding: 20px; }
 }
 .layer-indicator-badge span.lbl { font-family: 'Kanit', sans-serif; font-size: 14px; color: var(--grey); }
 .layer-indicator-badge span.name { font-family: 'Kanit', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
-
-/* Import Box */
-.import-box { background: #fff; border-radius: 12px; padding: 14px 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 3px 10px rgba(30,27,74,.06); flex-wrap: wrap; }
-.import-box label { font-family: 'Kanit', sans-serif; font-weight: 600; color: var(--navy); }
-input[type=file] { font-size: 13.5px; }
 
 .panel { background: #fff; border-radius: 12px; box-shadow: 0 4px 14px rgba(30,27,74,.06); padding: 22px; display: flex; flex-direction: column; gap: 20px; }
 .panel-title { font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 18px; color: var(--navy); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
@@ -219,11 +212,10 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
 .selected-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
 .selected-item { background: #fff; border: 1px solid #dcdcea; border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
 
-/* หมุดปักแบบแยกสีตาม Media Type */
 .custom-pin {
   display: flex; align-items: center; justify-content: center;
   width: 30px; height: 30px; border-radius: 50%;
-  font-size: 11px; font-weight: 700; border: 2.5px solid #ffffff;
+  font-size: 10.5px; font-weight: 700; border: 2.5px solid #ffffff;
   box-shadow: 0 3px 8px rgba(0,0,0,0.35); cursor: pointer;
   transition: transform .15s ease, box-shadow .15s ease;
 }
@@ -235,9 +227,6 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
   outline: 3px solid #7b2cbf;
 }
 
-/* ══════════════════════════════════════════════════
-   📱 MOBILE RESPONSIVE OPTIMIZATION (เวอร์ชันมือถือ)
-══════════════════════════════════════════════════ */
 @media (max-width: 768px) {
   body { padding: 10px; }
   .container { gap: 12px; }
@@ -272,7 +261,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
 <!-- Backdrop Overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-<!-- ════════ Sidebar Slider เมนูด้านซ้าย ════════ -->
+<!-- Sidebar Slider เมนูด้านซ้าย -->
 <aside class="sidebar-slider" id="sidebarSlider">
   <div class="sidebar-header">
     <h2>📌 เลือกระบบการทำงาน</h2>
@@ -310,8 +299,8 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
         <p>ระบบบริหารจัดการติดตามตั๋วงาน วิเคราะห์ปัญหา ตรวจเช็ครหัสป้าย และวางแผนเส้นทาง (4 Layers)</p>
       </div>
     </div>
-    <div id="fileStatus" style="font-family:'Kanit'; font-size:13px; background:rgba(255,255,255,0.15); padding:6px 12px; border-radius:8px;">
-      📂 ยังไม่ได้นำเข้าไฟล์ข้อมูล
+    <div id="fileStatus" style="font-family:'Kanit'; font-size:13px; background:rgba(255,255,255,0.15); padding:6px 14px; border-radius:8px;">
+      🔄 กำลังเชื่อมต่อข้อมูลสดจาก Google Sheets...
     </div>
   </div>
 
@@ -319,13 +308,6 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
   <div class="layer-indicator-badge">
     <span class="lbl">กำลังแสดงผล:</span>
     <span class="name" id="currentLayerDisplayTitle">Layer 1: Dashboard ภาพรวม</span>
-  </div>
-
-  <!-- Import Box -->
-  <div class="import-box">
-    <label>เลือกไฟล์ Excel / CSV (เลือกได้หลายไฟล์พร้อมกัน):</label>
-    <input type="file" id="excelFiles" accept=".xlsx, .xls, .csv" multiple>
-    <span style="font-size:12.5px; color:var(--grey);">*กด Ctrl หรือ Shift เพื่อเลือกไฟล์ย้อนหลังหรือหลายแผนกพร้อมกัน</span>
   </div>
 
   <!-- ════════ LAYER 1: Dashboard ภาพรวม ════════ -->
@@ -438,7 +420,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
           <thead>
             <tr><th style="width: 50px; text-align: center;">No</th><th>RefNo</th><th>Asset</th><th>Media Type</th><th>SLA</th><th>Status</th><th>Assignee</th><th>DETAIL</th></tr>
           </thead>
-          <tbody id="slaTableBody"><tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">ยังไม่มีข้อมูลตาราง SLA</td></tr></tbody>
+          <tbody id="slaTableBody"><tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
         </table>
       </div>
       <div class="table-bottom-stat"><div class="bottom-stat-pill" id="slaBottomStat">รายการทั้งหมด: 0 รายการ</div></div>
@@ -472,7 +454,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
           <thead>
             <tr><th style="width: 50px; text-align: center;">No</th><th>RefNo</th><th>Asset</th><th>Media Type</th><th>Status</th><th>Created Date Time</th><th>Created By</th><th>DETAIL</th></tr>
           </thead>
-          <tbody id="dupTableBody"><tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">ยังไม่มีรายการ Claim ซ้ำ</td></tr></tbody>
+          <tbody id="dupTableBody"><tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
         </table>
       </div>
       <div class="table-bottom-stat"><div class="bottom-stat-pill" id="dupBottomStat">รายการทั้งหมด: 0 รายการ</div></div>
@@ -533,7 +515,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
           <thead>
             <tr><th style="width: 50px; text-align: center;">No</th><th>RefNo</th><th>Asset</th><th>Media Type</th><th>Status</th><th>Schedule Date</th><th>Finish / Updated</th><th>Assignee</th><th>DETAIL (Solution Detail)</th></tr>
           </thead>
-          <tbody id="doneTableBody"><tr><td colspan="9" style="text-align:center; color:var(--grey); padding:16px;">ยังไม่มีรายการงานสำเร็จ</td></tr></tbody>
+          <tbody id="doneTableBody"><tr><td colspan="9" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
         </table>
       </div>
       <div class="table-bottom-stat"><div class="bottom-stat-pill" id="doneBottomStat">รายการทั้งหมด: 0 รายการ</div></div>
@@ -594,7 +576,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
           <thead>
             <tr><th style="width: 50px; text-align: center;">No</th><th>RefNo</th><th>Asset</th><th>Media Type</th><th>Status</th><th>SLA</th><th>Schedule Date</th><th>Assignee</th><th>DETAIL</th></tr>
           </thead>
-          <tbody id="undoneTableBody"><tr><td colspan="9" style="text-align:center; color:var(--grey); padding:16px;">ยังไม่มีรายการระหว่างดำเนินการ</td></tr></tbody>
+          <tbody id="undoneTableBody"><tr><td colspan="9" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
         </table>
       </div>
       <div class="table-bottom-stat"><div class="bottom-stat-pill" id="undoneBottomStat">รายการทั้งหมด: 0 รายการ</div></div>
@@ -626,7 +608,6 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
       </div>
     </div>
 
-    <!-- ตาราง 1: ปัญหาที่พบบ่อย Top 10 -->
     <div class="section-box" style="background:#fcfcfe; border:1.5px solid #eaeaf5; border-radius:12px; padding:18px;">
       <div class="table-header-row">
         <div class="table-label">🚨 1. ตารางปัญหาที่พบบ่อย (Top 10 รายการสูงสุด)</div>
@@ -637,12 +618,11 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
           <thead>
             <tr><th style="width: 60px; text-align: center;">อันดับ</th><th>รายละเอียดปัญหา (Problem / Detail)</th><th style="width: 140px; text-align: center;">จำนวนครั้งที่พบ</th><th style="width: 130px; text-align: center;">สัดส่วน (%)</th><th style="width: 250px;">แถบสัดส่วนปัญหา</th></tr>
           </thead>
-          <tbody id="frequentProblemsTableBody"><tr><td colspan="5" style="text-align:center; color:var(--grey); padding:18px;">ยังไม่มีข้อมูลสถิติปัญหา</td></tr></tbody>
+          <tbody id="frequentProblemsTableBody"><tr><td colspan="5" style="text-align:center; color:var(--grey); padding:18px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
         </table>
       </div>
     </div>
 
-    <!-- ตาราง 2: ป้ายเคลมซ้ำ > 3 ครั้ง -->
     <div class="section-box" style="background:#fffafa; border:1.5px solid #fbdada; border-radius:12px; padding:18px;">
       <div class="table-header-row">
         <div class="table-label" style="color:var(--red);">⚠️ 2. ตารางป้ายที่มีปัญหาบ่อยผิดปกติ (> 3 ครั้ง)</div>
@@ -660,7 +640,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
               <th>รายการปัญหาที่เกิดซ้ำ</th>
             </tr>
           </thead>
-          <tbody id="chronicAssetTableBody"><tr><td colspan="6" style="text-align:center; color:var(--grey); padding:18px;">ยังไม่มีข้อมูลป้ายที่เคลมมากกว่า 3 ครั้ง</td></tr></tbody>
+          <tbody id="chronicAssetTableBody"><tr><td colspan="6" style="text-align:center; color:var(--grey); padding:18px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -735,9 +715,21 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
       <span id="mapStatusChip" class="badge badge-red">🔄 กำลังโหลดพิกัดจาก Google Sheets...</span>
     </div>
 
-    <!-- แถบ Filter แผนที่ พร้อมปุ่มเปลี่ยนธีมแผนที่ -->
+    <!-- แถบ Filter แผนที่แบบ Popover Toggle Switch ไดนามิก -->
     <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; position:relative;">
-      <!-- Media Type Popover -->
+      
+      <!-- 📌 1. สถานะงาน (Status Filter): ระหว่างดำเนินการ vs งานเสร็จเมื่อวาน -->
+      <div class="filter-item" style="position:relative;">
+        <button type="button" class="popover-btn" onclick="openPopover(event, 'mapStatusPopover')">
+          📌 สถานะงาน <span class="badge-count" id="mapStatusCount">ทั้งหมด</span> ▾
+        </button>
+        <div id="mapStatusPopover" class="toggle-popover" onclick="event.stopPropagation()">
+          <input type="text" class="popover-search" placeholder="ค้นหาสถานะ..." oninput="filterSearchList(this)">
+          <div class="popover-list" id="mapStatusList"></div>
+        </div>
+      </div>
+
+      <!-- 📺 2. Media Type Popover -->
       <div class="filter-item" style="position:relative;">
         <button type="button" class="popover-btn" onclick="openPopover(event, 'mapMediaPopover')">
           📺 Media Type <span class="badge-count" id="mapMediaCount">ทั้งหมด</span> ▾
@@ -748,7 +740,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
         </div>
       </div>
 
-      <!-- Detail Popover -->
+      <!-- 📝 3. Detail Popover -->
       <div class="filter-item" style="position:relative;">
         <button type="button" class="popover-btn" onclick="openPopover(event, 'mapDetailPopover')">
           📝 ปัญหา (Detail) <span class="badge-count" id="mapDetailCount">ทั้งหมด</span> ▾
@@ -759,7 +751,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
         </div>
       </div>
 
-      <!-- 🎨 ปุ่มเปลี่ยน Theme แผนที่ -->
+      <!-- 🎨 ธีมแผนที่ -->
       <div class="filter-item">
         <span>🎨 ธีมแผนที่:</span>
         <select id="mapThemeSelector" class="filter-select" onchange="changeMapTheme(this.value)">
@@ -772,7 +764,6 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
       <button type="button" class="btn btn-navy" onclick="clearSelectedPins()">🔄 รีเซ็ตการเลือกหมุด</button>
     </div>
 
-    <!-- แผนที่ & Sidebar จัดรูท -->
     <div class="map-layout">
       <div id="map"></div>
       <div class="map-sidebar">
@@ -781,9 +772,8 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
           <span id="selectedCountBadge" class="badge" style="background:#f0f0fa; color:var(--navy);">0 ป้าย</span>
         </div>
 
-        <!-- ➕ กล่องพิมพ์รหัสป้ายด้วยตนเอง -->
         <div style="display:flex; gap:6px;">
-          <input type="text" id="manualAssetInput" placeholder="พิมพ์รหัสป้าย เช่น DS001..." 
+          <input type="text" id="manualAssetInput" placeholder="พิมพ์รหัสป้าย เช่น FLY A, DS001..." 
                  style="flex:1; padding:8px 10px; border-radius:6px; border:1.5px solid #d5d5ec; font-family:'Sarabun',sans-serif; font-size:13px; outline:none;"
                  onkeydown="if(event.key==='Enter'){ event.preventDefault(); addManualAssetPin(); }">
           <button type="button" class="btn btn-navy" style="padding:8px 12px; font-size:12.5px; white-space:nowrap;" onclick="addManualAssetPin()">
@@ -805,7 +795,6 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
 </div>
 
 <script>
-// URL Web App ล่าสุดของคุณที่ส่งข้อมูล JSON พิกัดสำเร็จแล้ว
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSm3Ebdqj-8iKxOGN0Xle5TAlblBPIb9ZLkrCv5aCgtCOM_LdXA7TCD1_YlRWsSkk6PQ/exec';
 
 let globalData = [];
@@ -827,7 +816,9 @@ let activeFilterStates = {
   undone: { media: new Set(), assignee: new Set(), detail: new Set() }
 };
 
+// State สำหรับตัวกรองแผนที่ Layer 4
 let mapFilterStates = {
+  status: new Set(),
   media: new Set(),
   detail: new Set()
 };
@@ -835,8 +826,98 @@ let mapFilterStates = {
 let masterSignsMap = {};
 let mapInstance = null;
 let currentTileLayer = null;
+let allMapItems = []; // ข้อมูลดิบสำหรับพล็อตบนแผนที่
 let allPinsOnMap = [];
 let selectedPins = [];
+
+// ─── ปรับปรุง Normalize รหัสป้าย: ครอบคลุม Flyover, MTP, EXAT, BECL ───
+function normalizeCodeKey(str) {
+  if (!str) return '';
+  let s = str.toString().toUpperCase().trim();
+  s = s.replace(/\(.*?\)/g, ''); // ลบวงเล็บ
+  s = s.replace(/[-_\s\/]/g, ''); // ลบขีด ช่องว่าง สแลช
+  s = s.replace(/PAC/g, '');      // ลบ PAC จาก FLY-PAC, PE-PAC, SP-PAC
+  return s;
+}
+
+// ─── Auto-Fetch โหลดข้อมูลสดจาก Google Sheets เมื่อเปิดเว็บ ───
+async function autoFetchLiveSheetData() {
+  const statusEl = document.getElementById('fileStatus');
+  statusEl.innerHTML = '🔄 กำลังดึงข้อมูลสดจากชีต zongdudata...';
+  
+  try {
+    const res = await fetch(SCRIPT_URL, { method: 'GET', redirect: 'follow' });
+    const result = await res.json();
+    
+    // 1. โหลด Master Signs พิกัดป้าย
+    let masterList = result.masterSigns || (Array.isArray(result) ? result : []);
+    masterSignsMap = {};
+    if (Array.isArray(masterList)) {
+      masterList.forEach(item => {
+        const rawCode = (item['code'] || item['code_raw'] || item['Asset Code'] || item['Asset'] || '').toString().trim().toUpperCase();
+        const lat = parseFloat(item['Latitude'] || item['Lat']);
+        const lng = parseFloat(item['Longitude'] || item['Long'] || item['Lng']);
+        
+        if (rawCode && !isNaN(lat) && !isNaN(lng)) {
+          const coordData = {
+            lat: lat,
+            lng: lng,
+            mediaType: item['Media Type'] || item['MediaType'] || 'General',
+            location: item['Location Name'] || item['Location'] || item['road'] || ''
+          };
+          masterSignsMap[rawCode] = coordData;
+          masterSignsMap[normalizeCodeKey(rawCode)] = coordData;
+
+          // ถ้าเป็น Flyover เช่น "FLY A" หรือ "A" ให้ map เพิ่ม
+          if (rawCode.startsWith('FLY')) {
+            const letter = rawCode.replace('FLY', '').replace(/[\s\-_]/g, '');
+            if (letter) masterSignsMap[letter] = coordData;
+          }
+        }
+      });
+    }
+
+    const masterCount = Object.keys(masterSignsMap).length;
+    const mapChip = document.getElementById('mapStatusChip');
+    if (mapChip) {
+      if (masterCount > 0) {
+        mapChip.innerText = `✅ โหลดพิกัดป้ายสำเร็จ (${masterCount} รูปแบบ)`;
+        mapChip.className = 'badge badge-green';
+      } else {
+        mapChip.innerText = `⚠️ อ่านชีตได้ แต่แปลงพิกัดไม่สำเร็จ`;
+        mapChip.className = 'badge badge-red';
+      }
+    }
+
+    // 2. โหลดตั๋วงาน
+    let ticketsList = result.tickets || (Array.isArray(result) && !result.masterSigns ? result : []);
+    
+    if (ticketsList && ticketsList.length > 0) {
+      const seenRef = new Set();
+      globalData = [];
+      ticketsList.forEach(row => {
+        const ref = (row['RefNo'] || row['Ref No'] || '').toString().trim();
+        if (ref) {
+          if (!seenRef.has(ref)) { seenRef.add(ref); globalData.push(row); }
+        } else { globalData.push(row); }
+      });
+
+      const updateTime = result.lastUpdate || new Date().toLocaleTimeString('th-TH');
+      statusEl.innerHTML = `✅ อัปเดตสดจากชีต (${globalData.length} งาน) • ${updateTime}`;
+      
+      processLayer1(globalData);
+      
+      if (!document.getElementById('layer4').classList.contains('hidden')) {
+        renderPinsOnMap();
+      }
+    } else {
+      statusEl.innerHTML = '⚠️ แท็บ zongdudata ยังไม่มีข้อมูลตั๋วงาน';
+    }
+  } catch (err) {
+    statusEl.innerHTML = `❌ ดึงข้อมูลไม่สำเร็จ: ${err.message}`;
+    console.error("Auto Fetch Error:", err);
+  }
+}
 
 // ─── Sidebar Navigation Drawer ───
 function openSidebar() {
@@ -868,7 +949,6 @@ function selectLayer(panelId, displayTitle, element) {
   }
 }
 
-// ─── ฟังก์ชัน Clean ข้อความ ───
 function cleanSttText(str) {
   if (!str) return '';
   return str.toString()
@@ -889,19 +969,20 @@ function getCleanDetail(row, isDone = false) {
   return [pos, dt].filter(Boolean).join(' - ') || '-';
 }
 
-// ─── ชุดสี Pastel สำหรับ Badge และหมุดบนแผนที่ ───
 const MEDIA_COLOR_MAP = {
-  'Smart Bus Shelter':     { bg: '#0284c7', color: '#ffffff' }, // ฟ้าสด
-  'Standard Bus Shelter':  { bg: '#ea580c', color: '#ffffff' }, // ส้มอิฐเด่น
-  'Cookies':               { bg: '#0d9488', color: '#ffffff' }, // เขียวมิ้นต์เข้ม
-  'Cream':                 { bg: '#ca8a04', color: '#ffffff' }, // ทองมัสตาร์ด
-  'Metro Poster (LED)':    { bg: '#7c3aed', color: '#ffffff' }, // ม่วงสว่าง
-  'Metro Poster':          { bg: '#4f46e5', color: '#ffffff' }, // คราม Indigo
-  'Flyover 2.0':           { bg: '#db2777', color: '#ffffff' }, // ชมพูบานเย็น
-  'Serie Poster':          { bg: '#059669', color: '#ffffff' }, // เขียวมรกต
-  'Pole wrap':             { bg: '#475569', color: '#ffffff' }, // เทาสเลท
-  'Gateway Billboard':     { bg: '#b91c1c', color: '#ffffff' }, // แดงทับทิม
-  'ป้ายจราจร':             { bg: '#1e3a8a', color: '#ffffff' }  // น้ำเงินเข้ม
+  'Smart Bus Shelter':     { bg: '#0284c7', color: '#ffffff' },
+  'Standard Bus Shelter':  { bg: '#ea580c', color: '#ffffff' },
+  'Cookies':               { bg: '#0d9488', color: '#ffffff' },
+  'Cream':                 { bg: '#ca8a04', color: '#ffffff' },
+  'Metro Poster (LED)':    { bg: '#7c3aed', color: '#ffffff' },
+  'Metro Poster':          { bg: '#4f46e5', color: '#ffffff' },
+  'Flyover 2.0':           { bg: '#db2777', color: '#ffffff' },
+  'Serie Poster':          { bg: '#059669', color: '#ffffff' },
+  'Pole wrap':             { bg: '#475569', color: '#ffffff' },
+  'Gateway Billboard':     { bg: '#b91c1c', color: '#ffffff' },
+  'ป้ายจราจร':             { bg: '#1e3a8a', color: '#ffffff' },
+  'งานเสร็จเมื่อวาน':      { bg: '#1F9D57', color: '#ffffff' },
+  'ระหว่างดำเนินการ':      { bg: '#CB3A3A', color: '#ffffff' }
 };
 
 const PASTEL_COLORS = [
@@ -950,10 +1031,14 @@ function filterSearchList(input) {
   });
 }
 
+// ─── ปรับปรุงการจำแนก Media Type ให้จับ Flyover 2.0 ครบทุกรูปแบบ ───
 function classifyMediaType(assetStr, row = {}) {
   if (!assetStr) return 'อื่นๆ';
   const asset = assetStr.toString().trim();
   const u = asset.toUpperCase();
+
+  // ตรวจจับ Flyover 2.0: ขึ้นต้นด้วย FLY, มีคำว่า FLYOVER, หรือเป็นตัวอักษรเดี่ยว A-V
+  if (u.startsWith('FLY') || u.includes('FLYOVER') || /^[A-V]$/.test(u)) return 'Flyover 2.0';
 
   if (u.startsWith('BECL') || u.startsWith('EXAT') || u.includes('GATEWAY')) return 'Gateway Billboard';
   if (u.startsWith('MTP')) {
@@ -973,7 +1058,6 @@ function classifyMediaType(assetStr, row = {}) {
   const projectStr = (row['Project'] || '').toString().toUpperCase();
   if (u.includes('CREAM') || projectStr.includes('CREAM') || creamSample.some(c => u.startsWith(c))) return 'Cream';
   if (u.startsWith('DP') || u.startsWith('DDP')) return 'Cookies';
-  if (u.startsWith('FLY') || /^[A-V]$/.test(u)) return 'Flyover 2.0';
   if (u.startsWith('SP') || /^\d\.\d$/.test(u)) return 'Serie Poster';
   if (u.startsWith('PW') || u.startsWith('POLE') || /^\d+(\.\d+)?$/.test(u)) return 'Pole wrap';
   return 'อื่นๆ';
@@ -986,8 +1070,14 @@ function switchTableView(viewId, cardElement) {
   cardElement.classList.add('active');
 }
 
-function parseRowDate(row) {
-  let val = row['Created Date Time'] || row['Created'] || row['Schedule Date'] || row['CreatedDate'];
+function parseRowDate(row, preferFinishDate = false) {
+  let val = null;
+  if (preferFinishDate) {
+    val = row['ActualEndDateTime'] || row['Modified Date Time'] || row['ModifiedDateTime'];
+  }
+  if (!val) {
+    val = row['Created Date Time'] || row['Created'] || row['Schedule Date'] || row['CreatedDate'];
+  }
   if (!val) return null;
   if (typeof val === 'number') return new Date((val - (25567 + 2)) * 86400 * 1000);
   let str = val.toString().trim().replace('T', ' ');
@@ -1095,45 +1185,6 @@ function isWithinTimeRangePrefix(d, prefix) {
   return true;
 }
 
-// ─── นำเข้าไฟล์ Excel / CSV ───
-document.getElementById('excelFiles').addEventListener('change', function(e) {
-  const files = e.target.files;
-  if (!files.length) return;
-
-  let rawList = [];
-  let loaded = 0;
-
-  Array.from(files).forEach(file => {
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-      const data = new Uint8Array(evt.target.result);
-      const workbook = XLSX.read(data, {type: 'array'});
-      workbook.SheetNames.forEach(sheetName => {
-        const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {defval: ''});
-        rawList = rawList.concat(sheetData);
-      });
-      loaded++;
-      if (loaded === files.length) {
-        const seenRef = new Set();
-        globalData = [];
-        rawList.forEach(row => {
-          const ref = (row['RefNo'] || '').toString().trim();
-          if (ref) {
-            if (!seenRef.has(ref)) { seenRef.add(ref); globalData.push(row); }
-          } else { globalData.push(row); }
-        });
-
-        document.getElementById('fileStatus').innerText = `✅ โหลดแล้ว ${globalData.length} รายการ`;
-        processLayer1(globalData);
-        if (!document.getElementById('layer4').classList.contains('hidden')) {
-          renderPinsOnMap();
-        }
-      }
-    };
-    reader.readAsArrayBuffer(file);
-  });
-});
-
 function processLayer1(data) {
   const total = data.length;
   document.getElementById('totalBadge').innerText = `รวมทั้งหมด: ${total} รายการ`;
@@ -1203,7 +1254,6 @@ function processLayer1(data) {
     if (sla.isOverdue) globalSlaRows.push(itemObj);
   });
 
-  // 🍩 แสดงผลตรงกลาง Donut Monthly ในรูปแบบ 447 / 511(47)
   if (backlogTotal > 0) {
     document.getElementById('monthCenterVal').innerText = `${monthDoneInMonth} / ${inMonthTotal}(${backlogTotal})`;
   } else {
@@ -1239,7 +1289,6 @@ function processLayer1(data) {
   executeFilter('undone');
 }
 
-// ─── Popovers Management ───
 function initAllPopovers(prefix, sourceRows) {
   activeFilterStates[prefix].media.clear();
   activeFilterStates[prefix].assignee.clear();
@@ -1346,7 +1395,6 @@ function renderPopoverItems(listContainerId, countBadgeId, items, selectedSet, o
   });
 }
 
-// ─── Filter Execution พร้อมคำนวณ Stat Box ทุกกล่องแบบ Realtime ───
 function executeFilter(prefix) {
   let source = globalSlaRows;
   if (prefix === 'done') source = globalDoneRows;
@@ -1377,7 +1425,6 @@ function executeFilter(prefix) {
     document.getElementById('undoneBottomStat').innerText = `รายการทั้งหมด: ${filtered.length} รายการ`;
   }
 
-  // 🔄 อัปเดต Stat Box ทุกกล่องด้านบนตามเงื่อนไขฟิลเตอร์
   updateAllStatBoxesByFilter(prefix);
 }
 
@@ -1442,7 +1489,6 @@ function filterDupTable() {
   document.getElementById('statUndone').innerText = matchUndone.length;
 }
 
-// ─── Table Renderers ───
 function renderFilteredSlaTable(rows) {
   const slaTbody = document.getElementById('slaTableBody');
   slaTbody.innerHTML = '';
@@ -1539,7 +1585,6 @@ function renderFilteredUndoneTable(rows) {
   });
 }
 
-// ─── Layer 2: Frequent Problems & Chronic Signs ───
 function renderLayer2() {
   const probTbody = document.getElementById('frequentProblemsTableBody');
   const probStat = document.getElementById('frequentProblemsStat');
@@ -1692,7 +1737,7 @@ function renderTagChips() {
 }
 
 function searchAssetCodes() {
-  if (globalData.length === 0) { alert('กรุณานำเข้าไฟล์ตั๋วงานเคลมด้านบนก่อน'); return; }
+  if (globalData.length === 0) { alert('ระบบกำลังดึงข้อมูลจาก Google Sheets หรือยังไม่มีข้อมูล'); return; }
   if (tagRealInput.value.trim()) { addTag(tagRealInput.value); tagRealInput.value = ''; }
   if (enteredTags.size === 0) { alert('กรุณากรอกรหัส Asset Code ที่ต้องการตรวจ'); return; }
 
@@ -1752,11 +1797,7 @@ function toggleL3Sort(col) {
   renderL3Table();
 }
 
-// ══════════════════════════════════════════════════
 // ─── LAYER 4: MAP & ROUTE PLANNER ───
-// ══════════════════════════════════════════════════
-
-// URL ของ Tile Themes แต่ละแบบ (ฟรี 100% ไม่ต้องใช้ API Key)
 const MAP_THEMES = {
   osm_hot: {
     url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
@@ -1772,15 +1813,14 @@ const MAP_THEMES = {
   }
 };
 
-// 1. ตั้งค่าแผนที่ Leaflet พร้อมระบบ Smooth Fractional Zoom
 function initMap() {
   if (!mapInstance) {
     mapInstance = L.map('map', {
       center: [13.7563, 100.5018],
       zoom: 11.5,
-      zoomSnap: 0.25,           // ซูมละเอียดระดับละ 0.25 ขั้น
-      zoomDelta: 0.5,           // ปุ่ม +/- ขยับทีละ 0.5 ขั้น
-      wheelPxPerZoomLevel: 120  // เลื่อนลูกกลิ้งเมาส์แล้วซูมนุ่มนวล
+      zoomSnap: 0.25,
+      zoomDelta: 0.5,
+      wheelPxPerZoomLevel: 120
     });
 
     changeMapTheme('osm_hot');
@@ -1799,130 +1839,191 @@ function changeMapTheme(themeKey) {
   currentTileLayer = L.tileLayer(theme.url, theme.options).addTo(mapInstance);
 }
 
-// 2. ดึงพิกัด Master จาก Google Apps Script (อ่าน key "code" / "code_raw")
-async function loadMasterCoordinates() {
-  const chip = document.getElementById('mapStatusChip');
-  try {
-    const res = await fetch(SCRIPT_URL, { method: 'GET', redirect: 'follow' });
-    const data = await res.json();
-    
-    masterSignsMap = {};
-    data.forEach(item => {
-      const code = (item['code'] || item['code_raw'] || item['Asset Code'] || item['Asset'] || '').toString().trim().toUpperCase();
-      const lat = parseFloat(item['Latitude'] || item['Lat']);
-      const lng = parseFloat(item['Longitude'] || item['Long'] || item['Lng']);
-
-      if (code && !isNaN(lat) && !isNaN(lng)) {
-        masterSignsMap[code] = {
-          lat: lat,
-          lng: lng,
-          mediaType: item['Media Type'] || item['MediaType'] || 'General',
-          location: item['Location Name'] || item['Location'] || item['road'] || ''
-        };
-      }
-    });
-
-    const count = Object.keys(masterSignsMap).length;
-    if (count > 0) {
-      if (chip) {
-        chip.innerText = `✅ โหลดพิกัดป้ายสำเร็จ ${count} จุด`;
-        chip.className = 'badge badge-green';
-      }
-      if (globalData && globalData.length > 0) {
-        renderPinsOnMap();
-      }
-    } else {
-      if (chip) {
-        chip.innerText = `⚠️ อ่านชีตได้ แต่แปลงพิกัดไม่สำเร็จ`;
-        chip.className = 'badge badge-red';
-      }
-    }
-  } catch (err) {
-    if (chip) {
-      chip.innerText = `❌ ไม่สามารถดึงพิกัดได้: ${err.message}`;
-      chip.className = 'badge badge-red';
-    }
-    console.error("Fetch coords error:", err);
-  }
-}
-loadMasterCoordinates();
-
-// 3. ปักหมุดบนแผนที่ SLA โดยแยกสีหมุดตาม Media Type
+// ─── ปักหมุดบนแผนที่ Layer 4 พร้อมรวบรวมข้อมูลดิบ (Data Prep) ───
 function renderPinsOnMap() {
   if (!mapInstance) return;
 
-  allPinsOnMap.forEach(p => mapInstance.removeLayer(p.marker));
-  allPinsOnMap = [];
+  allMapItems = [];
 
-  const mediaSet = new Set();
-  const detailSet = new Set();
+  // 1. ดึงตั๋ว SLA เกินเวลา (กลุ่มระหว่างดำเนินการ)
+  const slaSourceRows = (typeof globalSlaRows !== 'undefined' && globalSlaRows.length > 0) ? globalSlaRows : [];
+  slaSourceRows.forEach(item => {
+    prepareMapItem(item, false);
+  });
 
-  const sourceRows = (typeof globalSlaRows !== 'undefined' && globalSlaRows.length > 0) ? globalSlaRows : [];
+  // 2. ดึงตั๋วที่ปิดงาน "เมื่อวาน" (Finish / Approve)
+  let yStart = new Date(datasetRefDate);
+  yStart.setDate(yStart.getDate() - 1);
+  yStart.setHours(0, 0, 0, 0);
 
-  sourceRows.forEach(item => {
-    const row = item.row || {};
-    const rawAsset = (row['Asset'] || '').toString().trim().toUpperCase();
-    const status = (row['Status'] || '').toString().toLowerCase();
-    const detail = getCleanDetail(row, false);
-    const slaText = item.sla ? item.sla.text : (parseSlaDetails(row).text || '-');
-    
-    const coordInfo = masterSignsMap[rawAsset];
-    if (coordInfo) {
-      const media = coordInfo.mediaType || item.mediaType || 'Other';
-      mediaSet.add(media);
-      if (detail && detail !== '-') detailSet.add(detail);
+  let yEnd = new Date(datasetRefDate);
+  yEnd.setDate(yEnd.getDate() - 1);
+  yEnd.setHours(23, 59, 59, 999);
 
-      const isSelected = selectedPins.some(p => p.asset === rawAsset);
-      const selectedClass = isSelected ? 'pin-selected' : '';
-      
-      const colorStyle = getBadgeColor(media);
-
-      const icon = L.divIcon({
-        className: 'custom-pin-wrapper',
-        html: `<div id="pin-${rawAsset}" class="custom-pin ${selectedClass}" style="background-color: ${colorStyle.bg}; color: ${colorStyle.color};">${rawAsset.slice(0, 2)}</div>`,
-        iconSize: [30, 30],
-        iconAnchor: [15, 15]
-      });
-
-      const marker = L.marker([coordInfo.lat, coordInfo.lng], { icon: icon }).addTo(mapInstance);
-      marker.bindPopup(`
-        <div style="font-family:'Kanit'; font-size:13px; line-height: 1.5;">
-          <b>📌 ${rawAsset}</b> <span style="background:${colorStyle.bg}; color:${colorStyle.color}; padding:2px 6px; border-radius:4px; font-size:11px;">${media}</span><br>
-          <b>สถานะ:</b> ${row['Status'] || '-'}<br>
-          <b>⏱ SLA:</b> <span style="color:#CB3A3A; font-weight:bold;">${slaText}</span><br>
-          <b>ปัญหา:</b> ${detail}<br>
-          <b>จุดติดตั้ง:</b> ${coordInfo.location || '-'}
-        </div>
-      `);
-
-      marker.on('click', () => toggleSelectPin(rawAsset, coordInfo.lat, coordInfo.lng, detail));
-
-      allPinsOnMap.push({ asset: rawAsset, media: media, detail: detail, marker: marker });
+  const doneSourceRows = (typeof globalDoneRows !== 'undefined' && globalDoneRows.length > 0) ? globalDoneRows : [];
+  doneSourceRows.forEach(item => {
+    const finishDate = parseRowDate(item.row, true);
+    if (finishDate && finishDate >= yStart && finishDate <= yEnd) {
+      prepareMapItem(item, true);
     }
   });
 
-  renderPopoverItems('mapMediaList', 'mapMediaCount', Array.from(mediaSet).sort(), mapFilterStates.media, () => {
+  // สร้างหมุดและผูกตัวกรอง Dynamic
+  buildMapPinsAndFilters();
+}
+
+function prepareMapItem(item, isYesterdayDone) {
+  const row = item.row || {};
+  const rawAssetField = (row['Asset'] || '').toString().trim();
+  const detail = getCleanDetail(row, isYesterdayDone);
+  const slaText = item.sla ? item.sla.text : (parseSlaDetails(row).text || '-');
+
+  const assetTokens = rawAssetField.split(/[,;]+/).map(t => t.trim()).filter(Boolean);
+
+  assetTokens.forEach(rawAsset => {
+    const uAsset = rawAsset.toUpperCase();
+    
+    // ค้นหาพิกัด (เทียบชื่อตรง, Normalize, หรือตัด FLY)
+    let coordInfo = masterSignsMap[uAsset] || masterSignsMap[normalizeCodeKey(uAsset)];
+    if (!coordInfo && uAsset.startsWith('FLY')) {
+      const letter = uAsset.replace('FLY', '').replace(/[\s\-_]/g, '');
+      coordInfo = masterSignsMap[letter] || masterSignsMap[normalizeCodeKey(letter)];
+    }
+
+    if (coordInfo) {
+      const media = classifyMediaType(uAsset, row) || coordInfo.mediaType || item.mediaType || 'อื่นๆ';
+      const statusCategory = isYesterdayDone ? 'งานเสร็จเมื่อวาน' : 'ระหว่างดำเนินการ';
+
+      allMapItems.push({
+        asset: uAsset,
+        media: media,
+        detail: detail,
+        statusCategory: statusCategory,
+        isYesterdayDone: isYesterdayDone,
+        row: row,
+        coordInfo: coordInfo,
+        slaText: slaText
+      });
+    }
+  });
+}
+
+function buildMapPinsAndFilters() {
+  allPinsOnMap.forEach(p => mapInstance.removeLayer(p.marker));
+  allPinsOnMap = [];
+
+  allMapItems.forEach(item => {
+    const isSelected = selectedPins.some(p => p.asset === item.asset);
+    const selectedClass = isSelected ? 'pin-selected' : '';
+
+    // หมุดงานเสร็จเมื่อวาน: สีเขียวสด 🟢 / หมุดงานค้าง: สีตาม Media Type
+    const pinColorBg = item.isYesterdayDone ? '#1F9D57' : (getBadgeColor(item.media).bg);
+    const pinLabel = item.asset.replace(/[^A-Z0-9]/gi, '').slice(0, 3);
+
+    const icon = L.divIcon({
+      className: 'custom-pin-wrapper',
+      html: `<div id="pin-${item.asset}" class="custom-pin ${selectedClass}" style="background-color: ${pinColorBg}; color: #ffffff;">${pinLabel}</div>`,
+      iconSize: [30, 30],
+      iconAnchor: [15, 15]
+    });
+
+    const marker = L.marker([item.coordInfo.lat, item.coordInfo.lng], { icon: icon }).addTo(mapInstance);
+
+    const doneBadge = item.isYesterdayDone
+      ? `<span style="background:#e6f7ee; color:#1F9D57; padding:2px 6px; border-radius:4px; font-weight:700; font-size:11px;">✅ งานเสร็จเมื่อวาน</span><br>`
+      : `<span style="color:#CB3A3A; font-weight:bold;">⏱ SLA: ${item.slaText}</span><br>`;
+
+    marker.bindPopup(`
+      <div style="font-family:'Kanit'; font-size:13px; line-height: 1.5;">
+        <b>📌 ${item.asset}</b> <span style="background:${pinColorBg}; color:#fff; padding:2px 6px; border-radius:4px; font-size:11px;">${item.media}</span><br>
+        ${doneBadge}
+        <b>สถานะ:</b> ${item.row['Status'] || '-'}<br>
+        <b>ปัญหา/การแก้ไข:</b> ${item.detail}<br>
+        <b>จุดติดตั้ง:</b> ${item.coordInfo.location || '-'}
+      </div>
+    `);
+
+    marker.on('click', () => toggleSelectPin(item.asset, item.coordInfo.lat, item.coordInfo.lng, item.detail));
+
+    allPinsOnMap.push({
+      asset: item.asset,
+      media: item.media,
+      detail: item.detail,
+      statusCategory: item.statusCategory,
+      marker: marker
+    });
+  });
+
+  // สร้าง Filter สถานะงาน (Status Category)
+  const statusSet = new Set(['ระหว่างดำเนินการ', 'งานเสร็จเมื่อวาน']);
+  renderPopoverItems('mapStatusList', 'mapStatusCount', Array.from(statusSet), mapFilterStates.status, () => {
+    updateDynamicMediaAndDetailOptions();
     applyMapFilters();
+  });
+
+  updateDynamicMediaAndDetailOptions();
+  applyMapFilters();
+}
+
+// 🔄 ฟังก์ชัน Dynamic Filter: คำนวณ Media Type และ Detail ให้สอดคล้องกับ Status ที่เลือก
+function updateDynamicMediaAndDetailOptions() {
+  const selectedStatuses = mapFilterStates.status;
+  const mediaSet = new Set();
+
+  allMapItems.forEach(item => {
+    const matchStatus = selectedStatuses.size === 0 || selectedStatuses.has(item.statusCategory);
+    if (matchStatus) {
+      mediaSet.add(item.media);
+    }
+  });
+
+  // อัปเดต Media Type Popover
+  renderPopoverItems('mapMediaList', 'mapMediaCount', Array.from(mediaSet).sort(), mapFilterStates.media, () => {
+    updateDynamicDetailOptions();
+    applyMapFilters();
+  });
+
+  updateDynamicDetailOptions();
+}
+
+function updateDynamicDetailOptions() {
+  const selectedStatuses = mapFilterStates.status;
+  const selectedMedias = mapFilterStates.media;
+  const detailSet = new Set();
+
+  allMapItems.forEach(item => {
+    const matchStatus = selectedStatuses.size === 0 || selectedStatuses.has(item.statusCategory);
+    const matchMedia = selectedMedias.size === 0 || selectedMedias.has(item.media);
+
+    if (matchStatus && matchMedia && item.detail && item.detail !== '-') {
+      detailSet.add(item.detail);
+    }
+  });
+
+  // ล้างปัญหาที่เคยเลือกไว้ ถ้าในเงื่อนไขใหม่ไม่มีปัญหานั้นแล้ว
+  mapFilterStates.detail.forEach(dt => {
+    if (!detailSet.has(dt)) mapFilterStates.detail.delete(dt);
   });
 
   renderPopoverItems('mapDetailList', 'mapDetailCount', Array.from(detailSet).sort(), mapFilterStates.detail, () => {
     applyMapFilters();
   });
-
-  applyMapFilters();
 }
 
+// กรองการแสดงหมุดบนแผนที่
 function applyMapFilters() {
   if (!mapInstance) return;
 
+  const sStatuses = mapFilterStates.status;
   const sMedias = mapFilterStates.media;
   const sDetails = mapFilterStates.detail;
 
   allPinsOnMap.forEach(item => {
+    const matchStatus = sStatuses.size === 0 || sStatuses.has(item.statusCategory);
     const matchMedia = sMedias.size === 0 || sMedias.has(item.media);
     const matchDetail = sDetails.size === 0 || sDetails.has(item.detail);
 
-    if (matchMedia && matchDetail) {
+    if (matchStatus && matchMedia && matchDetail) {
       if (!mapInstance.hasLayer(item.marker)) mapInstance.addLayer(item.marker);
     } else {
       if (mapInstance.hasLayer(item.marker)) mapInstance.removeLayer(item.marker);
@@ -1930,7 +2031,6 @@ function applyMapFilters() {
   });
 }
 
-// 4. ฟังก์ชันป้อนรหัสป้ายด้วยตนเองลงในรายการจัดรูทวิ่ง
 function addManualAssetPin() {
   const inputEl = document.getElementById('manualAssetInput');
   const code = (inputEl.value || '').trim().toUpperCase();
@@ -1943,7 +2043,12 @@ function addManualAssetPin() {
     return;
   }
 
-  const coordInfo = masterSignsMap[code];
+  let coordInfo = masterSignsMap[code] || masterSignsMap[normalizeCodeKey(code)];
+  if (!coordInfo && code.startsWith('FLY')) {
+    const letter = code.replace('FLY', '').replace(/[\s\-_]/g, '');
+    coordInfo = masterSignsMap[letter] || masterSignsMap[normalizeCodeKey(letter)];
+  }
+
   if (!coordInfo) {
     alert(`❌ ไม่พบข้อมูลพิกัดของป้ายรหัส "${code}" ในฐานข้อมูล Master Signs`);
     return;
@@ -1952,7 +2057,7 @@ function addManualAssetPin() {
   let issueDetail = 'ป้อนรหัสด้วยตนเอง';
   const foundTicket = (typeof globalSlaRows !== 'undefined') ? globalSlaRows.find(item => {
     const a = (item.row && item.row['Asset'] ? item.row['Asset'] : '').toString().trim().toUpperCase();
-    return a === code;
+    return a.includes(code);
   }) : null;
 
   if (foundTicket && foundTicket.row) {
@@ -2033,7 +2138,6 @@ function openGoogleMapsRoute() {
   window.open(`https://www.google.com/maps/dir/${coords}`, '_blank');
 }
 
-// ─── Render Donut Chart ───
 function renderSingleDonut(canvasId, legendId, stats, chartInstance) {
   if (chartInstance) chartInstance.destroy();
   const labels = ['Approve', 'Finish', 'Working On', 'Pending & Ready To Work'];
@@ -2067,6 +2171,9 @@ function renderSingleDonut(canvasId, legendId, stats, chartInstance) {
   });
   return newChart;
 }
+
+// โหลดข้อมูลสดเมื่อเปิดหน้าเว็บ
+window.addEventListener('DOMContentLoaded', autoFetchLiveSheetData);
 </script>
 </body>
 </html>
