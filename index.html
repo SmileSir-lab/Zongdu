@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI Operation Daily Report & Monitoring Dashboard (4 Layers Complete)</title>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
-<!-- Chart.js สำหรับวาดกราฟโดนัท -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Leaflet.js แผนที่ฟรี ไม่ต้องใช้ API Key -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -258,10 +256,8 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
 </head>
 <body>
 
-<!-- Backdrop Overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-<!-- Sidebar Slider เมนูด้านซ้าย -->
 <aside class="sidebar-slider" id="sidebarSlider">
   <div class="sidebar-header">
     <h2>📌 เลือกระบบการทำงาน</h2>
@@ -288,7 +284,6 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
 </aside>
 
 <div class="container">
-  <!-- Header -->
   <div class="head">
     <div class="head-left">
       <button type="button" class="menu-toggle-btn" onclick="openSidebar()">
@@ -304,7 +299,6 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
     </div>
   </div>
 
-  <!-- Indicator Badge -->
   <div class="layer-indicator-badge">
     <span class="lbl">กำลังแสดงผล:</span>
     <span class="name" id="currentLayerDisplayTitle">Layer 1: Dashboard ภาพรวม</span>
@@ -345,7 +339,6 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
       </div>
     </div>
 
-    <!-- Interactive Stat Cards -->
     <div class="big-stat-grid">
       <div class="big-stat-card card-dup" id="cardDup" onclick="switchTableView('viewDup', this)">
         <div class="big-stat-title"><span>🔁 Ticket ซ้ำ</span><span class="hint">คลิกดูตาราง ↗</span></div>
@@ -715,10 +708,8 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
       <span id="mapStatusChip" class="badge badge-red">🔄 กำลังโหลดพิกัดจาก Google Sheets...</span>
     </div>
 
-    <!-- แถบ Filter แผนที่แบบ Popover Toggle Switch ไดนามิก -->
     <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; position:relative;">
-      
-      <!-- 📌 1. สถานะงาน (Status Filter): ระหว่างดำเนินการ vs งานเสร็จเมื่อวาน -->
+      <!-- 📌 1. สถานะงาน -->
       <div class="filter-item" style="position:relative;">
         <button type="button" class="popover-btn" onclick="openPopover(event, 'mapStatusPopover')">
           📌 สถานะงาน <span class="badge-count" id="mapStatusCount">ทั้งหมด</span> ▾
@@ -816,7 +807,6 @@ let activeFilterStates = {
   undone: { media: new Set(), assignee: new Set(), detail: new Set() }
 };
 
-// State สำหรับตัวกรองแผนที่ Layer 4
 let mapFilterStates = {
   status: new Set(),
   media: new Set(),
@@ -826,17 +816,17 @@ let mapFilterStates = {
 let masterSignsMap = {};
 let mapInstance = null;
 let currentTileLayer = null;
-let allMapItems = []; // ข้อมูลดิบสำหรับพล็อตบนแผนที่
+let allMapItems = [];
 let allPinsOnMap = [];
 let selectedPins = [];
 
-// ─── ปรับปรุง Normalize รหัสป้าย: ครอบคลุม Flyover, MTP, EXAT, BECL ───
+// ─── ปรับปรุง Normalize รหัสป้าย: ครอบคลุม Flyover, MTP, EXAT ───
 function normalizeCodeKey(str) {
   if (!str) return '';
   let s = str.toString().toUpperCase().trim();
-  s = s.replace(/\(.*?\)/g, ''); // ลบวงเล็บ
-  s = s.replace(/[-_\s\/]/g, ''); // ลบขีด ช่องว่าง สแลช
-  s = s.replace(/PAC/g, '');      // ลบ PAC จาก FLY-PAC, PE-PAC, SP-PAC
+  s = s.replace(/\(.*?\)/g, '');
+  s = s.replace(/[-_\s\/]/g, '');
+  s = s.replace(/PAC/g, '');
   return s;
 }
 
@@ -868,7 +858,6 @@ async function autoFetchLiveSheetData() {
           masterSignsMap[rawCode] = coordData;
           masterSignsMap[normalizeCodeKey(rawCode)] = coordData;
 
-          // ถ้าเป็น Flyover เช่น "FLY A" หรือ "A" ให้ map เพิ่ม
           if (rawCode.startsWith('FLY')) {
             const letter = rawCode.replace('FLY', '').replace(/[\s\-_]/g, '');
             if (letter) masterSignsMap[letter] = coordData;
@@ -919,7 +908,6 @@ async function autoFetchLiveSheetData() {
   }
 }
 
-// ─── Sidebar Navigation Drawer ───
 function openSidebar() {
   document.getElementById('sidebarSlider').classList.add('open');
   document.getElementById('sidebarOverlay').classList.add('active');
@@ -1031,15 +1019,13 @@ function filterSearchList(input) {
   });
 }
 
-// ─── ปรับปรุงการจำแนก Media Type ให้จับ Flyover 2.0 ครบทุกรูปแบบ ───
+// ─── ปรับปรุงการจำแนก Media Type ให้ตรวจจับ Flyover 2.0 ครอบคลุม ───
 function classifyMediaType(assetStr, row = {}) {
   if (!assetStr) return 'อื่นๆ';
   const asset = assetStr.toString().trim();
   const u = asset.toUpperCase();
 
-  // ตรวจจับ Flyover 2.0: ขึ้นต้นด้วย FLY, มีคำว่า FLYOVER, หรือเป็นตัวอักษรเดี่ยว A-V
   if (u.startsWith('FLY') || u.includes('FLYOVER') || /^[A-V]$/.test(u)) return 'Flyover 2.0';
-
   if (u.startsWith('BECL') || u.startsWith('EXAT') || u.includes('GATEWAY')) return 'Gateway Billboard';
   if (u.startsWith('MTP')) {
     const ledSample = ['MTP A5', 'MTP A11', 'MTP A18', 'MTP A05'];
@@ -1839,7 +1825,7 @@ function changeMapTheme(themeKey) {
   currentTileLayer = L.tileLayer(theme.url, theme.options).addTo(mapInstance);
 }
 
-// ─── ปักหมุดบนแผนที่ Layer 4 พร้อมรวบรวมข้อมูลดิบ (Data Prep) ───
+// ─── ปักหมุดบนแผนที่ Layer 4 (กรองงานเสร็จเฉพาะ "เมื่อวาน" แบบเป๊ะ 1 วัน) ───
 function renderPinsOnMap() {
   if (!mapInstance) return;
 
@@ -1851,24 +1837,39 @@ function renderPinsOnMap() {
     prepareMapItem(item, false);
   });
 
-  // 2. ดึงตั๋วที่ปิดงาน "เมื่อวาน" (Finish / Approve)
-  let yStart = new Date(datasetRefDate);
-  yStart.setDate(yStart.getDate() - 1);
-  yStart.setHours(0, 0, 0, 0);
-
-  let yEnd = new Date(datasetRefDate);
-  yEnd.setDate(yEnd.getDate() - 1);
-  yEnd.setHours(23, 59, 59, 999);
+  // 2. ดึงตั๋วที่ปิดงาน "เมื่อวาน" (วันเดียวเท่านั้น: 00:00:00 - 23:59:59)
+  const baseDate = (datasetRefDate && !isNaN(datasetRefDate.getTime())) ? new Date(datasetRefDate) : new Date();
+  const yStart = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() - 1, 0, 0, 0, 0);
+  const yEnd = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() - 1, 23, 59, 59, 999);
 
   const doneSourceRows = (typeof globalDoneRows !== 'undefined' && globalDoneRows.length > 0) ? globalDoneRows : [];
   doneSourceRows.forEach(item => {
-    const finishDate = parseRowDate(item.row, true);
+    const row = item.row || {};
+    const finishDateStr = row['ActualEndDateTime'] || row['Modified Date Time'] || row['ModifiedDateTime'];
+    if (!finishDateStr) return;
+
+    let finishDate = null;
+    if (typeof finishDateStr === 'number') {
+      finishDate = new Date((finishDateStr - (25567 + 2)) * 86400 * 1000);
+    } else {
+      let str = finishDateStr.toString().trim().replace('T', ' ');
+      let d = new Date(str);
+      if (!isNaN(d.getTime())) {
+        finishDate = d;
+      } else {
+        let parts = str.split(' ')[0].split(/[-\/]/);
+        if (parts.length === 3) {
+          if (parts[0].length === 4) finishDate = new Date(Number(parts[0]), Number(parts[1])-1, Number(parts[2]));
+          else finishDate = new Date(Number(parts[2]), Number(parts[1])-1, Number(parts[0]));
+        }
+      }
+    }
+
     if (finishDate && finishDate >= yStart && finishDate <= yEnd) {
       prepareMapItem(item, true);
     }
   });
 
-  // สร้างหมุดและผูกตัวกรอง Dynamic
   buildMapPinsAndFilters();
 }
 
@@ -1883,7 +1884,6 @@ function prepareMapItem(item, isYesterdayDone) {
   assetTokens.forEach(rawAsset => {
     const uAsset = rawAsset.toUpperCase();
     
-    // ค้นหาพิกัด (เทียบชื่อตรง, Normalize, หรือตัด FLY)
     let coordInfo = masterSignsMap[uAsset] || masterSignsMap[normalizeCodeKey(uAsset)];
     if (!coordInfo && uAsset.startsWith('FLY')) {
       const letter = uAsset.replace('FLY', '').replace(/[\s\-_]/g, '');
@@ -1916,7 +1916,6 @@ function buildMapPinsAndFilters() {
     const isSelected = selectedPins.some(p => p.asset === item.asset);
     const selectedClass = isSelected ? 'pin-selected' : '';
 
-    // หมุดงานเสร็จเมื่อวาน: สีเขียวสด 🟢 / หมุดงานค้าง: สีตาม Media Type
     const pinColorBg = item.isYesterdayDone ? '#1F9D57' : (getBadgeColor(item.media).bg);
     const pinLabel = item.asset.replace(/[^A-Z0-9]/gi, '').slice(0, 3);
 
@@ -1954,7 +1953,6 @@ function buildMapPinsAndFilters() {
     });
   });
 
-  // สร้าง Filter สถานะงาน (Status Category)
   const statusSet = new Set(['ระหว่างดำเนินการ', 'งานเสร็จเมื่อวาน']);
   renderPopoverItems('mapStatusList', 'mapStatusCount', Array.from(statusSet), mapFilterStates.status, () => {
     updateDynamicMediaAndDetailOptions();
@@ -1965,7 +1963,6 @@ function buildMapPinsAndFilters() {
   applyMapFilters();
 }
 
-// 🔄 ฟังก์ชัน Dynamic Filter: คำนวณ Media Type และ Detail ให้สอดคล้องกับ Status ที่เลือก
 function updateDynamicMediaAndDetailOptions() {
   const selectedStatuses = mapFilterStates.status;
   const mediaSet = new Set();
@@ -1977,7 +1974,6 @@ function updateDynamicMediaAndDetailOptions() {
     }
   });
 
-  // อัปเดต Media Type Popover
   renderPopoverItems('mapMediaList', 'mapMediaCount', Array.from(mediaSet).sort(), mapFilterStates.media, () => {
     updateDynamicDetailOptions();
     applyMapFilters();
@@ -2000,7 +1996,6 @@ function updateDynamicDetailOptions() {
     }
   });
 
-  // ล้างปัญหาที่เคยเลือกไว้ ถ้าในเงื่อนไขใหม่ไม่มีปัญหานั้นแล้ว
   mapFilterStates.detail.forEach(dt => {
     if (!detailSet.has(dt)) mapFilterStates.detail.delete(dt);
   });
@@ -2010,7 +2005,6 @@ function updateDynamicDetailOptions() {
   });
 }
 
-// กรองการแสดงหมุดบนแผนที่
 function applyMapFilters() {
   if (!mapInstance) return;
 
@@ -2172,7 +2166,6 @@ function renderSingleDonut(canvasId, legendId, stats, chartInstance) {
   return newChart;
 }
 
-// โหลดข้อมูลสดเมื่อเปิดหน้าเว็บ
 window.addEventListener('DOMContentLoaded', autoFetchLiveSheetData);
 </script>
 </body>
