@@ -268,7 +268,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
       <span class="item-icon">🍩</span>
       <span>Layer 1: Dashboard ภาพรวม</span>
     </button>
-    <button class="sidebar-item" id="sideBtn-layer2" onclick="selectLayer('layer2', 'Layer 2: ตารางปัญหาที่พบบ่อย & ป้ายเคลมซ้ำ', this)">
+    <button class="sidebar-item" id="sideBtn-layer2" onclick="selectLayer('layer2', 'Layer 2: ปัญหาพบบ่อย & เคลมซ้ำ', this)">
       <span class="item-icon">📊</span>
       <span>Layer 2: ปัญหาพบบ่อย & เคลมซ้ำ</span>
     </button>
@@ -332,7 +332,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
           <canvas id="weekChart"></canvas>
           <div class="chart-center-text">
             <div class="val" id="weekCenterVal" style="font-size: 20px;">0 / 0(0)</div>
-            <div class="lbl">ยอดรายอาทิตย์(เคลมเพิ่ม)</div>
+            <div class="lbl">ยอดรายอาทิตย์(เคลมเพิ่มเมื่อวาน)</div>
           </div>
         </div>
         <div id="weekLegend" class="legend-box"></div>
@@ -576,10 +576,10 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
     </div>
   </section>
 
-  <!-- ════════ LAYER 2: ปัญหาที่พบบ่อย & ป้ายเคลมซ้ำ ════════ -->
+  <!-- ════════ LAYER 2: ปัญหาพบบ่อย & เคลมซ้ำ (สลับเอาป้ายปัญหาบ่อยขึ้นก่อน) ════════ -->
   <section id="layer2" class="panel hidden">
     <div class="panel-title">
-      <span>📊 Layer 2: การวิเคราะห์เชิงลึก (ปัญหาที่พบบ่อย & ป้ายที่เคลมซ้ำ)</span>
+      <span>📊 Layer 2: การวิเคราะห์เชิงลึก (ป้ายที่เคลมซ้ำ & ปัญหาที่พบบ่อย)</span>
       <div class="filter-bar">
         <div class="filter-item">
           <span>⏳ ช่วงเวลา:</span>
@@ -598,27 +598,19 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
             <input type="date" id="layer2EndDate" onchange="renderLayer2()">
           </div>
         </div>
+        <div class="filter-item">
+          <span>📝 Detail:</span>
+          <select id="layer2DetailFilter" class="filter-select" onchange="renderLayer2()">
+            <option value="ALL">-- ทุกปัญหา (ALL) --</option>
+          </select>
+        </div>
       </div>
     </div>
 
-    <div class="section-box" style="background:#fcfcfe; border:1.5px solid #eaeaf5; border-radius:12px; padding:18px;">
-      <div class="table-header-row">
-        <div class="table-label">🚨 1. ตารางปัญหาที่พบบ่อย (Top 10 รายการสูงสุด)</div>
-        <div class="bottom-stat-pill" id="frequentProblemsStat" style="font-size:12.5px;">รวมปัญหา: 0 เคส</div>
-      </div>
-      <div class="tw" style="margin-top:8px;">
-        <table>
-          <thead>
-            <tr><th style="width: 60px; text-align: center;">อันดับ</th><th>รายละเอียดปัญหา (Problem / Detail)</th><th style="width: 140px; text-align: center;">จำนวนครั้งที่พบ</th><th style="width: 130px; text-align: center;">สัดส่วน (%)</th><th style="width: 250px;">แถบสัดส่วนปัญหา</th></tr>
-          </thead>
-          <tbody id="frequentProblemsTableBody"><tr><td colspan="5" style="text-align:center; color:var(--grey); padding:18px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
+    <!-- ตาราง 1 (สลับขึ้นมาบนสุด): ป้ายเคลมซ้ำ > 3 ครั้ง -->
     <div class="section-box" style="background:#fffafa; border:1.5px solid #fbdada; border-radius:12px; padding:18px;">
       <div class="table-header-row">
-        <div class="table-label" style="color:var(--red);">⚠️ 2. ตารางป้ายที่มีปัญหาบ่อยผิดปกติ (> 3 ครั้ง)</div>
+        <div class="table-label" style="color:var(--red);">⚠️ 1. ตารางป้ายที่มีปัญหาบ่อยผิดปกติ (> 3 ครั้ง)</div>
         <div class="bottom-stat-pill" id="chronicAssetStat" style="font-size:12.5px; border-color:#fca5a5; color:var(--red);">พบป้ายซ่อมซ้ำ: 0 ป้าย</div>
       </div>
       <div class="tw" style="margin-top:8px;">
@@ -637,20 +629,36 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
         </table>
       </div>
     </div>
+
+    <!-- ตาราง 2 (เลื่อนลงมาอันล่าง): ปัญหาที่พบบ่อย Top 10 -->
+    <div class="section-box" style="background:#fcfcfe; border:1.5px solid #eaeaf5; border-radius:12px; padding:18px;">
+      <div class="table-header-row">
+        <div class="table-label">🚨 2. ตารางปัญหาที่พบบ่อย (Top 10 รายการสูงสุด)</div>
+        <div class="bottom-stat-pill" id="frequentProblemsStat" style="font-size:12.5px;">รวมปัญหา: 0 เคส</div>
+      </div>
+      <div class="tw" style="margin-top:8px;">
+        <table>
+          <thead>
+            <tr><th style="width: 60px; text-align: center;">อันดับ</th><th>รายละเอียดปัญหา (Problem / Detail)</th><th style="width: 140px; text-align: center;">จำนวนครั้งที่พบ</th><th style="width: 130px; text-align: center;">สัดส่วน (%)</th><th style="width: 250px;">แถบสัดส่วนปัญหา</th></tr>
+          </thead>
+          <tbody id="frequentProblemsTableBody"><tr><td colspan="5" style="text-align:center; color:var(--grey); padding:18px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
   </section>
 
   <!-- ════════ LAYER 3: Monitoring Lookup (Asset Code) ════════ -->
   <section id="layer3" class="panel hidden">
     <div class="panel-title">
-      <span>🔍 Layer 3: Asset Code Monitoring Lookup (ตรวจเช็ครหัสป้ายแบบเฉพาะเจาะจง)</span>
+      <span>🔍 Layer 3: Asset Code Monitoring Lookup (ตรวจเช็ครหัสป้ายเพื่อไปเคลมต่อ)</span>
     </div>
     
     <div class="section-box">
       <label style="font-family:'Kanit'; font-weight:600; color:var(--navy);">
-        กรอกรหัสโค้ด (กด <b>Enter</b> หรือใส่เครื่องหมาย <b>,</b> เพื่อล็อกเป็นกรอบ — เคาะ Spacebar เช่น MTP A75 ได้ตามปกติ):
+        กรอกหรือวางรหัสโค้ด (กด <b>Enter</b> หรือ <b>Ctrl+V วางชิปจะขึ้นทันที</b> — รองรับการเว้นวรรค เช่น MTP A75 ได้ตามปกติ):
       </label>
       <div class="tag-input-container" id="tagContainer" onclick="focusTagInput()">
-        <input type="text" id="tagRealInput" class="tag-real-input" placeholder="พิมพ์ชื่อโค้ด เช่น MTP A75, DS012 แล้วกด Enter...">
+        <input type="text" id="tagRealInput" class="tag-real-input" placeholder="พิมพ์หรือวางโค้ด เช่น MTP A75, DS012...">
       </div>
       <div class="btn-row">
         <button class="btn btn-navy" onclick="searchAssetCodes()">🔍 ตรวจสอบสถานะโค้ดเหล่านี้</button>
@@ -658,6 +666,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
       </div>
     </div>
 
+    <!-- Stat Box สรุปสถานะตั๋วรายโค้ด (ออกตั๋วแล้ว / ยังไม่ได้ออกตั๋ว / ตั๋วซ้ำ) -->
     <div id="statBoxContainer" class="stat-box-container"></div>
 
     <div class="section-box">
@@ -820,7 +829,6 @@ let allMapItems = [];
 let allPinsOnMap = [];
 let selectedPins = [];
 
-// ─── ปรับปรุง Normalize รหัสป้าย: ครอบคลุม Flyover, MTP, EXAT ───
 function normalizeCodeKey(str) {
   if (!str) return '';
   let s = str.toString().toUpperCase().trim();
@@ -830,7 +838,6 @@ function normalizeCodeKey(str) {
   return s;
 }
 
-// ─── Auto-Fetch โหลดข้อมูลสดจาก Google Sheets เมื่อเปิดเว็บ ───
 async function autoFetchLiveSheetData() {
   const statusEl = document.getElementById('fileStatus');
   statusEl.innerHTML = '🔄 กำลังดึงข้อมูลสดจากชีต zongdudata...';
@@ -839,7 +846,6 @@ async function autoFetchLiveSheetData() {
     const res = await fetch(SCRIPT_URL, { method: 'GET', redirect: 'follow' });
     const result = await res.json();
     
-    // 1. โหลด Master Signs พิกัดป้าย
     let masterList = result.masterSigns || (Array.isArray(result) ? result : []);
     masterSignsMap = {};
     if (Array.isArray(masterList)) {
@@ -878,7 +884,6 @@ async function autoFetchLiveSheetData() {
       }
     }
 
-    // 2. โหลดตั๋วงาน
     let ticketsList = result.tickets || (Array.isArray(result) && !result.masterSigns ? result : []);
     
     if (ticketsList && ticketsList.length > 0) {
@@ -1019,7 +1024,6 @@ function filterSearchList(input) {
   });
 }
 
-// ─── ปรับปรุงการจำแนก Media Type ให้ตรวจจับ Flyover 2.0 ครอบคลุม ───
 function classifyMediaType(assetStr, row = {}) {
   if (!assetStr) return 'อื่นๆ';
   const asset = assetStr.toString().trim();
@@ -1171,6 +1175,7 @@ function isWithinTimeRangePrefix(d, prefix) {
   return true;
 }
 
+// ─── การประมวลผล LAYER 1: ปรับคำนวณเคลมเพิ่มเป็น "เมื่อวาน" ───
 function processLayer1(data) {
   const total = data.length;
   document.getElementById('totalBadge').innerText = `รวมทั้งหมด: ${total} รายการ`;
@@ -1190,6 +1195,10 @@ function processLayer1(data) {
   let endOfWeek = new Date(datasetRefDate);
   endOfWeek.setHours(23, 59, 59, 999);
 
+  // กำหนดช่วงเวลาของ "เมื่อวาน" แบบเป๊ะๆ
+  const yStart = new Date(datasetRefDate.getFullYear(), datasetRefDate.getMonth(), datasetRefDate.getDate() - 1, 0, 0, 0, 0);
+  const yEnd = new Date(datasetRefDate.getFullYear(), datasetRefDate.getMonth(), datasetRefDate.getDate() - 1, 23, 59, 59, 999);
+
   const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
   const dayNames = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
 
@@ -1199,7 +1208,8 @@ function processLayer1(data) {
   let monthDoneInMonth = 0, inMonthTotal = 0, backlogTotal = 0;
   let monthDonutStats = { approve: 0, finish: 0, working: 0, pending_ready: 0 };
   let weekStats = { approve: 0, finish: 0, working: 0, pending_ready: 0 };
-  let weekTotal = 0, weekClaimCount = 0;
+  let weekTotal = 0;
+  let claimAddedYesterdayCount = 0; // เคลมที่เปิดเพิ่มเมื่อวาน
 
   globalSlaRows = []; globalDoneRows = []; globalUndoneRows = [];
   let activeAssetMap = {};
@@ -1224,7 +1234,11 @@ function processLayer1(data) {
 
     if (d && d >= startOfWeek && d <= endOfWeek) {
       weekStats[stType]++; weekTotal++;
-      if (isClaimJob(row)) weekClaimCount++;
+    }
+
+    // นับงานเคลมที่สร้างขึ้น "เมื่อวาน"
+    if (d && d >= yStart && d <= yEnd && isClaimJob(row)) {
+      claimAddedYesterdayCount++;
     }
 
     if (stType === 'pending_ready' || stType === 'working') {
@@ -1247,7 +1261,8 @@ function processLayer1(data) {
   }
 
   const weekDone = weekStats.approve + weekStats.finish;
-  document.getElementById('weekCenterVal').innerText = `${weekDone} / ${weekTotal}(${weekClaimCount})`;
+  // แสดงผล 73 / 116(ยอดเคลมเปิดเพิ่มเมื่อวาน)
+  document.getElementById('weekCenterVal').innerText = `${weekDone} / ${weekTotal}(${claimAddedYesterdayCount})`;
 
   monthChartInst = renderSingleDonut('monthChart', 'monthLegend', monthDonutStats, monthChartInst);
   weekChartInst = renderSingleDonut('weekChart', 'weekLegend', weekStats, weekChartInst);
@@ -1571,10 +1586,14 @@ function renderFilteredUndoneTable(rows) {
   });
 }
 
+// ─── การประมวลผล LAYER 2: ป้ายที่มีปัญหาบ่อยขึ้นก่อน + Filter Detail ───
 function renderLayer2() {
   const probTbody = document.getElementById('frequentProblemsTableBody');
   const probStat = document.getElementById('frequentProblemsStat');
   const assetStat = document.getElementById('chronicAssetStat');
+  const detailFilterSelect = document.getElementById('layer2DetailFilter');
+  const selectedDetail = detailFilterSelect ? detailFilterSelect.value : 'ALL';
+
   probTbody.innerHTML = '';
 
   if (globalData.length === 0) {
@@ -1586,11 +1605,35 @@ function renderLayer2() {
   }
 
   const layer2Rows = globalData.filter(row => isWithinTimeRangePrefix(parseRowDate(row), 'layer2'));
+  
+  // รวบรวมตัวเลือก Detail ใส่ Dropdown
+  const detailSet = new Set();
+  layer2Rows.forEach(row => {
+    let p = getCleanDetail(row, false);
+    if (!p || p === '-') p = cleanSttText(row['Problem Category'] || '');
+    if (p && p !== '-') detailSet.add(p);
+  });
+
+  if (detailFilterSelect && detailFilterSelect.options.length <= 1) {
+    Array.from(detailSet).sort().forEach(dt => {
+      const opt = document.createElement('option');
+      opt.value = dt;
+      opt.textContent = dt.length > 35 ? dt.substring(0, 35) + '...' : dt;
+      detailFilterSelect.appendChild(opt);
+    });
+  }
+
   let problemCountMap = {}, totalProblems = 0, assetClaimMap = {};
 
   layer2Rows.forEach(row => {
     let pText = getCleanDetail(row, false);
     if (!pText || pText === '-') pText = cleanSttText(row['Problem Category'] || 'ปัญหาทั่วไป');
+
+    // กรองด้วย Detail Dropdown
+    if (selectedDetail !== 'ALL' && pText !== selectedDetail) {
+      return;
+    }
+
     if (pText && pText !== '-') {
       problemCountMap[pText] = (problemCountMap[pText] || 0) + 1;
       totalProblems++;
@@ -1612,6 +1655,7 @@ function renderLayer2() {
     }
   });
 
+  // 1. ตารางปัญหาพบบ่อย
   const top10Problems = Object.keys(problemCountMap)
     .map(key => ({ name: key, count: problemCountMap[key] }))
     .sort((a, b) => b.count - a.count).slice(0, 10);
@@ -1639,6 +1683,7 @@ function renderLayer2() {
     });
   }
 
+  // 2. ตารางป้ายซ่อมซ้ำ (> 3 ครั้ง)
   currentChronicList = Object.values(assetClaimMap).filter(it => it.totalClaims > 3);
   assetStat.innerText = `พบป้ายซ่อมซ้ำ (>3 ครั้ง): ${currentChronicList.length} ป้าย`;
   renderChronicTable();
@@ -1679,7 +1724,7 @@ function toggleChronicSort(col) {
   renderChronicTable();
 }
 
-// ─── Layer 3: Tag Input Monitoring Lookup ───
+// ─── LAYER 3: Tag Input (Paste อัตโนมัติ + Stat Box ออกตั๋วแล้ว/ยังไม่ออกตั๋ว/ตั๋วซ้ำ) ───
 let enteredTags = new Set();
 let l3SearchResults = [];
 let currentL3Sort = { col: 'sched', asc: false };
@@ -1687,12 +1732,26 @@ let currentL3Sort = { col: 'sched', asc: false };
 function focusTagInput() { document.getElementById('tagRealInput').focus(); }
 
 const tagRealInput = document.getElementById('tagRealInput');
+
+// พิมพ์ Enter หรือ Comma
 tagRealInput.addEventListener('keydown', function(e) {
   if (e.key === 'Enter' || e.key === ',') {
     e.preventDefault(); addTag(this.value); this.value = '';
   } else if (e.key === 'Backspace' && this.value === '' && enteredTags.size > 0) {
     const arr = Array.from(enteredTags); removeTag(arr[arr.length - 1]);
   }
+});
+
+// วาง (Paste / Ctrl+V) แล้วขึ้น Tag ทันทีอัตโนมัติ
+tagRealInput.addEventListener('paste', function(e) {
+  e.preventDefault();
+  const pastedData = (e.clipboardData || window.clipboardData).getData('text');
+  if (!pastedData) return;
+  
+  // แยกคำด้วย Comma, Semicolon หรือขึ้นบรรทัดใหม่
+  const tokens = pastedData.split(/[\r\n,;]+/).map(t => t.trim()).filter(Boolean);
+  tokens.forEach(tok => addTag(tok));
+  this.value = '';
 });
 
 function addTag(text) {
@@ -1732,15 +1791,35 @@ function searchAssetCodes() {
   l3SearchResults = [];
 
   enteredTags.forEach(code => {
-    let rows = globalData.filter(row => (row['Asset'] || '').toString().trim().toUpperCase().includes(code));
+    // ค้นหาแถวที่มีรหัสนี้
+    let rows = globalData.filter(row => {
+      const rawA = (row['Asset'] || '').toString().trim().toUpperCase();
+      const tokens = rawA.split(/[,;]+/).map(t => t.trim());
+      return tokens.includes(code) || rawA.includes(code);
+    });
+
     let statDiv = document.createElement('div');
+
     if (rows.length === 0) {
+      // 1. ไม่มีตั๋ว
       statDiv.className = 'stat-box stat-red';
-      statDiv.innerHTML = `📌 โค้ด: ${code} — 🔴 ไม่ได้ออกตั๋ว / ไม่พบข้อมูล`;
+      statDiv.innerHTML = `📌 โค้ด: ${code} — 🔴 ยังไม่ได้ออกตั๋ว`;
     } else {
-      let activeTickets = rows.filter(r => !['finish', 'approve', 'close'].some(s => (r['Status'] || '').toLowerCase().includes(s)));
-      statDiv.className = activeTickets.length > 0 ? 'stat-box stat-red' : 'stat-box stat-green';
-      statDiv.innerHTML = `📌 โค้ด: ${code} — ${activeTickets.length > 0 ? `🔴 มีงานค้าง (${activeTickets.length} ตั๋ว)` : '🟢 ปิดงานสำเร็จแล้ว'}`;
+      // ตรวจสอบตั๋วค้างดำเนินงาน (Pending, Ready to work, Working on)
+      let activeTickets = rows.filter(r => {
+        let st = (r['Status'] || '').toLowerCase();
+        return st.includes('pending') || st.includes('working') || st.includes('ready');
+      });
+
+      if (activeTickets.length >= 2) {
+        // 2. ตั๋วซ้ำ (มีตั๋วค้าง >= 2)
+        statDiv.className = 'stat-box stat-red';
+        statDiv.innerHTML = `📌 โค้ด: ${code} — 🔴 ตั๋วซ้ำ (${activeTickets.length} รายการ)`;
+      } else {
+        // 3. ออกตั๋วแล้ว (มีตั๋วในระบบ)
+        statDiv.className = 'stat-box stat-green';
+        statDiv.innerHTML = `📌 โค้ด: ${code} — 🟢 ออกตั๋วแล้ว`;
+      }
       rows.forEach(r => l3SearchResults.push(r));
     }
     statContainer.appendChild(statDiv);
@@ -1759,6 +1838,24 @@ function renderL3Table() {
     tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--grey); padding:20px;">ไม่พบรายการที่ตรงกับเงื่อนไข</td></tr>`;
     return;
   }
+
+  // ระบบ Sort ที่แก้ไขให้ทำงานได้จริง
+  filtered.sort((a, b) => {
+    if (currentL3Sort.col === 'asset') {
+      let aVal = (a['Asset'] || '').toString();
+      let bVal = (b['Asset'] || '').toString();
+      return currentL3Sort.asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+    } else if (currentL3Sort.col === 'sched') {
+      let aD = parseRowDate(a) ? parseRowDate(a).getTime() : 0;
+      let bD = parseRowDate(b) ? parseRowDate(b).getTime() : 0;
+      return currentL3Sort.asc ? aD - bD : bD - aD;
+    } else if (currentL3Sort.col === 'updated') {
+      let aD = parseRowDate(a, true) ? parseRowDate(a, true).getTime() : 0;
+      let bD = parseRowDate(b, true) ? parseRowDate(b, true).getTime() : 0;
+      return currentL3Sort.asc ? aD - bD : bD - aD;
+    }
+    return 0;
+  });
 
   filtered.forEach(row => {
     const isDone = ['finish', 'approve', 'close'].some(s => (row['Status'] || '').toLowerCase().includes(s));
@@ -1780,6 +1877,16 @@ function renderL3Table() {
 function toggleL3Sort(col) {
   currentL3Sort.asc = (currentL3Sort.col === col) ? !currentL3Sort.asc : true;
   currentL3Sort.col = col;
+
+  // อัปเดตไอคอนลูกศร
+  ['asset', 'sched', 'updated'].forEach(k => {
+    const icon = document.getElementById(`sortIcon-${k}`);
+    if (icon) {
+      if (k === col) icon.innerText = currentL3Sort.asc ? '▲' : '▼';
+      else icon.innerText = '⇅';
+    }
+  });
+
   renderL3Table();
 }
 
@@ -1825,19 +1932,16 @@ function changeMapTheme(themeKey) {
   currentTileLayer = L.tileLayer(theme.url, theme.options).addTo(mapInstance);
 }
 
-// ─── ปักหมุดบนแผนที่ Layer 4 (กรองงานเสร็จเฉพาะ "เมื่อวาน" แบบเป๊ะ 1 วัน) ───
 function renderPinsOnMap() {
   if (!mapInstance) return;
 
   allMapItems = [];
 
-  // 1. ดึงตั๋ว SLA เกินเวลา (กลุ่มระหว่างดำเนินการ)
   const slaSourceRows = (typeof globalSlaRows !== 'undefined' && globalSlaRows.length > 0) ? globalSlaRows : [];
   slaSourceRows.forEach(item => {
     prepareMapItem(item, false);
   });
 
-  // 2. ดึงตั๋วที่ปิดงาน "เมื่อวาน" (วันเดียวเท่านั้น: 00:00:00 - 23:59:59)
   const baseDate = (datasetRefDate && !isNaN(datasetRefDate.getTime())) ? new Date(datasetRefDate) : new Date();
   const yStart = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() - 1, 0, 0, 0, 0);
   const yEnd = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() - 1, 23, 59, 59, 999);
