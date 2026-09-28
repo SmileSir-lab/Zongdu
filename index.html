@@ -1,107 +1,152 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Operation Daily Report - Layer 1 Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Operation Daily Report - Layer 1 Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Chart.js สำหรับกราฟโดนัท -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <style>
-    :root {
-      --navy: #1e1b4a;
-      --navy2: #171560;
-      --primary: #4f46e5;
-      --teal: #0F988E;
-      --green: #1F9D57;
-      --red: #CB3A3A;
-      --orange: #E8842B;
-      --bg-page: #f1f5f9;
-      --card-bg: #ffffff;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
-    body { background: var(--bg-page); color: var(--text-main); padding: 16px; }
-    .container { max-width: 1440px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+<style>
+:root {
+  --navy: #232084; --navy2: #171560;
+  --blue: #1E88E5;   /* Approve */
+  --green: #1F9D57;  /* Finish */
+  --yellow: #FBC02D; /* Working On */
+  --red: #CB3A3A;    /* Pending & Ready To Work */
+  --orange: #E8842B;
+  --page: #E9E9F2; --ink: #1c1a4a; --grey: #6b6b80;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
+body { background: var(--page); color: var(--ink); padding: 16px; }
+.container { max-width: 1440px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
 
-    /* Top Bar & Header */
-    .top-navbar {
-      display: flex; justify-content: space-between; align-items: center;
-      background: var(--navy); color: #fff; padding: 14px 20px; border-radius: 12px;
-      box-shadow: 0 4px 14px rgba(30, 27, 74, 0.15);
-    }
-    .nav-left { display: flex; align-items: center; gap: 14px; }
-    .menu-trigger-btn {
-      background: rgba(255, 255, 255, 0.15); color: #fff; border: 1px solid rgba(255, 255, 255, 0.25);
-      padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
-      font-family: 'Kanit', sans-serif; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
-    }
-    .menu-trigger-btn:hover { background: rgba(255, 255, 255, 0.25); }
-    .page-title { font-family: 'Kanit', sans-serif; font-size: 18px; font-weight: 600; }
-    .page-subtitle { font-size: 12px; color: #cbd5e1; }
-    .status-badge {
-      font-size: 12.5px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 8px;
-    }
-    .refresh-btn {
-      background: var(--primary); color: #fff; border: none; border-radius: 6px;
-      padding: 4px 8px; font-size: 11px; cursor: pointer; margin-left: 6px;
-    }
-    .refresh-btn:hover { opacity: 0.9; }
+/* Top Bar & Header */
+.top-navbar {
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+  color: #fff; padding: 16px 22px; border-radius: 14px; box-shadow: 0 6px 20px rgba(23,21,96,.2);
+}
+.nav-left { display: flex; align-items: center; gap: 14px; }
+.menu-trigger-btn {
+  background: rgba(255, 255, 255, 0.18); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
+  font-family: 'Kanit', sans-serif; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+}
+.menu-trigger-btn:hover { background: rgba(255, 255, 255, 0.28); }
+.page-title { font-family: 'Kanit', sans-serif; font-size: 20px; font-weight: 700; }
+.page-subtitle { font-family: 'Kanit', sans-serif; font-size: 13px; color: #c9c9ee; }
+.status-badge {
+  font-family: 'Kanit', sans-serif; font-size: 13px; background: rgba(255,255,255,0.18);
+  padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.25);
+  display: flex; align-items: center; gap: 8px;
+}
+.refresh-btn {
+  background: #fff; color: var(--navy); border: none; border-radius: 6px;
+  padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Kanit';
+}
+.refresh-btn:hover { opacity: 0.9; }
 
-    /* Sidebar Slider Drawer */
-    .sidebar-overlay {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: 9998;
-      opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
-    }
-    .sidebar-overlay.active { opacity: 1; visibility: visible; }
-    .sidebar-slider {
-      position: fixed; top: 0; left: -320px; width: 300px; height: 100vh;
-      background: #ffffff; z-index: 9999; box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
-      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column;
-    }
-    .sidebar-slider.open { left: 0; }
-    .sidebar-header {
-      padding: 20px; background: var(--navy); color: #fff;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .sidebar-header h2 { font-family: 'Kanit', sans-serif; font-size: 17px; }
-    .close-btn { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; }
-    .sidebar-menu { padding: 16px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
-    .sidebar-link {
-      display: flex; align-items: center; gap: 12px; padding: 12px 16px;
-      border-radius: 10px; text-decoration: none; color: var(--text-main);
-      font-family: 'Kanit', sans-serif; font-weight: 500; font-size: 14.5px;
-      background: #f8fafc; border: 1px solid var(--border); transition: all 0.2s;
-    }
-    .sidebar-link:hover { background: #e0e7ff; color: var(--primary); border-color: var(--primary); }
-    .sidebar-link.active {
-      background: var(--primary); color: #fff; border-color: var(--primary);
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
-    }
+/* Sidebar Slider Drawer */
+.sidebar-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: 9998;
+  opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
+}
+.sidebar-overlay.active { opacity: 1; visibility: visible; }
+.sidebar-slider {
+  position: fixed; top: 0; left: -320px; width: 300px; height: 100vh;
+  background: #ffffff; z-index: 9999; box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column;
+}
+.sidebar-slider.open { left: 0; }
+.sidebar-header {
+  padding: 20px; background: var(--navy); color: #fff;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.sidebar-header h2 { font-family: 'Kanit', sans-serif; font-size: 18px; }
+.close-btn { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; }
+.sidebar-menu { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.sidebar-link {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  border-radius: 10px; text-decoration: none; color: var(--ink);
+  font-family: 'Kanit', sans-serif; font-weight: 500; font-size: 14.5px;
+  background: #f8fafc; border: 1.5px solid #eaeaf5; transition: all 0.2s;
+}
+.sidebar-link:hover { background: #e0e7ff; color: var(--navy); border-color: var(--navy); }
+.sidebar-link.active {
+  background: var(--navy); color: #fff; border-color: var(--navy);
+  box-shadow: 0 4px 12px rgba(35, 32, 132, 0.25);
+}
 
-    /* Cards & Stats */
-    .summary-card { background: #fff; border-radius: 14px; padding: 20px; border: 1px solid var(--border); }
-    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
-    .stat-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 16px; border-left: 5px solid var(--primary); }
-    .stat-box.overdue { border-left-color: var(--red); }
-    .stat-box.finished { border-left-color: var(--green); }
-    .stat-box.pending { border-left-color: var(--orange); }
-    .stat-label { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
-    .stat-num { font-size: 26px; font-weight: 700; color: var(--navy); font-family: 'Kanit', sans-serif; }
+/* Panel & Donuts */
+.panel { background: #fff; border-radius: 14px; box-shadow: 0 4px 14px rgba(30,27,74,.06); padding: 22px; display: flex; flex-direction: column; gap: 20px; }
+.panel-title { font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 18px; color: var(--navy); display: flex; justify-content: space-between; align-items: center; }
 
-    /* Tables */
-    .table-container { background: #fff; border-radius: 14px; padding: 20px; border: 1px solid var(--border); overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-    th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { background: #f8fafc; font-family: 'Kanit', sans-serif; color: var(--navy); }
-    .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-    .badge-green { background: #dcfce7; color: #166534; }
-    .badge-red { background: #fee2e2; color: #991b1b; }
-    .badge-orange { background: #ffedd5; color: #9a3412; }
-  </style>
+.donut-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; }
+.donut-card { background: #fbfbfd; border-radius: 14px; border: 1.5px solid #eaeaf5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+.donut-card h3 { font-family: 'Kanit', sans-serif; font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.chart-sublabel { font-family: 'Kanit', sans-serif; font-size: 12px; color: var(--grey); margin-bottom: 14px; text-align: center; }
+.chart-wrapper { position: relative; width: 240px; height: 240px; }
+.chart-center-text {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  text-align: center; pointer-events: none; width: 90%;
+}
+.chart-center-text .val { font-family: 'Kanit', sans-serif; font-size: 21px; font-weight: 700; color: var(--navy); }
+.chart-center-text .lbl { font-family: 'Kanit', sans-serif; font-size: 12px; font-weight: 600; color: var(--grey); line-height: 1.3; margin-top: 2px; }
+
+.legend-box { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; justify-content: center; width: 100%; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-family: 'Kanit', sans-serif; font-size: 12px; background: #fff; padding: 4px 8px; border-radius: 6px; border: 1px solid #e2e2ee; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+/* Interactive Big Stat Cards */
+.big-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.big-stat-card {
+  background: #fbfbfd; border-radius: 12px; padding: 18px 20px; border: 2px solid #eaeaf5;
+  display: flex; flex-direction: column; justify-content: center; cursor: pointer; transition: all .2s ease;
+}
+.big-stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+.big-stat-card.card-dup { border-left: 8px solid #6f42c1; }
+.big-stat-card.card-sla { border-left: 8px solid var(--red); background: #fff8f8; }
+.big-stat-card.card-done { border-left: 8px solid var(--green); background: #f6fff9; }
+.big-stat-card.card-undone { border-left: 8px solid var(--orange); background: #fffbf6; }
+.big-stat-card.active { box-shadow: 0 0 0 3px var(--navy); }
+
+.big-stat-title { font-family: 'Kanit', sans-serif; font-size: 14px; font-weight: 600; color: var(--grey); margin-bottom: 4px; display: flex; justify-content: space-between; }
+.big-stat-num { font-family: 'Kanit', sans-serif; font-size: 34px; font-weight: 700; color: var(--ink); line-height: 1.1; }
+.big-stat-card.card-sla .big-stat-num { color: var(--red); }
+.big-stat-card.card-done .big-stat-num { color: var(--green); }
+.big-stat-card.card-undone .big-stat-num { color: var(--orange); }
+.big-stat-card.card-dup .big-stat-num { color: #6f42c1; }
+
+/* Table View Container */
+.table-view-container { display: none; flex-direction: column; gap: 10px; }
+.table-view-container.active { display: flex; }
+.table-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.table-label { font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 16px; color: var(--navy); }
+
+.filter-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: #f4f4fa; padding: 8px 14px; border-radius: 8px; }
+.filter-item { display: flex; align-items: center; gap: 6px; font-family: 'Kanit', sans-serif; font-size: 13px; color: var(--navy); font-weight: 600; }
+.filter-select { font-family: 'Sarabun', sans-serif; font-size: 12.5px; padding: 5px 10px; border-radius: 6px; border: 1.5px solid #d5d5ec; background: #fff; outline: none; }
+
+.tw { overflow-x: auto; max-height: 440px; border-radius: 8px; border: 1px solid #eaeaf5; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+th { background: var(--navy); color: #fff; font-family: 'Kanit', sans-serif; padding: 10px 12px; position: sticky; top: 0; z-index: 2; white-space: nowrap; }
+td { padding: 9px 12px; border-bottom: 1px solid #f0f0f8; vertical-align: top; }
+tr:hover { background: #f8f8fc; }
+
+/* Badges */
+.badge { font-family: 'Kanit', sans-serif; font-size: 11.5px; padding: 4px 10px; border-radius: 6px; font-weight: 600; display: inline-block; white-space: nowrap; }
+.badge-green { background: #e6f7ee; color: var(--green); }
+.badge-red { background: #ffeaea; color: var(--red); }
+.badge-orange { background: #fff3e6; color: var(--orange); }
+.badge-yellow { background: #fef9e7; color: #b78103; }
+
+textarea { width: 100%; height: 110px; padding: 10px; border: 1.5px solid #d5d5ec; border-radius: 8px; font-size: 13.5px; outline: none; resize: vertical; }
+.btn { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 13.5px; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.btn-navy { background: var(--navy); color: #fff; }
+.btn-green { background: var(--green); color: #fff; }
+</style>
 </head>
 <body>
 
@@ -109,7 +154,7 @@
   <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
   <aside class="sidebar-slider" id="sidebar">
     <div class="sidebar-header">
-      <h2>📑 เมนูเลือก Layer</h2>
+      <h2>📑 สลับ Layer</h2>
       <button class="close-btn" onclick="toggleSidebar()">✕</button>
     </div>
     <div class="sidebar-menu">
@@ -121,12 +166,10 @@
   </aside>
 
   <div class="container">
-    <!-- แถบด้านบนแทนที่ Box เดิม -->
+    <!-- Top Bar -->
     <header class="top-navbar">
       <div class="nav-left">
-        <button class="menu-trigger-btn" onclick="toggleSidebar()">
-          ☰ สลับเลเยอร์
-        </button>
+        <button class="menu-trigger-btn" onclick="toggleSidebar()">☰ สลับเลเยอร์</button>
         <div>
           <h1 class="page-title">AI Operation Daily Report & Monitoring</h1>
           <p class="page-subtitle">Layer 1: Dashboard ภาพรวมและติดตามตั๋วงานรายวัน</p>
@@ -134,156 +177,458 @@
       </div>
       <div class="status-badge">
         <span id="dataStatus">🔄 กำลังเชื่อมต่อข้อมูล...</span>
-        <button class="refresh-btn" onclick="fetchLiveGoogleData(true)">รีเฟรชชีต</button>
+        <button class="refresh-btn" onclick="fetchLiveData(true)">รีเฟรชชีต</button>
       </div>
     </header>
 
-    <!-- Stat Summary -->
-    <section class="summary-card">
-      <h3 style="font-family: 'Kanit'; color: var(--navy);">📊 สรุปตั๋วงานภาพรวม (Daily Summary)</h3>
-      <div class="stats-row">
-        <div class="stat-box">
-          <div class="stat-label">ตั๋วทั้งหมดในระบบ</div>
-          <div class="stat-num" id="stat_total">0</div>
+    <section class="panel">
+      <div class="panel-title">
+        <span>🍩 Summary Special & Claim Job</span>
+        <span id="totalBadge" class="badge" style="background:#f0f0fa; color:var(--navy); font-size:13px;">รวมทั้งหมด: 0 รายการ</span>
+      </div>
+
+      <!-- Donut 2 ใบ -->
+      <div class="donut-grid">
+        <div class="donut-card">
+          <h3>📅 1. Monthly (สรุปภาพรวมรายเดือน)</h3>
+          <div id="monthSubLabel" class="chart-sublabel">ข้อมูลเดือนปัจจุบัน</div>
+          <div class="chart-wrapper">
+            <canvas id="monthChart"></canvas>
+            <div class="chart-center-text">
+              <div class="val" id="monthCenterVal">0 / 0</div>
+              <div class="lbl">ยอดรายเดือน+งานค้าง</div>
+            </div>
+          </div>
+          <div id="monthLegend" class="legend-box"></div>
         </div>
-        <div class="stat-box overdue">
-          <div class="stat-label">ตั๋ว SLA เกินเวลา</div>
-          <div class="stat-num" id="stat_sla">0</div>
-        </div>
-        <div class="stat-box finished">
-          <div class="stat-label">งานสำเร็จ (Finished / Approved)</div>
-          <div class="stat-num" id="stat_finished">0</div>
-        </div>
-        <div class="stat-box pending">
-          <div class="stat-label">ตั๋วรอดำเนินการ (Pending)</div>
-          <div class="stat-num" id="stat_pending">0</div>
+
+        <div class="donut-card">
+          <h3>🗓️ 2. Weekly (สรุปรายสัปดาห์ จันทร์-ปัจจุบัน)</h3>
+          <div id="weekSubLabel" class="chart-sublabel">ข้อมูลรอบสัปดาห์</div>
+          <div class="chart-wrapper">
+            <canvas id="weekChart"></canvas>
+            <div class="chart-center-text">
+              <div class="val" id="weekCenterVal" style="font-size: 20px;">0 / 0(0)</div>
+              <div class="lbl">ยอดรายอาทิตย์(เคลมเพิ่ม)</div>
+            </div>
+          </div>
+          <div id="weekLegend" class="legend-box"></div>
         </div>
       </div>
-    </section>
 
-    <!-- Table Section -->
-    <section class="table-container">
-      <h3 style="font-family: 'Kanit'; margin-bottom: 14px; color: var(--navy);">⏱ รายการตั๋วที่เกินกำหนดเวลา (SLA Risk / Overdue)</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>ลำดับ</th>
-            <th>RefNo</th>
-            <th>Asset Code</th>
-            <th>สถานะ</th>
-            <th>SLA</th>
-            <th>รายละเอียด</th>
-          </tr>
-        </thead>
-        <tbody id="slaTableBody">
-          <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr>
-        </tbody>
-      </table>
+      <!-- Interactive Stat Box -->
+      <div class="big-stat-grid">
+        <div class="big-stat-card card-dup" onclick="switchTable('viewDup', this)">
+          <div class="big-stat-title"><span>🔁 Ticket ซ้ำ</span><span style="font-size:11px;">คลิกดู ↗</span></div>
+          <div class="big-stat-num" id="statDup">0</div>
+        </div>
+        <div class="big-stat-card card-sla active" onclick="switchTable('viewSla', this)">
+          <div class="big-stat-title"><span>⏱ SLA เกินเวลา</span><span style="font-size:11px;">คลิกดู ↗</span></div>
+          <div class="big-stat-num" id="statSlaOver">0</div>
+        </div>
+        <div class="big-stat-card card-done" onclick="switchTable('viewDone', this)">
+          <div class="big-stat-title"><span>🟢 งานสำเร็จ (Approve + Finish)</span><span style="font-size:11px;">คลิกดู ↗</span></div>
+          <div class="big-stat-num" id="statDone">0</div>
+        </div>
+        <div class="big-stat-card card-undone" onclick="switchTable('viewUndone', this)">
+          <div class="big-stat-title"><span>🟠 ระหว่างดำเนินการ</span><span style="font-size:11px;">คลิกดู ↗</span></div>
+          <div class="big-stat-num" id="statUndone">0</div>
+        </div>
+      </div>
+
+      <!-- VIEW 1: ตาราง SLA เกินเวลา -->
+      <div id="viewSla" class="table-view-container active">
+        <div class="table-header-row">
+          <div class="table-label">⏱ --SLA--⏱ (เฉพาะตั๋วที่เกินกำหนดเวลา)</div>
+          <div class="filter-bar">
+            <div class="filter-item">
+              <span>👤 Assignee:</span>
+              <select id="slaAssigneeFilter" class="filter-select" onchange="filterSlaTable()">
+                <option value="ALL">-- ทุกคน (ALL) --</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <span>📝 Detail:</span>
+              <select id="slaDetailFilter" class="filter-select" onchange="filterSlaTable()">
+                <option value="ALL">-- ทั้งหมด (ALL) --</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 50px; text-align: center;">No</th>
+                <th>RefNo</th>
+                <th>Asset</th>
+                <th>SLA</th>
+                <th>Status</th>
+                <th>Assignee</th>
+                <th>DETAIL</th>
+              </tr>
+            </thead>
+            <tbody id="slaTableBody">
+              <tr><td colspan="7" style="text-align:center; padding:16px;">กำลังโหลด...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VIEW 2: ตาราง Claim ซ้ำ -->
+      <div id="viewDup" class="table-view-container">
+        <div class="table-label">🔁 --Overlapping Claims--🔁 (ตั๋วค้างดำเนินงานซ้ำกันตั้งแต่ 2 รายการขึ้นไป)</div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 50px; text-align: center;">No</th>
+                <th>RefNo</th>
+                <th>Asset</th>
+                <th>Status</th>
+                <th>Created Date Time</th>
+                <th>Created By</th>
+                <th>DETAIL</th>
+              </tr>
+            </thead>
+            <tbody id="dupTableBody">
+              <tr><td colspan="7" style="text-align:center; padding:16px;">กำลังโหลด...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VIEW 3: ตารางงานสำเร็จ -->
+      <div id="viewDone" class="table-view-container">
+        <div class="table-label">✅ --Finish & Approve--✅ (รายการตั๋วที่ปิดงานสำเร็จเรียบร้อยแล้ว)</div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 50px; text-align: center;">No</th>
+                <th>RefNo</th>
+                <th>Asset</th>
+                <th>Status</th>
+                <th>Schedule Date</th>
+                <th>Finish Date</th>
+                <th>Assignee</th>
+                <th>DETAIL</th>
+              </tr>
+            </thead>
+            <tbody id="doneTableBody">
+              <tr><td colspan="8" style="text-align:center; padding:16px;">กำลังโหลด...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VIEW 4: ตารางระหว่างดำเนินการ -->
+      <div id="viewUndone" class="table-view-container">
+        <div class="table-label">⏳ --Pending, Ready to Work & Working On--⏳</div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 50px; text-align: center;">No</th>
+                <th>RefNo</th>
+                <th>Asset</th>
+                <th>Status</th>
+                <th>SLA</th>
+                <th>Schedule Date</th>
+                <th>Assignee</th>
+                <th>DETAIL</th>
+              </tr>
+            </thead>
+            <tbody id="undoneTableBody">
+              <tr><td colspan="8" style="text-align:center; padding:16px;">กำลังโหลด...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AI Brief Preview -->
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <label style="font-family:'Kanit'; font-weight:600; color:var(--navy);">🤖 ข้อความสรุปสำหรับรายงาน (AI Brief Preview):</label>
+        <textarea id="aiBriefOutput"></textarea>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-navy" onclick="copyBrief()">📋 คัดลอกข้อความสรุป</button>
+          <button class="btn btn-green" onclick="sendEmail()">📧 เปิดร่างอีเมลรายงานด่วน</button>
+        </div>
+      </div>
     </section>
   </div>
 
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSm3Ebdqj-8iKxOGN0Xle5TAlblBPIb9ZLkrCv5aCgtCOM_LdXA7TCD1_YlRWsSkk6PQ/exec';
-    let globalTickets = [];
+    let globalData = [];
+    let monthChartInst = null;
+    let weekChartInst = null;
+    let globalSlaRows = [];
 
-    // ฟังก์ชันเปิด/ปิดแถบเมนูด้านซ้าย
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('open');
       document.getElementById('overlay').classList.toggle('active');
     }
 
-    // ฟังก์ชันดึงข้อมูลแบบแคชความเร็วสูง (Fast Cache)
-    async function fetchLiveGoogleData(forceRefresh = false) {
+    function switchTable(viewId, cardEl) {
+      document.querySelectorAll('.table-view-container').forEach(el => el.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+      document.querySelectorAll('.big-stat-card').forEach(el => el.classList.remove('active'));
+      cardEl.classList.add('active');
+    }
+
+    // ─── ระบบแคชความเร็วสูง (Fast Cache) ───
+    async function fetchLiveData(forceRefresh = false) {
       const statusEl = document.getElementById('dataStatus');
-      const cachedData = localStorage.getItem('zongdu_cache_data');
+      const cached = localStorage.getItem('zongdu_cache_data');
       const cacheTime = localStorage.getItem('zongdu_cache_time');
 
-      // 1. ถ้ามีแคชและไม่ได้สั่งกดรีเฟรช ให้โหลดจากเครื่องทันที (0.1 วิ)
-      if (cachedData && !forceRefresh) {
+      if (cached && !forceRefresh) {
         try {
-          const parsed = JSON.parse(cachedData);
+          const parsed = JSON.parse(cached);
           statusEl.innerText = `⚡ ใช้ข้อมูลแคช (${cacheTime})`;
-          processData(parsed);
+          handleReceivedData(parsed);
           return;
-        } catch(e) {
-          console.warn('Cache error, fetching live...');
-        }
+        } catch(e) {}
       }
 
-      // 2. ถ้าไม่มีแคชหรือกดปุ่มรีเฟรช ให้ดึงจากชีตสด
-      statusEl.innerText = '🔄 กำลังดึงข้อมูลจาก Google Sheets...';
+      statusEl.innerText = '🔄 กำลังดึงสดจากชีต...';
       try {
         const res = await fetch(SCRIPT_URL, { method: 'GET', redirect: 'follow' });
-        const data = await res.json();
+        const result = await res.json();
+        const nowStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        
+        localStorage.setItem('zongdu_cache_data', JSON.stringify(result));
+        localStorage.setItem('zongdu_cache_time', nowStr);
 
-        if (data.tickets && data.tickets.length > 0) {
-          const nowStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-          // บันทึกลงแคชเครื่อง เพื่อให้หน้าอื่น (layer2, layer3) เปิดต่อได้ทันที
-          localStorage.setItem('zongdu_cache_data', JSON.stringify(data));
-          localStorage.setItem('zongdu_cache_time', nowStr);
-
-          statusEl.innerText = `✅ ดึงสดสำเร็จ (${nowStr})`;
-          processData(data);
-        } else {
-          statusEl.innerText = '⚠️ แท็บ zongdudata ไม่มีข้อมูล';
-        }
+        statusEl.innerText = `✅ สดจากชีต (${nowStr})`;
+        handleReceivedData(result);
       } catch (err) {
-        statusEl.innerText = '❌ เชื่อมต่อชีตล้มเหลว';
-        console.error(err);
+        statusEl.innerText = '❌ เชื่อมต่อล้มเหลว';
       }
     }
 
-    function processData(result) {
-      globalTickets = result.tickets || [];
-      let total = globalTickets.length;
-      let finished = 0, pending = 0, overdue = 0;
-      let tbody = document.getElementById('slaTableBody');
-      tbody.innerHTML = '';
+    function handleReceivedData(result) {
+      let ticketsList = result.tickets || (Array.isArray(result) ? result : []);
+      const seenRef = new Set();
+      globalData = [];
 
-      let overdueList = [];
+      ticketsList.forEach(row => {
+        const ref = (row['RefNo'] || row['Ref No'] || '').toString().trim();
+        if (ref) {
+          if (!seenRef.has(ref)) { seenRef.add(ref); globalData.push(row); }
+        } else { globalData.push(row); }
+      });
 
-      globalTickets.forEach((t) => {
-        const st = (t['Status'] || t['status'] || '').toString();
-        const sla = (t['SLA'] || t['sla'] || '').toString();
+      processLayer1(globalData);
+    }
 
-        if (st.toLowerCase().includes('finish') || st.toLowerCase().includes('approve')) {
-          finished++;
-        } else {
-          pending++;
+    function parseRowDate(row) {
+      let val = row['Created Date Time'] || row['Created'] || row['Schedule Date'] || row['CreatedDate'];
+      if (!val) return null;
+      if (typeof val === 'number') return new Date((val - (25567 + 2)) * 86400 * 1000);
+      let str = val.toString().trim().replace('T', ' ');
+      let d = new Date(str);
+      if (!isNaN(d.getTime())) return d;
+      let parts = str.split(' ')[0].split(/[-\/]/);
+      if (parts.length === 3) {
+        if (parts[0].length === 4) return new Date(Number(parts[0]), Number(parts[1])-1, Number(parts[2]));
+        return new Date(Number(parts[2]), Number(parts[1])-1, Number(parts[0]));
+      }
+      return null;
+    }
+
+    function formatDateTime(val) {
+      if (!val) return '-';
+      if (typeof val === 'number') {
+        const d = new Date((val - (25567 + 2)) * 86400 * 1000);
+        if (!isNaN(d.getTime())) return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}`;
+      }
+      return val.toString().trim();
+    }
+
+    function classifyStatus(row) {
+      const st = (row['Status'] || row['สถานะ'] || '').toString().trim().toLowerCase();
+      if (st.includes('approve')) return 'approve';
+      if (st.includes('finish') || st.includes('close') || st.includes('done')) return 'finish';
+      if (st.includes('working')) return 'working';
+      return 'pending_ready';
+    }
+
+    function parseSla(row) {
+      const st = classifyStatus(row);
+      if (st === 'approve' || st === 'finish') return { text: 'END', isOverdue: false, sortVal: 999999 };
+      let rt = row['SLA RT'];
+      let slaStatus = (row['SLA Status'] || '').toString().toLowerCase();
+      if (rt !== undefined && rt !== '' && !isNaN(Number(rt))) {
+        let sec = Number(rt);
+        let isOver = sec < 0 || slaStatus.includes('overdue');
+        let days = Math.floor(Math.abs(sec) / 86400);
+        let hrs = Math.floor((Math.abs(sec) % 86400) / 3600);
+        return { text: isOver ? `เกิน ${days}ว ${hrs}ชม` : `เหลือ ${days}ว ${hrs}ชม`, isOverdue: isOver, sortVal: sec };
+      }
+      let isOver = slaStatus.includes('overdue');
+      return { text: isOver ? 'เลยกำหนด' : 'OnTrack', isOverdue: isOver, sortVal: isOver ? -1 : 1 };
+    }
+
+    function processLayer1(data) {
+      document.getElementById('totalBadge').innerText = `รวมทั้งหมด: ${data.length} รายการ`;
+      let dateObjs = data.map(r => parseRowDate(r)).filter(d => d && !isNaN(d.getTime()));
+      let refDate = dateObjs.length > 0 ? new Date(Math.max(...dateObjs.map(d => d.getTime()))) : new Date();
+
+      const targetYear = refDate.getFullYear();
+      const targetMonth = refDate.getMonth();
+      let diffToMon = refDate.getDay() === 0 ? 6 : refDate.getDay() - 1;
+      let startOfWeek = new Date(refDate);
+      startOfWeek.setDate(refDate.getDate() - diffToMon);
+      startOfWeek.setHours(0, 0, 0, 0);
+
+      let inMonthTotal = 0, monthDoneInMonth = 0, backlogTotal = 0;
+      let monthDonut = { approve: 0, finish: 0, working: 0, pending_ready: 0 };
+      let weekDonut = { approve: 0, finish: 0, working: 0, pending_ready: 0 };
+      let allStats = { approve: 0, finish: 0, working: 0, pending_ready: 0 };
+      let weekTotal = 0, weekClaim = 0;
+
+      globalSlaRows = [];
+      let doneRows = [], undoneRows = [];
+      let activeAssetMap = {};
+
+      data.forEach(row => {
+        const stType = classifyStatus(row);
+        const d = parseRowDate(row);
+        const isDone = (stType === 'approve' || stType === 'finish');
+        allStats[stType]++;
+
+        const sla = parseSla(row);
+        if (isDone) doneRows.push({ row, sla });
+        else undoneRows.push({ row, sla });
+
+        if (d && d.getFullYear() === targetYear && d.getMonth() === targetMonth) {
+          inMonthTotal++;
+          monthDonut[stType]++;
+          if (isDone) monthDoneInMonth++;
+        } else if (!isDone) {
+          backlogTotal++;
+          monthDonut[stType]++;
         }
 
-        if (sla.toLowerCase().includes('over') || sla.toLowerCase().includes('risk') || sla.includes('-')) {
-          overdue++;
-          overdueList.push(t);
+        if (d && d >= startOfWeek) {
+          weekDonut[stType]++;
+          weekTotal++;
+          let ref = (row['RefNo'] || '').toUpperCase();
+          if (ref.startsWith('CLM')) weekClaim++;
+        }
+
+        const rawAsset = (row['Asset'] || '').toString().trim();
+        if (!isDone && rawAsset) {
+          rawAsset.split(/[,;]+/).forEach(tok => {
+            let t = tok.trim();
+            if (t) {
+              if (!activeAssetMap[t]) activeAssetMap[t] = [];
+              activeAssetMap[t].push(row);
+            }
+          });
+        }
+
+        if (sla.isOverdue) globalSlaRows.push({ row, sla });
+      });
+
+      document.getElementById('monthCenterVal').innerText = backlogTotal > 0 ? `${monthDoneInMonth} / ${inMonthTotal}+${backlogTotal}` : `${monthDoneInMonth} / ${inMonthTotal}`;
+      document.getElementById('weekCenterVal').innerText = `${weekDonut.approve + weekDonut.finish} / ${weekTotal}(${weekClaim})`;
+
+      // เรนเดอร์โดนัท
+      monthChartInst = drawDonut('monthChart', 'monthLegend', monthDonut, monthChartInst);
+      weekChartInst = drawDonut('weekChart', 'weekLegend', weekDonut, weekChartInst);
+
+      // นับซ้ำ
+      let dupList = [];
+      Object.keys(activeAssetMap).forEach(k => {
+        if (activeAssetMap[k].length >= 2) {
+          Array.from(new Set(activeAssetMap[k])).forEach(t => dupList.push({ asset: k, ticket: t }));
         }
       });
 
-      document.getElementById('stat_total').innerText = total;
-      document.getElementById('stat_finished').innerText = finished;
-      document.getElementById('stat_pending').innerText = pending;
-      document.getElementById('stat_sla').innerText = overdue;
+      document.getElementById('statDup').innerText = dupList.length;
+      document.getElementById('statSlaOver').innerText = globalSlaRows.length;
+      document.getElementById('statDone').innerText = allStats.approve + allStats.finish;
+      document.getElementById('statUndone').innerText = allStats.working + allStats.pending_ready;
 
-      if (overdueList.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--green);">🎉 เยี่ยมมาก! ไม่มีงานที่เกินกำหนด SLA</td></tr>';
-        return;
-      }
+      // เรนเดอร์ตาราง
+      renderSlaTable(globalSlaRows);
+      renderDupTable(dupList);
+      renderDoneTable(doneRows);
+      renderUndoneTable(undoneRows);
 
-      overdueList.slice(0, 30).forEach((t, i) => {
-        let tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${i + 1}</td>
-          <td><b>${t['RefNo'] || t['refNo'] || '-'}</b></td>
-          <td>${t['Asset'] || t['Asset Code'] || '-'}</td>
-          <td><span class="badge badge-orange">${t['Status'] || '-'}</span></td>
-          <td><span class="badge badge-red">${t['SLA'] || '-'}</span></td>
-          <td>${t['Detail'] || t['detail'] || '-'}</td>
-        `;
-        tbody.appendChild(tr);
+      document.getElementById('aiBriefOutput').value = `📊 ภาพรวม: สำเร็จ ${allStats.approve + allStats.finish} งาน | ระหว่างดำเนินการ ${allStats.working + allStats.pending_ready} งาน\n⏱ SLA เกินเวลา: ${globalSlaRows.length} งาน | 🔁 แจ้งซ้ำ: ${dupList.length} งาน`;
+    }
+
+    function drawDonut(canvasId, legendId, stats, chartInst) {
+      if (chartInst) chartInst.destroy();
+      const labels = ['Approve', 'Finish', 'Working On', 'Pending'];
+      const colors = ['#1E88E5', '#1F9D57', '#FBC02D', '#CB3A3A'];
+      const vals = [stats.approve, stats.finish, stats.working, stats.pending_ready];
+
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{ data: vals.some(v => v > 0) ? vals : [1], backgroundColor: vals.some(v => v > 0) ? colors : ['#E6E6E6'], borderWidth: 3 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false } } }
+      });
+
+      const leg = document.getElementById(legendId);
+      leg.innerHTML = '';
+      const icons = ['🔵', '🟢', '🟡', '🔴'];
+      labels.forEach((l, i) => {
+        leg.innerHTML += `<div class="legend-item"><span class="legend-dot" style="background:${colors[i]}"></span>${icons[i]} ${l}: <b>${vals[i]}</b></div>`;
+      });
+      return chart;
+    }
+
+    function renderSlaTable(rows) {
+      const tbody = document.getElementById('slaTableBody');
+      tbody.innerHTML = rows.length === 0 ? '<tr><td colspan="7" style="text-align:center; padding:16px;">🎉 ไม่มีตั๋วเกิน SLA</td></tr>' : '';
+      rows.forEach(({ row, sla }, i) => {
+        tbody.innerHTML += `<tr><td style="text-align:center;">${i+1}</td><td style="font-weight:600; color:var(--navy);">${row['RefNo']||'-'}</td><td><b>${row['Asset']||'-'}</b></td><td style="color:var(--red); font-weight:700;">${sla.text}</td><td><span class="badge badge-red">${row['Status']||'-'}</span></td><td>${row['Assignee']||'-'}</td><td>${row['Informed Detail']||row['DETAIL']||'-'}</td></tr>`;
       });
     }
 
-    // เริ่มทำงานทันที
-    window.addEventListener('DOMContentLoaded', () => fetchLiveGoogleData(false));
+    function renderDupTable(list) {
+      const tbody = document.getElementById('dupTableBody');
+      tbody.innerHTML = list.length === 0 ? '<tr><td colspan="7" style="text-align:center; padding:16px;">ไม่มีเคลมซ้ำ</td></tr>' : '';
+      list.forEach(({ asset, ticket }, i) => {
+        tbody.innerHTML += `<tr><td style="text-align:center;">${i+1}</td><td>${ticket['RefNo']||'-'}</td><td style="font-weight:700; color:var(--red);">${asset}</td><td><span class="badge badge-red">${ticket['Status']||'-'}</span></td><td>${formatDateTime(ticket['Created Date Time'])}</td><td>${ticket['Created By']||'-'}</td><td>${ticket['Informed Detail']||'-'}</td></tr>`;
+      });
+    }
+
+    function renderDoneTable(rows) {
+      const tbody = document.getElementById('doneTableBody');
+      tbody.innerHTML = rows.length === 0 ? '<tr><td colspan="8" style="text-align:center; padding:16px;">ไม่มีรายการ</td></tr>' : '';
+      rows.slice(0, 30).forEach(({ row }, i) => {
+        tbody.innerHTML += `<tr><td style="text-align:center;">${i+1}</td><td>${row['RefNo']||'-'}</td><td><b>${row['Asset']||'-'}</b></td><td><span class="badge badge-green">${row['Status']||'-'}</span></td><td>${formatDateTime(row['Schedule Date'])}</td><td>${formatDateTime(row['Modified Date Time'])}</td><td>${row['Assignee']||'-'}</td><td>${row['Informed Detail']||'-'}</td></tr>`;
+      });
+    }
+
+    function renderUndoneTable(rows) {
+      const tbody = document.getElementById('undoneTableBody');
+      tbody.innerHTML = rows.length === 0 ? '<tr><td colspan="8" style="text-align:center; padding:16px;">ไม่มีรายการ</td></tr>' : '';
+      rows.slice(0, 30).forEach(({ row, sla }, i) => {
+        tbody.innerHTML += `<tr><td style="text-align:center;">${i+1}</td><td>${row['RefNo']||'-'}</td><td><b>${row['Asset']||'-'}</b></td><td><span class="badge badge-orange">${row['Status']||'-'}</span></td><td style="color:${sla.isOverdue?'var(--red)':'var(--green)'};">${sla.text}</td><td>${formatDateTime(row['Schedule Date'])}</td><td>${row['Assignee']||'-'}</td><td>${row['Informed Detail']||'-'}</td></tr>`;
+      });
+    }
+
+    function copyBrief() {
+      const t = document.getElementById('aiBriefOutput');
+      t.select(); document.execCommand('copy'); alert('คัดลอกเรียบร้อย!');
+    }
+
+    function sendEmail() {
+      window.location.href = `mailto:?subject=Summary Report&body=${encodeURIComponent(document.getElementById('aiBriefOutput').value)}`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => fetchLiveData(false));
   </script>
 </body>
 </html>
