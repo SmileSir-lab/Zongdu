@@ -1,571 +1,289 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Operation Daily Report - Layer 1 Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Operation Daily Report - Layer 1 Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
-:root {
-  --navy: #232084; --navy2: #171560; --teal: #0F9B8E; --green: #1F9D57;
-  --blue: #1E88E5; --red: #CB3A3A; --orange: #E8842B; --yellow: #FBC02D;
-  --page: #E9E9F2; --ink: #1c1a4a; --grey: #6b6b80;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
-body { background: var(--page); color: var(--ink); padding: 20px; }
-.container { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+  <style>
+    :root {
+      --navy: #1e1b4a;
+      --navy2: #171560;
+      --primary: #4f46e5;
+      --teal: #0F988E;
+      --green: #1F9D57;
+      --red: #CB3A3A;
+      --orange: #E8842B;
+      --bg-page: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
+    body { background: var(--bg-page); color: var(--text-main); padding: 16px; }
+    .container { max-width: 1440px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
 
-/* 📌 แถบเมนูกลางสำหรับลิงก์ข้ามเลเยอร์ */
-.nav-menu-bar {
-  display: flex; gap: 8px; flex-wrap: wrap; background: #fff; padding: 12px 16px; 
-  border-radius: 12px; box-shadow: 0 4px 14px rgba(30,27,74,.06);
-}
-.nav-tab {
-  font-family: 'Kanit', sans-serif; font-size: 13.5px; font-weight: 600;
-  padding: 8px 16px; border-radius: 8px; text-decoration: none;
-  background: #f0f0fa; color: var(--navy); border: 1.5px solid #d5d5ec;
-  transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
-}
-.nav-tab:hover { background: var(--navy); color: #fff; }
-.nav-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); box-shadow: 0 4px 12px rgba(35, 32, 132, 0.25); }
+    /* Top Bar & Header */
+    .top-navbar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--navy); color: #fff; padding: 14px 20px; border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(30, 27, 74, 0.15);
+    }
+    .nav-left { display: flex; align-items: center; gap: 14px; }
+    .menu-trigger-btn {
+      background: rgba(255, 255, 255, 0.15); color: #fff; border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
+      font-family: 'Kanit', sans-serif; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+    }
+    .menu-trigger-btn:hover { background: rgba(255, 255, 255, 0.25); }
+    .page-title { font-family: 'Kanit', sans-serif; font-size: 18px; font-weight: 600; }
+    .page-subtitle { font-size: 12px; color: #cbd5e1; }
+    .status-badge {
+      font-size: 12.5px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 6px 14px; border-radius: 20px; display: flex; align-items: center; gap: 8px;
+    }
+    .refresh-btn {
+      background: var(--primary); color: #fff; border: none; border-radius: 6px;
+      padding: 4px 8px; font-size: 11px; cursor: pointer; margin-left: 6px;
+    }
+    .refresh-btn:hover { opacity: 0.9; }
 
-/* Header */
-.head {
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
-  border-radius: 14px; padding: 18px 24px; color: #fff; display: flex;
-  justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
-  box-shadow: 0 6px 20px rgba(23,21,96,.2);
-}
-.head h1 { font-family: 'Kanit', sans-serif; font-size: 22px; font-weight: 700; }
-.head p { font-family: 'Kanit', sans-serif; font-size: 13.5px; color: #c9c9ee; margin-top: 2px; }
+    /* Sidebar Slider Drawer */
+    .sidebar-overlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: 9998;
+      opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
+    }
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
+    .sidebar-slider {
+      position: fixed; top: 0; left: -320px; width: 300px; height: 100vh;
+      background: #ffffff; z-index: 9999; box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column;
+    }
+    .sidebar-slider.open { left: 0; }
+    .sidebar-header {
+      padding: 20px; background: var(--navy); color: #fff;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .sidebar-header h2 { font-family: 'Kanit', sans-serif; font-size: 17px; }
+    .close-btn { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; }
+    .sidebar-menu { padding: 16px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+      border-radius: 10px; text-decoration: none; color: var(--text-main);
+      font-family: 'Kanit', sans-serif; font-weight: 500; font-size: 14.5px;
+      background: #f8fafc; border: 1px solid var(--border); transition: all 0.2s;
+    }
+    .sidebar-link:hover { background: #e0e7ff; color: var(--primary); border-color: var(--primary); }
+    .sidebar-link.active {
+      background: var(--primary); color: #fff; border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
 
-.panel { background: #fff; border-radius: 12px; box-shadow: 0 4px 14px rgba(30,27,74,.06); padding: 22px; display: flex; flex-direction: column; gap: 20px; }
-.panel-title { font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 18px; color: var(--navy); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    /* Cards & Stats */
+    .summary-card { background: #fff; border-radius: 14px; padding: 20px; border: 1px solid var(--border); }
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
+    .stat-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 16px; border-left: 5px solid var(--primary); }
+    .stat-box.overdue { border-left-color: var(--red); }
+    .stat-box.finished { border-left-color: var(--green); }
+    .stat-box.pending { border-left-color: var(--orange); }
+    .stat-label { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+    .stat-num { font-size: 26px; font-weight: 700; color: var(--navy); font-family: 'Kanit', sans-serif; }
 
-/* Donut Presentation */
-.donut-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; }
-.donut-card { background: #fbfbfd; border-radius: 14px; border: 1.5px solid #eaeaf5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-.donut-card h3 { font-family: 'Kanit', sans-serif; font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
-.chart-sublabel { font-family: 'Kanit', sans-serif; font-size: 12px; color: var(--grey); margin-bottom: 14px; text-align: center; }
-.chart-wrapper { position: relative; width: 240px; height: 240px; }
-.chart-center-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; width: 90%; }
-.chart-center-text .val { font-family: 'Kanit', sans-serif; font-size: 20px; font-weight: 700; color: var(--navy); }
-.chart-center-text .lbl { font-family: 'Kanit', sans-serif; font-size: 12px; font-weight: 600; color: var(--grey); line-height: 1.3; margin-top: 2px; }
-.legend-box { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; justify-content: center; width: 100%; }
-.legend-item { display: flex; align-items: center; gap: 5px; font-family: 'Kanit', sans-serif; font-size: 12px; background: #fff; padding: 4px 8px; border-radius: 6px; border: 1px solid #e2e2ee; }
-.legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
-
-/* Stat Cards */
-.big-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 5px; }
-.big-stat-card {
-  background: #fbfbfd; border-radius: 12px; padding: 18px 20px; border: 2px solid #eaeaf5;
-  display: flex; flex-direction: column; justify-content: center; cursor: pointer; transition: all .2s ease;
-  user-select: none;
-}
-.big-stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,.08); }
-.big-stat-card.card-dup { border-left: 8px solid #6f42c1; }
-.big-stat-card.card-sla { border-left: 8px solid var(--red); background: #fff8f8; }
-.big-stat-card.card-done { border-left: 8px solid var(--green); background: #f6fff9; }
-.big-stat-card.card-undone { border-left: 8px solid var(--orange); background: #fffbf6; }
-.big-stat-card.active { box-shadow: 0 0 0 3px var(--navy), 0 8px 20px rgba(35, 32, 132, 0.15) !important; transform: translateY(-3px); }
-.big-stat-title { font-family: 'Kanit', sans-serif; font-size: 14px; font-weight: 600; color: var(--grey); margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; }
-.big-stat-title span.hint { font-size: 11px; font-weight: normal; color: #8c8ca0; }
-.big-stat-num { font-family: 'Kanit', sans-serif; font-size: 34px; font-weight: 700; color: var(--ink); line-height: 1.1; }
-
-/* Filter & Table */
-.section-box { display: flex; flex-direction: column; gap: 10px; position: relative; }
-.table-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-.table-label { font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 16px; color: var(--navy); }
-.filter-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: #f4f4fa; padding: 8px 12px; border-radius: 8px; }
-.filter-item { display: flex; align-items: center; gap: 5px; font-family: 'Kanit', sans-serif; font-size: 12.5px; color: var(--navy); font-weight: 600; position: relative; }
-.filter-select { font-family: 'Sarabun', sans-serif; font-size: 12.5px; padding: 6px 10px; border-radius: 6px; border: 1.5px solid #d5d5ec; background: #fff; color: var(--ink); outline: none; cursor: pointer; }
-.custom-date-box { display: none; align-items: center; gap: 5px; background: #fff; padding: 2px 6px; border-radius: 6px; border: 1.5px solid #d5d5ec; }
-.custom-date-box.active { display: flex; }
-.custom-date-box input[type="date"] { border: none; font-size: 12px; outline: none; font-family: 'Sarabun', sans-serif; cursor: pointer; color: var(--ink); }
-
-/* Popover UI */
-.popover-btn {
-  font-family: 'Kanit', sans-serif; font-size: 13px; padding: 6px 14px; border-radius: 6px;
-  border: 1.5px solid #d5d5ec; background: #fff; color: var(--navy); cursor: pointer;
-  display: inline-flex; align-items: center; gap: 8px; font-weight: 600; transition: .15s; user-select: none;
-}
-.popover-btn:hover { border-color: var(--navy); background: #f9f9fd; }
-.popover-btn .badge-count { background: var(--navy); color: #fff; font-size: 11px; border-radius: 10px; padding: 2px 7px; line-height: 1; }
-.toggle-popover {
-  position: absolute; top: calc(100% + 8px); left: 0; z-index: 9999;
-  width: 280px; background: #ffffff; border-radius: 10px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.18); border: 1.5px solid #dcdcee; padding: 10px; display: none; flex-direction: column; gap: 8px;
-}
-.toggle-popover.show { display: flex; }
-.popover-search { width: 100%; padding: 7px 12px; border: 1.5px solid #d5d5ec; border-radius: 6px; font-size: 12.5px; outline: none; }
-.popover-list { max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
-.popover-item { display: flex; align-items: center; gap: 10px; padding: 5px 8px; border-radius: 6px; cursor: pointer; }
-.popover-item:hover { background: #f2f2f8; }
-
-.switch { position: relative; display: inline-block; width: 34px; height: 18px; flex-shrink: 0; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .2s; border-radius: 18px; }
-.slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: white; transition: .2s; border-radius: 50%; }
-input:checked + .slider { background-color: #1E88E5; }
-input:checked + .slider:before { transform: translateX(16px); }
-
-.pill-badge { font-family: 'Kanit', sans-serif; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 14px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
-.tw { overflow-x: auto; max-height: 440px; border-radius: 8px; border: 1px solid #eaeaf5; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-th { background: var(--navy); color: #fff; font-family: 'Kanit', sans-serif; padding: 10px 12px; position: sticky; top: 0; z-index: 2; white-space: nowrap; }
-td { padding: 9px 12px; border-bottom: 1px solid #f0f0f8; vertical-align: middle; }
-tr:hover { background: #f8f8fc; }
-
-.table-bottom-stat { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 4px; }
-.bottom-stat-pill { background: #f0f0fa; border: 1.5px solid #d5d5ec; border-radius: 8px; padding: 6px 16px; font-family: 'Kanit', sans-serif; font-size: 13.5px; font-weight: 700; color: var(--navy); }
-
-.badge { font-family: 'Kanit', sans-serif; font-size: 11.5px; padding: 4px 10px; border-radius: 6px; font-weight: 600; display: inline-block; white-space: nowrap; }
-.badge-green { background: #e6f7ee; color: var(--green); }
-.badge-red { background: #ffeaea; color: var(--red); }
-.badge-no { background: #ffeaea; color: var(--red); border: 1px solid #f5b5b5; border-radius: 20px; }
-.badge-media { background: #f0f0fa; color: var(--navy); border: 1px solid #d5d5ec; font-size: 11px; padding: 2px 7px; border-radius: 4px; }
-
-.table-view-container { display: none; }
-.table-view-container.active { display: flex; }
-</style>
+    /* Tables */
+    .table-container { background: #fff; border-radius: 14px; padding: 20px; border: 1px solid var(--border); overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: #f8fafc; font-family: 'Kanit', sans-serif; color: var(--navy); }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+    .badge-orange { background: #ffedd5; color: #9a3412; }
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <!-- 📌 แถบเมนูกลางสำหรับลิงก์ข้ามเลเยอร์ -->
-  <nav class="nav-menu-bar">
-    <a href="index.html" class="nav-tab active">🍩 Layer 1: Dashboard</a>
-    <a href="layer2.html" class="nav-tab">📊 Layer 2: ปัญหาพบบ่อย</a>
-    <a href="layer3.html" class="nav-tab">🔍 Layer 3: Asset Lookup</a>
-    <a href="layer4.html" class="nav-tab">🗺️ Layer 4: Map & Route</a>
-  </nav>
+  <!-- Drawer Slider เมนูด้านซ้าย -->
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+  <aside class="sidebar-slider" id="sidebar">
+    <div class="sidebar-header">
+      <h2>📑 เมนูเลือก Layer</h2>
+      <button class="close-btn" onclick="toggleSidebar()">✕</button>
+    </div>
+    <div class="sidebar-menu">
+      <a href="index.html" class="sidebar-link active">🍩 Layer 1: Dashboard ภาพรวม</a>
+      <a href="layer2.html" class="sidebar-link">📊 Layer 2: ปัญหาพบบ่อย & ซ้ำ</a>
+      <a href="layer3.html" class="sidebar-link">🔍 Layer 3: Asset Monitoring</a>
+      <a href="layer4.html" class="sidebar-link">🗺️ Layer 4: Map & Route Planner</a>
+    </div>
+  </aside>
 
-  <div class="head">
-    <div>
-      <h1>AI Operation Daily Report & Monitoring</h1>
-      <p>Layer 1: Dashboard ภาพรวมและติดตามตั๋วงานรายวัน</p>
-    </div>
-    <div id="fileStatus" style="font-family:'Kanit'; font-size:13px; background:rgba(255,255,255,0.15); padding:6px 14px; border-radius:8px;">
-      🔄 กำลังเชื่อมต่อข้อมูลสดจาก Google Sheets...
-    </div>
+  <div class="container">
+    <!-- แถบด้านบนแทนที่ Box เดิม -->
+    <header class="top-navbar">
+      <div class="nav-left">
+        <button class="menu-trigger-btn" onclick="toggleSidebar()">
+          ☰ สลับเลเยอร์
+        </button>
+        <div>
+          <h1 class="page-title">AI Operation Daily Report & Monitoring</h1>
+          <p class="page-subtitle">Layer 1: Dashboard ภาพรวมและติดตามตั๋วงานรายวัน</p>
+        </div>
+      </div>
+      <div class="status-badge">
+        <span id="dataStatus">🔄 กำลังเชื่อมต่อข้อมูล...</span>
+        <button class="refresh-btn" onclick="fetchLiveGoogleData(true)">รีเฟรชชีต</button>
+      </div>
+    </header>
+
+    <!-- Stat Summary -->
+    <section class="summary-card">
+      <h3 style="font-family: 'Kanit'; color: var(--navy);">📊 สรุปตั๋วงานภาพรวม (Daily Summary)</h3>
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-label">ตั๋วทั้งหมดในระบบ</div>
+          <div class="stat-num" id="stat_total">0</div>
+        </div>
+        <div class="stat-box overdue">
+          <div class="stat-label">ตั๋ว SLA เกินเวลา</div>
+          <div class="stat-num" id="stat_sla">0</div>
+        </div>
+        <div class="stat-box finished">
+          <div class="stat-label">งานสำเร็จ (Finished / Approved)</div>
+          <div class="stat-num" id="stat_finished">0</div>
+        </div>
+        <div class="stat-box pending">
+          <div class="stat-label">ตั๋วรอดำเนินการ (Pending)</div>
+          <div class="stat-num" id="stat_pending">0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Table Section -->
+    <section class="table-container">
+      <h3 style="font-family: 'Kanit'; margin-bottom: 14px; color: var(--navy);">⏱ รายการตั๋วที่เกินกำหนดเวลา (SLA Risk / Overdue)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ลำดับ</th>
+            <th>RefNo</th>
+            <th>Asset Code</th>
+            <th>สถานะ</th>
+            <th>SLA</th>
+            <th>รายละเอียด</th>
+          </tr>
+        </thead>
+        <tbody id="slaTableBody">
+          <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr>
+        </tbody>
+      </table>
+    </section>
   </div>
 
-  <section class="panel">
-    <div class="panel-title">
-      <span>🍩 Summary Special & Claim Job</span>
-      <span id="totalBadge" class="badge" style="background:#f0f0fa; color:var(--navy); font-size:13px; padding:6px 12px;">รวมทั้งหมด: 0 รายการ</span>
-    </div>
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSm3Ebdqj-8iKxOGN0Xle5TAlblBPIb9ZLkrCv5aCgtCOM_LdXA7TCD1_YlRWsSkk6PQ/exec';
+    let globalTickets = [];
 
-    <div class="donut-grid">
-      <div class="donut-card">
-        <h3>📅 1. Monthly (สรุปภาพรวมรายเดือน)</h3>
-        <div id="monthSubLabel" class="chart-sublabel">ข้อมูลเดือนปัจจุบัน</div>
-        <div class="chart-wrapper">
-          <canvas id="monthChart"></canvas>
-          <div class="chart-center-text">
-            <div class="val" id="monthCenterVal">0 / 0</div>
-            <div class="lbl">ยอดรายเดือน(SLAเกิน1เดือน)</div>
-          </div>
-        </div>
-        <div id="monthLegend" class="legend-box"></div>
-      </div>
-
-      <div class="donut-card">
-        <h3>🗓️ 2. Weekly (สรุปรายสัปดาห์ จันทร์-ปัจจุบัน)</h3>
-        <div id="weekSubLabel" class="chart-sublabel">ข้อมูลรอบสัปดาห์</div>
-        <div class="chart-wrapper">
-          <canvas id="weekChart"></canvas>
-          <div class="chart-center-text">
-            <div class="val" id="weekCenterVal" style="font-size: 20px;">0 / 0(0)</div>
-            <div class="lbl">ยอดรายอาทิตย์(เคลมเพิ่มเมื่อวาน)</div>
-          </div>
-        </div>
-        <div id="weekLegend" class="legend-box"></div>
-      </div>
-    </div>
-
-    <div class="big-stat-grid">
-      <div class="big-stat-card card-dup" id="cardDup" onclick="switchTableView('viewDup', this)">
-        <div class="big-stat-title"><span>🔁 Ticket ซ้ำ</span><span class="hint">คลิกดูตาราง ↗</span></div>
-        <div class="big-stat-num" id="statDup" style="color:#6f42c1;">0</div>
-      </div>
-      <div class="big-stat-card card-sla active" id="cardSla" onclick="switchTableView('viewSla', this)">
-        <div class="big-stat-title"><span>⏱ SLA เกินเวลา</span><span class="hint">คลิกดูตาราง ↗</span></div>
-        <div class="big-stat-num" id="statSlaOver" style="color:var(--red);">0</div>
-      </div>
-      <div class="big-stat-card card-done" id="cardDone" onclick="switchTableView('viewDone', this)">
-        <div class="big-stat-title"><span>🟢 งานสำเร็จ (Approve + Finish)</span><span class="hint">คลิกดูตาราง ↗</span></div>
-        <div class="big-stat-num" id="statDone" style="color:var(--green);">0</div>
-      </div>
-      <div class="big-stat-card card-undone" id="cardUndone" onclick="switchTableView('viewUndone', this)">
-        <div class="big-stat-title"><span>🟠 ระหว่างดำเนินการ</span><span class="hint">คลิกดูตาราง ↗</span></div>
-        <div class="big-stat-num" id="statUndone" style="color:var(--orange);">0</div>
-      </div>
-    </div>
-
-    <!-- VIEW 1: ตาราง SLA -->
-    <div id="viewSla" class="section-box table-view-container active">
-      <div class="table-header-row">
-        <div class="table-label">⏱ --SLA--⏱ (เฉพาะตั๋วที่เกินกำหนดเวลา)</div>
-        <div class="filter-bar">
-          <div class="filter-item">
-            <span>⏳ ช่วงเวลา:</span>
-            <select id="slaTimeFilter" class="filter-select" onchange="handleTimeFilterChange('sla')">
-              <option value="ALL">-- ทั้งหมด --</option>
-              <option value="3D">3 วันล่าสุด</option>
-              <option value="7D">7 วันล่าสุด</option>
-              <option value="1M">1 เดือน</option>
-              <option value="90D">90 วัน</option>
-              <option value="1Y">1 ปี</option>
-              <option value="CUSTOM">📅 เลือกวันเอง (Advance)</option>
-            </select>
-            <div id="slaCustomBox" class="custom-date-box">
-              <input type="date" id="slaStartDate" onchange="executeFilter('sla')"> -
-              <input type="date" id="slaEndDate" onchange="executeFilter('sla')">
-            </div>
-          </div>
-          <div class="filter-item">
-            <button type="button" class="popover-btn" onclick="openPopover(event, 'slaMediaPopover')">
-              📺 Media Type <span class="badge-count" id="slaMediaCount">ทั้งหมด</span> ▾
-            </button>
-            <div id="slaMediaPopover" class="toggle-popover" onclick="event.stopPropagation()">
-              <input type="text" class="popover-search" placeholder="ค้นหาประเภทสื่อ..." oninput="filterSearchList(this)">
-              <div class="popover-list" id="slaMediaList"></div>
-            </div>
-          </div>
-          <div class="filter-item">
-            <button type="button" class="popover-btn" onclick="openPopover(event, 'slaAssigneePopover')">
-              👤 Assignee <span class="badge-count" id="slaAssigneeCount">ทุกคน</span> ▾
-            </button>
-            <div id="slaAssigneePopover" class="toggle-popover" onclick="event.stopPropagation()">
-              <input type="text" class="popover-search" placeholder="ค้นหาผู้รับผิดชอบ..." oninput="filterSearchList(this)">
-              <div class="popover-list" id="slaAssigneeList"></div>
-            </div>
-          </div>
-          <div class="filter-item">
-            <button type="button" class="popover-btn" onclick="openPopover(event, 'slaDetailPopover')">
-              📝 Detail <span class="badge-count" id="slaDetailCount">ทั้งหมด</span> ▾
-            </button>
-            <div id="slaDetailPopover" class="toggle-popover" onclick="event.stopPropagation()">
-              <input type="text" class="popover-search" placeholder="ค้นหารายละเอียด..." oninput="filterSearchList(this)">
-              <div class="popover-list" id="slaDetailList"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="tw">
-        <table>
-          <thead>
-            <tr><th style="width: 50px; text-align: center;">No</th><th>RefNo</th><th>Asset</th><th>Media Type</th><th>SLA</th><th>Status</th><th>Assignee</th><th>DETAIL</th></tr>
-          </thead>
-          <tbody id="slaTableBody"><tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
-        </table>
-      </div>
-      <div class="table-bottom-stat"><div class="bottom-stat-pill" id="slaBottomStat">รายการทั้งหมด: 0 รายการ</div></div>
-    </div>
-
-    <!-- VIEW 2: ตาราง Claim ซ้ำ -->
-    <div id="viewDup" class="section-box table-view-container">
-      <div class="table-header-row">
-        <div class="table-label">🔁 --Overlapping Claims--🔁 (ตั๋วค้างดำเนินงานซ้ำกันตั้งแต่ 2 รายการขึ้นไป)</div>
-        <div class="filter-bar">
-          <div class="filter-item">
-            <span>⏳ ช่วงเวลา:</span>
-            <select id="dupTimeFilter" class="filter-select" onchange="handleTimeFilterChange('dup')">
-              <option value="ALL">-- ทั้งหมด --</option>
-              <option value="3D">3 วันล่าสุด</option>
-              <option value="7D">7 วันล่าสุด</option>
-              <option value="1M">1 เดือน</option>
-              <option value="90D">90 วัน</option>
-              <option value="1Y">1 ปี</option>
-              <option value="CUSTOM">📅 เลือกวันเอง (Advance)</option>
-            </select>
-            <div id="dupCustomBox" class="custom-date-box">
-              <input type="date" id="dupStartDate" onchange="filterDupTable()"> -
-              <input type="date" id="dupEndDate" onchange="filterDupTable()">
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="tw">
-        <table>
-          <thead>
-            <tr><th style="width: 50px; text-align: center;">No</th><th>RefNo</th><th>Asset</th><th>Media Type</th><th>Status</th><th>Created Date Time</th><th>Created By</th><th>DETAIL</th></tr>
-          </thead>
-          <tbody id="dupTableBody"><tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
-        </table>
-      </div>
-      <div class="table-bottom-stat"><div class="bottom-stat-pill" id="dupBottomStat">รายการทั้งหมด: 0 รายการ</div></div>
-    </div>
-
-    <!-- VIEW 3: ตารางงานสำเร็จ -->
-    <div id="viewDone" class="section-box table-view-container">
-      <div class="table-header-row">
-        <div class="table-label">✅ --Finish & Approve--✅ (รายการตั๋วที่ปิดงานสำเร็จเรียบร้อยแล้ว)</div>
-        <div class="filter-bar">
-          <div class="filter-item">
-            <span>⏳ ช่วงเวลา:</span>
-            <select id="doneTimeFilter" class="filter-select" onchange="handleTimeFilterChange('done')">
-              <option value="ALL">-- ทั้งหมด --</option>
-              <option value="3D">3 วันล่าสุด</option>
-              <option value="7D">7 วันล่าสุด</option>
-              <option value="1M">1 เดือน</option>
-              <option value="90D">90 วัน</option>
-              <option value="1Y">1 ปี</option>
-              <option value="CUSTOM">📅 เลือกวันเอง (Advance)</option>
-            </select>
-            <div id="doneCustomBox" class="custom-date-box">
-              <input type="date" id="doneStartDate" onchange="executeFilter('done')"> -
-              <input type="date" id="doneEndDate" onchange="executeFilter('done')">
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="tw">
-        <table>
-          <thead>
-            <tr><th style="width: 50px; text-align: center;">No</th><th>RefNo</th><th>Asset</th><th>Media Type</th><th>Status</th><th>Schedule Date</th><th>Finish / Updated</th><th>Assignee</th><th>DETAIL (Solution Detail)</th></tr>
-          </thead>
-          <tbody id="doneTableBody"><tr><td colspan="9" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
-        </table>
-      </div>
-      <div class="table-bottom-stat"><div class="bottom-stat-pill" id="doneBottomStat">รายการทั้งหมด: 0 รายการ</div></div>
-    </div>
-
-    <!-- VIEW 4: ตารางระหว่างดำเนินการ -->
-    <div id="viewUndone" class="section-box table-view-container">
-      <div class="table-header-row">
-        <div class="table-label">⏳ --Pending, Ready to Work & Working On--⏳ (รายการตั๋วที่อยู่ระหว่างดำเนินการทั้งหมด)</div>
-      </div>
-      <div class="tw">
-        <table>
-          <thead>
-            <tr><th style="width: 50px; text-align: center;">No</th><th>RefNo</th><th>Asset</th><th>Media Type</th><th>Status</th><th>SLA</th><th>Schedule Date</th><th>Assignee</th><th>DETAIL</th></tr>
-          </thead>
-          <tbody id="undoneTableBody"><tr><td colspan="9" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
-        </table>
-      </div>
-      <div class="table-bottom-stat"><div class="bottom-stat-pill" id="undoneBottomStat">รายการทั้งหมด: 0 รายการ</div></div>
-    </div>
-  </section>
-</div>
-
-<script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSm3Ebdqj-8iKxOGN0Xle5TAlblBPIb9ZLkrCv5aCgtCOM_LdXA7TCD1_YlRWsSkk6PQ/exec';
-
-let globalData = [];
-let monthChartInst = null;
-let weekChartInst = null;
-let datasetRefDate = new Date();
-
-let globalSlaRows = [];
-let globalDoneRows = [];
-let globalUndoneRows = [];
-let globalDupList = [];
-
-let activeFilterStates = {
-  sla: { media: new Set(), assignee: new Set(), detail: new Set() },
-  done: { media: new Set(), assignee: new Set(), detail: new Set() },
-  undone: { media: new Set(), assignee: new Set(), detail: new Set() }
-};
-
-async function autoFetchLiveSheetData() {
-  const statusEl = document.getElementById('fileStatus');
-  statusEl.innerHTML = '🔄 กำลังดึงข้อมูลสดจากชีต zongdudata...';
-  
-  try {
-    const res = await fetch(SCRIPT_URL, { method: 'GET', redirect: 'follow' });
-    const result = await res.json();
-    let ticketsList = result.tickets || (Array.isArray(result) ? result : []);
-    
-    if (ticketsList && ticketsList.length > 0) {
-      globalData = ticketsList;
-      statusEl.innerHTML = `✅ อัปเดตสดจากชีต (${globalData.length} งาน)`;
-      processLayer1(globalData);
-    } else {
-      statusEl.innerHTML = '⚠️ ยังไม่มีข้อมูลตั๋วงาน';
+    // ฟังก์ชันเปิด/ปิดแถบเมนูด้านซ้าย
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('active');
     }
-  } catch (err) {
-    statusEl.innerHTML = `❌ ดึงข้อมูลไม่สำเร็จ: ${err.message}`;
-  }
-}
 
-function cleanSttText(str) {
-  if (!str) return '';
-  return str.toString().replace(/^stt[_-]/i, '').replace(/\bstt[_-]/gi, '').trim();
-}
+    // ฟังก์ชันดึงข้อมูลแบบแคชความเร็วสูง (Fast Cache)
+    async function fetchLiveGoogleData(forceRefresh = false) {
+      const statusEl = document.getElementById('dataStatus');
+      const cachedData = localStorage.getItem('zongdu_cache_data');
+      const cacheTime = localStorage.getItem('zongdu_cache_time');
 
-function getCleanDetail(row, isDone = false) {
-  if (isDone) {
-    let sol = row['Solution Detail'] || row['SolutionDetail'] || row['Solution'] || '';
-    return cleanSttText(sol) || '-';
-  }
-  let pos = cleanSttText(row['Informed Position'] || '');
-  let dt = cleanSttText(row['Informed Detail'] || row['Problem Category'] || '');
-  return [pos, dt].filter(Boolean).join(' - ') || '-';
-}
+      // 1. ถ้ามีแคชและไม่ได้สั่งกดรีเฟรช ให้โหลดจากเครื่องทันที (0.1 วิ)
+      if (cachedData && !forceRefresh) {
+        try {
+          const parsed = JSON.parse(cachedData);
+          statusEl.innerText = `⚡ ใช้ข้อมูลแคช (${cacheTime})`;
+          processData(parsed);
+          return;
+        } catch(e) {
+          console.warn('Cache error, fetching live...');
+        }
+      }
 
-function classifyMediaType(assetStr, row = {}) {
-  if (!assetStr) return 'อื่นๆ';
-  const u = assetStr.toString().trim().toUpperCase();
-  if (u.startsWith('FLY')) return 'Flyover 2.0';
-  if (u.startsWith('MTP')) return 'Metro Poster';
-  if (u.startsWith('DS')) return 'Smart Bus Shelter';
-  return 'อื่นๆ';
-}
+      // 2. ถ้าไม่มีแคชหรือกดปุ่มรีเฟรช ให้ดึงจากชีตสด
+      statusEl.innerText = '🔄 กำลังดึงข้อมูลจาก Google Sheets...';
+      try {
+        const res = await fetch(SCRIPT_URL, { method: 'GET', redirect: 'follow' });
+        const data = await res.json();
 
-function switchTableView(viewId, cardElement) {
-  document.querySelectorAll('.table-view-container').forEach(el => el.classList.remove('active'));
-  document.getElementById(viewId).classList.add('active');
-  document.querySelectorAll('.big-stat-card').forEach(el => el.classList.remove('active'));
-  cardElement.classList.add('active');
-}
+        if (data.tickets && data.tickets.length > 0) {
+          const nowStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+          // บันทึกลงแคชเครื่อง เพื่อให้หน้าอื่น (layer2, layer3) เปิดต่อได้ทันที
+          localStorage.setItem('zongdu_cache_data', JSON.stringify(data));
+          localStorage.setItem('zongdu_cache_time', nowStr);
 
-function parseRowDate(row) {
-  let val = row['Created Date Time'] || row['Created'] || row['Schedule Date'];
-  if (!val) return null;
-  if (typeof val === 'number') return new Date((val - (25567 + 2)) * 86400 * 1000);
-  let d = new Date(val.toString().trim().replace('T', ' '));
-  return isNaN(d.getTime()) ? null : d;
-}
-
-function classifyStatus(row) {
-  const st = (row['Status'] || '').toLowerCase();
-  if (st.includes('approve')) return 'approve';
-  if (st.includes('finish') || st.includes('close') || st.includes('done')) return 'finish';
-  if (st.includes('working')) return 'working';
-  return 'pending_ready';
-}
-
-function isClaimJob(row) {
-  const cat = (row['Ticket Category'] || row['Category'] || '').toLowerCase();
-  const ref = (row['RefNo'] || '').toUpperCase();
-  return cat.includes('claim') || ref.startsWith('CLM');
-}
-
-function parseSlaDetails(row) {
-  const stType = classifyStatus(row);
-  if (stType === 'approve' || stType === 'finish') return { text: 'END', isOverdue: false, sortVal: 999999999 };
-  let rt = row['SLA RT'];
-  let seconds = (rt !== undefined && rt !== '' && !isNaN(Number(rt))) ? Number(rt) : null;
-  if (seconds !== null) {
-    let isOver = seconds < 0;
-    let absSec = Math.abs(seconds);
-    let days = Math.floor(absSec / 86400);
-    let hours = Math.floor((absSec % 86400) / 3600);
-    return { text: isOver ? `เกิน ${days}วัน${hours}ชม.` : `เหลือ ${days}วัน${hours}ชม.`, isOverdue: isOver, sortVal: seconds };
-  }
-  return { text: 'OnTrack', isOverdue: false, sortVal: 50000000 };
-}
-
-function processLayer1(data) {
-  const total = data.length;
-  document.getElementById('totalBadge').innerText = `รวมทั้งหมด: ${total} รายการ`;
-
-  let dateObjs = data.map(r => parseRowDate(r)).filter(d => d);
-  datasetRefDate = dateObjs.length > 0 ? new Date(Math.max(...dateObjs.map(d => d.getTime()))) : new Date();
-
-  let monthDonutStats = { approve: 0, finish: 0, working: 0, pending_ready: 0 };
-  let weekStats = { approve: 0, finish: 0, working: 0, pending_ready: 0 };
-
-  globalSlaRows = []; globalDoneRows = []; globalUndoneRows = [];
-  let activeAssetMap = {};
-
-  data.forEach(row => {
-    const stType = classifyStatus(row);
-    const d = parseRowDate(row);
-    const isDone = (stType === 'approve' || stType === 'finish');
-    const asset = (row['Asset'] || '').toString().trim();
-    const mediaType = classifyMediaType(asset, row);
-    const sla = parseSlaDetails(row);
-
-    const itemObj = { row, sla, mediaType, date: d };
-    if (isDone) globalDoneRows.push(itemObj); else globalUndoneRows.push(itemObj);
-
-    monthDonutStats[stType]++;
-    weekStats[stType]++;
-
-    if (stType === 'pending_ready' || stType === 'working') {
-      if (asset) {
-        if (!activeAssetMap[asset]) activeAssetMap[asset] = [];
-        activeAssetMap[asset].push({ row, mediaType });
+          statusEl.innerText = `✅ ดึงสดสำเร็จ (${nowStr})`;
+          processData(data);
+        } else {
+          statusEl.innerText = '⚠️ แท็บ zongdudata ไม่มีข้อมูล';
+        }
+      } catch (err) {
+        statusEl.innerText = '❌ เชื่อมต่อชีตล้มเหลว';
+        console.error(err);
       }
     }
 
-    if (sla.isOverdue) globalSlaRows.push(itemObj);
-  });
+    function processData(result) {
+      globalTickets = result.tickets || [];
+      let total = globalTickets.length;
+      let finished = 0, pending = 0, overdue = 0;
+      let tbody = document.getElementById('slaTableBody');
+      tbody.innerHTML = '';
 
-  document.getElementById('monthCenterVal').innerText = `${monthDonutStats.approve + monthDonutStats.finish} / ${total}`;
-  document.getElementById('weekCenterVal').innerText = `${weekStats.approve + weekStats.finish} / ${total}`;
+      let overdueList = [];
 
-  monthChartInst = renderSingleDonut('monthChart', 'monthLegend', monthDonutStats, monthChartInst);
-  weekChartInst = renderSingleDonut('weekChart', 'weekLegend', weekStats, weekChartInst);
+      globalTickets.forEach((t) => {
+        const st = (t['Status'] || t['status'] || '').toString();
+        const sla = (t['SLA'] || t['sla'] || '').toString();
 
-  document.getElementById('statSlaOver').innerText = globalSlaRows.length;
-  document.getElementById('statDone').innerText = globalDoneRows.length;
-  document.getElementById('statUndone').innerText = globalUndoneRows.length;
+        if (st.toLowerCase().includes('finish') || st.toLowerCase().includes('approve')) {
+          finished++;
+        } else {
+          pending++;
+        }
 
-  executeFilter('sla');
-}
+        if (sla.toLowerCase().includes('over') || sla.toLowerCase().includes('risk') || sla.includes('-')) {
+          overdue++;
+          overdueList.push(t);
+        }
+      });
 
-function executeFilter(prefix) {
-  let source = globalSlaRows;
-  if (prefix === 'done') source = globalDoneRows;
-  if (prefix === 'undone') source = globalUndoneRows;
+      document.getElementById('stat_total').innerText = total;
+      document.getElementById('stat_finished').innerText = finished;
+      document.getElementById('stat_pending').innerText = pending;
+      document.getElementById('stat_sla').innerText = overdue;
 
-  if (prefix === 'sla') {
-    renderFilteredSlaTable(source);
-    document.getElementById('slaBottomStat').innerText = `รายการทั้งหมด: ${source.length} รายการ`;
-  }
-}
+      if (overdueList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--green);">🎉 เยี่ยมมาก! ไม่มีงานที่เกินกำหนด SLA</td></tr>';
+        return;
+      }
 
-function renderFilteredSlaTable(rows) {
-  const slaTbody = document.getElementById('slaTableBody');
-  slaTbody.innerHTML = '';
-  if (rows.length === 0) {
-    slaTbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">ไม่พบรายการ SLA เกินกำหนด</td></tr>`;
-    return;
-  }
-  rows.forEach(({ row, sla, mediaType }, index) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="text-align:center; font-weight:600; color:var(--grey);">${index + 1}</td>
-      <td style="font-weight:600; color:var(--navy);">${row['RefNo'] || '-'}</td>
-      <td><b>${row['Asset'] || '-'}</b></td>
-      <td><span class="badge-media">${mediaType}</span></td>
-      <td style="color:var(--red); font-weight:700;">${sla.text}</td>
-      <td><span class="badge badge-red">${row['Status'] || '-'}</span></td>
-      <td>${row['Assignee'] || '-'}</td>
-      <td style="font-size:12.5px;">${getCleanDetail(row, false)}</td>
-    `;
-    slaTbody.appendChild(tr);
-  });
-}
+      overdueList.slice(0, 30).forEach((t, i) => {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td><b>${t['RefNo'] || t['refNo'] || '-'}</b></td>
+          <td>${t['Asset'] || t['Asset Code'] || '-'}</td>
+          <td><span class="badge badge-orange">${t['Status'] || '-'}</span></td>
+          <td><span class="badge badge-red">${t['SLA'] || '-'}</span></td>
+          <td>${t['Detail'] || t['detail'] || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
-function renderSingleDonut(canvasId, legendId, stats, chartInstance) {
-  if (chartInstance) chartInstance.destroy();
-  const labels = ['Approve', 'Finish', 'Working On', 'Pending'];
-  const colors = ['#1E88E5', '#1F9D57', '#FBC02D', '#CB3A3A'];
-  const dataVals = [stats.approve, stats.finish, stats.working, stats.pending_ready];
-
-  const ctx = document.getElementById(canvasId).getContext('2d');
-  return new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: dataVals.some(v => v > 0) ? dataVals : [1],
-        backgroundColor: dataVals.some(v => v > 0) ? colors : ['#E6E6E6'],
-        borderWidth: 3, borderColor: '#ffffff'
-      }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false } } }
-  });
-}
-
-window.addEventListener('DOMContentLoaded', autoFetchLiveSheetData);
-</script>
+    // เริ่มทำงานทันที
+    window.addEventListener('DOMContentLoaded', () => fetchLiveGoogleData(false));
+  </script>
 </body>
 </html>
