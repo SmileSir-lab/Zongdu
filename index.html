@@ -3,12 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Operation Daily Report & Monitoring Dashboard (4 Layers Complete)</title>
+<title>AI Operation Daily Report - Layer 1 Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
 :root {
@@ -20,73 +17,29 @@
 body { background: var(--page); color: var(--ink); padding: 20px; }
 .container { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
 
-/* ─── Sidebar Slider Navigation ─── */
-.sidebar-overlay {
-  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(4px);
-  z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+/* 📌 แถบเมนูกลางสำหรับลิงก์ข้ามเลเยอร์ */
+.nav-menu-bar {
+  display: flex; gap: 8px; flex-wrap: wrap; background: #fff; padding: 12px 16px; 
+  border-radius: 12px; box-shadow: 0 4px 14px rgba(30,27,74,.06);
 }
-.sidebar-overlay.active { opacity: 1; visibility: visible; }
+.nav-tab {
+  font-family: 'Kanit', sans-serif; font-size: 13.5px; font-weight: 600;
+  padding: 8px 16px; border-radius: 8px; text-decoration: none;
+  background: #f0f0fa; color: var(--navy); border: 1.5px solid #d5d5ec;
+  transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+}
+.nav-tab:hover { background: var(--navy); color: #fff; }
+.nav-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); box-shadow: 0 4px 12px rgba(35, 32, 132, 0.25); }
 
-.sidebar-slider {
-  position: fixed; top: 0; left: -320px; width: 300px; height: 100vh;
-  background: #ffffff; box-shadow: 6px 0 25px rgba(0,0,0,0.18);
-  z-index: 10001; transition: left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex; flex-direction: column;
-}
-.sidebar-slider.open { left: 0; }
-
-.sidebar-header {
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
-  color: #fff; padding: 22px 20px; display: flex; justify-content: space-between; align-items: center;
-}
-.sidebar-header h2 { font-family: 'Kanit', sans-serif; font-size: 18px; font-weight: 700; }
-.sidebar-close-btn {
-  background: rgba(255,255,255,0.2); border: none; color: #fff; font-size: 20px;
-  width: 34px; height: 34px; border-radius: 8px; cursor: pointer; display: flex;
-  align-items: center; justify-content: center; transition: background 0.15s;
-}
-.sidebar-close-btn:hover { background: rgba(255,255,255,0.35); }
-
-.sidebar-menu { padding: 18px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; }
-.sidebar-item {
-  display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 10px;
-  font-family: 'Kanit', sans-serif; font-size: 14px; font-weight: 600; color: var(--navy);
-  background: transparent; border: none; text-align: left; width: 100%; cursor: pointer;
-  transition: all 0.2s ease;
-}
-.sidebar-item:hover { background: #f0f0fa; transform: translateX(4px); }
-.sidebar-item.active {
-  background: var(--navy); color: #ffffff; box-shadow: 0 4px 12px rgba(35, 32, 132, 0.25);
-}
-.sidebar-item .item-icon { font-size: 18px; }
-
-/* Header & Toggle Button */
+/* Header */
 .head {
   background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
   border-radius: 14px; padding: 18px 24px; color: #fff; display: flex;
   justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
   box-shadow: 0 6px 20px rgba(23,21,96,.2);
 }
-.head-left { display: flex; align-items: center; gap: 16px; }
-.menu-toggle-btn {
-  background: rgba(255,255,255,0.18); border: 1.5px solid rgba(255,255,255,0.4);
-  color: #fff; padding: 8px 14px; border-radius: 8px; font-family: 'Kanit', sans-serif;
-  font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center;
-  gap: 8px; transition: all 0.2s;
-}
-.menu-toggle-btn:hover { background: #fff; color: var(--navy); }
 .head h1 { font-family: 'Kanit', sans-serif; font-size: 22px; font-weight: 700; }
 .head p { font-family: 'Kanit', sans-serif; font-size: 13.5px; color: #c9c9ee; margin-top: 2px; }
-
-/* Indicator Badge */
-.layer-indicator-badge {
-  background: #ffffff; border-radius: 10px; padding: 10px 16px;
-  display: flex; align-items: center; justify-content: space-between;
-  box-shadow: 0 2px 8px rgba(30,27,74,.05); border: 1.5px solid #d5d5ec;
-}
-.layer-indicator-badge span.lbl { font-family: 'Kanit', sans-serif; font-size: 14px; color: var(--grey); }
-.layer-indicator-badge span.name { font-family: 'Kanit', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
 
 .panel { background: #fff; border-radius: 12px; box-shadow: 0 4px 14px rgba(30,27,74,.06); padding: 22px; display: flex; flex-direction: column; gap: 20px; }
 .panel-title { font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 18px; color: var(--navy); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
@@ -98,7 +51,7 @@ body { background: var(--page); color: var(--ink); padding: 20px; }
 .chart-sublabel { font-family: 'Kanit', sans-serif; font-size: 12px; color: var(--grey); margin-bottom: 14px; text-align: center; }
 .chart-wrapper { position: relative; width: 240px; height: 240px; }
 .chart-center-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; width: 90%; }
-.chart-center-text .val { font-family: 'Kanit', sans-serif; font-size: 21px; font-weight: 700; color: var(--navy); }
+.chart-center-text .val { font-family: 'Kanit', sans-serif; font-size: 20px; font-weight: 700; color: var(--navy); }
 .chart-center-text .lbl { font-family: 'Kanit', sans-serif; font-size: 12px; font-weight: 600; color: var(--grey); line-height: 1.3; margin-top: 2px; }
 .legend-box { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; justify-content: center; width: 100%; }
 .legend-item { display: flex; align-items: center; gap: 5px; font-family: 'Kanit', sans-serif; font-size: 12px; background: #fff; padding: 4px 8px; border-radius: 6px; border: 1px solid #e2e2ee; }
@@ -120,10 +73,6 @@ body { background: var(--page); color: var(--ink); padding: 20px; }
 .big-stat-title { font-family: 'Kanit', sans-serif; font-size: 14px; font-weight: 600; color: var(--grey); margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; }
 .big-stat-title span.hint { font-size: 11px; font-weight: normal; color: #8c8ca0; }
 .big-stat-num { font-family: 'Kanit', sans-serif; font-size: 34px; font-weight: 700; color: var(--ink); line-height: 1.1; }
-.big-stat-card.card-sla .big-stat-num { color: var(--red); }
-.big-stat-card.card-done .big-stat-num { color: var(--green); }
-.big-stat-card.card-undone .big-stat-num { color: var(--orange); }
-.big-stat-card.card-dup .big-stat-num { color: #6f42c1; }
 
 /* Filter & Table */
 .section-box { display: flex; flex-direction: column; gap: 10px; position: relative; }
@@ -172,140 +121,38 @@ tr:hover { background: #f8f8fc; }
 .table-bottom-stat { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 4px; }
 .bottom-stat-pill { background: #f0f0fa; border: 1.5px solid #d5d5ec; border-radius: 8px; padding: 6px 16px; font-family: 'Kanit', sans-serif; font-size: 13.5px; font-weight: 700; color: var(--navy); }
 
-/* Badges */
 .badge { font-family: 'Kanit', sans-serif; font-size: 11.5px; padding: 4px 10px; border-radius: 6px; font-weight: 600; display: inline-block; white-space: nowrap; }
 .badge-green { background: #e6f7ee; color: var(--green); }
 .badge-red { background: #ffeaea; color: var(--red); }
 .badge-no { background: #ffeaea; color: var(--red); border: 1px solid #f5b5b5; border-radius: 20px; }
 .badge-media { background: #f0f0fa; color: var(--navy); border: 1px solid #d5d5ec; font-size: 11px; padding: 2px 7px; border-radius: 4px; }
 
-/* Tag Input Layer 3 */
-.tag-input-container { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 44px; padding: 6px 10px; border: 1.5px solid #d5d5ec; border-radius: 8px; background: #fff; cursor: text; }
-.tag-input-container:focus-within { border-color: var(--navy); }
-.code-chip { display: inline-flex; align-items: center; gap: 6px; background: #f0f0fa; color: var(--navy); border: 1px solid #c9c9ee; border-radius: 6px; padding: 4px 8px; font-family: 'Kanit', sans-serif; font-size: 13px; font-weight: 600; }
-.code-chip .chip-remove { cursor: pointer; color: var(--grey); font-size: 14px; }
-.code-chip .chip-remove:hover { color: var(--red); }
-.tag-real-input { border: none; outline: none; font-size: 13.5px; flex: 1; min-width: 180px; padding: 4px; background: transparent; }
-
-.stat-box-container { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
-.stat-box { font-family: 'Kanit', sans-serif; font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; }
-.stat-green { background: #e6f7ee; color: var(--green); border: 1px solid #a3e8c0; }
-.stat-red { background: #ffeaea; color: var(--red); border: 1px solid #f8b8b8; }
-
-.btn { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 13.5px; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
-.btn-navy { background: var(--navy); color: #fff; }
-.btn-green { background: var(--green); color: #fff; }
-.btn-red { background: var(--red); color: #fff; }
-.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px; }
 .table-view-container { display: none; }
 .table-view-container.active { display: flex; }
-.hidden { display: none !important; }
-th.sortable { cursor: pointer; user-select: none; }
-th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
-
-/* ─── LAYER 4 MAP STYLES ─── */
-.map-layout { display: grid; grid-template-columns: 1fr 340px; gap: 16px; margin-top: 8px; }
-#map { width: 100%; height: 580px; border-radius: 12px; border: 1.5px solid #d5d5ec; z-index: 1; }
-.map-sidebar { background: #fafafc; border: 1.5px solid #eaeaf5; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; height: 580px; }
-.selected-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
-.selected-item { background: #fff; border: 1px solid #dcdcea; border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
-
-.custom-pin {
-  display: flex; align-items: center; justify-content: center;
-  width: 30px; height: 30px; border-radius: 50%;
-  font-size: 10.5px; font-weight: 700; border: 2.5px solid #ffffff;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.35); cursor: pointer;
-  transition: transform .15s ease, box-shadow .15s ease;
-}
-.custom-pin:hover { transform: scale(1.22); }
-.pin-selected {
-  border-color: #ffd166 !important;
-  transform: scale(1.35) !important;
-  box-shadow: 0 0 14px rgba(123, 44, 191, 0.95), 0 3px 8px rgba(0,0,0,0.4) !important;
-  outline: 3px solid #7b2cbf;
-}
-
-@media (max-width: 768px) {
-  body { padding: 10px; }
-  .container { gap: 12px; }
-  .head { padding: 14px 16px; gap: 10px; }
-  .head h1 { font-size: 18px; }
-  .head p { font-size: 12px; }
-  .menu-toggle-btn { padding: 6px 10px; font-size: 12.5px; }
-
-  .donut-grid { grid-template-columns: 1fr; gap: 14px; }
-  .donut-card { padding: 14px; }
-  .chart-wrapper { width: 200px; height: 200px; }
-  .big-stat-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .big-stat-card { padding: 12px 14px; }
-  .big-stat-num { font-size: 26px; }
-
-  .filter-bar, .btn-row { flex-direction: column; align-items: stretch !important; gap: 8px; }
-  .filter-item, .popover-btn, .btn { width: 100%; justify-content: center; }
-  .toggle-popover { width: 90vw; left: 5% !important; }
-
-  .map-layout { grid-template-columns: 1fr !important; gap: 12px; }
-  #map { height: 380px !important; }
-  .map-sidebar { height: auto !important; max-height: 380px; padding: 12px; }
-
-  .tw { max-height: 350px; -webkit-overflow-scrolling: touch; }
-  table { font-size: 12px; }
-  th, td { padding: 7px 8px; }
-}
 </style>
 </head>
 <body>
 
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-<aside class="sidebar-slider" id="sidebarSlider">
-  <div class="sidebar-header">
-    <h2>📌 เลือกระบบการทำงาน</h2>
-    <button class="sidebar-close-btn" onclick="closeSidebar()">&times;</button>
-  </div>
-  <nav class="sidebar-menu">
-    <button class="sidebar-item active" id="sideBtn-layer1" onclick="selectLayer('layer1', 'Layer 1: Dashboard ภาพรวม', this)">
-      <span class="item-icon">🍩</span>
-      <span>Layer 1: Dashboard ภาพรวม</span>
-    </button>
-    <button class="sidebar-item" id="sideBtn-layer2" onclick="selectLayer('layer2', 'Layer 2: ปัญหาพบบ่อย & เคลมซ้ำ', this)">
-      <span class="item-icon">📊</span>
-      <span>Layer 2: ปัญหาพบบ่อย & เคลมซ้ำ</span>
-    </button>
-    <button class="sidebar-item" id="sideBtn-layer3" onclick="selectLayer('layer3', 'Layer 3: Asset Code Monitoring Lookup', this)">
-      <span class="item-icon">🔍</span>
-      <span>Layer 3: Asset Code Lookup</span>
-    </button>
-    <button class="sidebar-item" id="sideBtn-layer4" onclick="selectLayer('layer4', 'Layer 4: แผนที่งานเคลม & วางแผนรูทวิ่ง', this)">
-      <span class="item-icon">🗺️</span>
-      <span>Layer 4: Map & Route Planner</span>
-    </button>
-  </nav>
-</aside>
-
 <div class="container">
+  <!-- 📌 แถบเมนูกลางสำหรับลิงก์ข้ามเลเยอร์ -->
+  <nav class="nav-menu-bar">
+    <a href="index.html" class="nav-tab active">🍩 Layer 1: Dashboard</a>
+    <a href="layer2.html" class="nav-tab">📊 Layer 2: ปัญหาพบบ่อย</a>
+    <a href="layer3.html" class="nav-tab">🔍 Layer 3: Asset Lookup</a>
+    <a href="layer4.html" class="nav-tab">🗺️ Layer 4: Map & Route</a>
+  </nav>
+
   <div class="head">
-    <div class="head-left">
-      <button type="button" class="menu-toggle-btn" onclick="openSidebar()">
-        ☰ เปิดเมนูเลเยอร์
-      </button>
-      <div>
-        <h1>AI Operation Daily Report & Monitoring</h1>
-        <p>ระบบบริหารจัดการติดตามตั๋วงาน วิเคราะห์ปัญหา ตรวจเช็ครหัสป้าย และวางแผนเส้นทาง (4 Layers)</p>
-      </div>
+    <div>
+      <h1>AI Operation Daily Report & Monitoring</h1>
+      <p>Layer 1: Dashboard ภาพรวมและติดตามตั๋วงานรายวัน</p>
     </div>
     <div id="fileStatus" style="font-family:'Kanit'; font-size:13px; background:rgba(255,255,255,0.15); padding:6px 14px; border-radius:8px;">
       🔄 กำลังเชื่อมต่อข้อมูลสดจาก Google Sheets...
     </div>
   </div>
 
-  <div class="layer-indicator-badge">
-    <span class="lbl">กำลังแสดงผล:</span>
-    <span class="name" id="currentLayerDisplayTitle">Layer 1: Dashboard ภาพรวม</span>
-  </div>
-
-  <!-- ════════ LAYER 1: Dashboard ภาพรวม ════════ -->
-  <section id="layer1" class="panel">
+  <section class="panel">
     <div class="panel-title">
       <span>🍩 Summary Special & Claim Job</span>
       <span id="totalBadge" class="badge" style="background:#f0f0fa; color:var(--navy); font-size:13px; padding:6px 12px;">รวมทั้งหมด: 0 รายการ</span>
@@ -342,19 +189,19 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
     <div class="big-stat-grid">
       <div class="big-stat-card card-dup" id="cardDup" onclick="switchTableView('viewDup', this)">
         <div class="big-stat-title"><span>🔁 Ticket ซ้ำ</span><span class="hint">คลิกดูตาราง ↗</span></div>
-        <div class="big-stat-num" id="statDup">0</div>
+        <div class="big-stat-num" id="statDup" style="color:#6f42c1;">0</div>
       </div>
       <div class="big-stat-card card-sla active" id="cardSla" onclick="switchTableView('viewSla', this)">
         <div class="big-stat-title"><span>⏱ SLA เกินเวลา</span><span class="hint">คลิกดูตาราง ↗</span></div>
-        <div class="big-stat-num" id="statSlaOver">0</div>
+        <div class="big-stat-num" id="statSlaOver" style="color:var(--red);">0</div>
       </div>
       <div class="big-stat-card card-done" id="cardDone" onclick="switchTableView('viewDone', this)">
         <div class="big-stat-title"><span>🟢 งานสำเร็จ (Approve + Finish)</span><span class="hint">คลิกดูตาราง ↗</span></div>
-        <div class="big-stat-num" id="statDone">0</div>
+        <div class="big-stat-num" id="statDone" style="color:var(--green);">0</div>
       </div>
       <div class="big-stat-card card-undone" id="cardUndone" onclick="switchTableView('viewUndone', this)">
         <div class="big-stat-title"><span>🟠 ระหว่างดำเนินการ</span><span class="hint">คลิกดูตาราง ↗</span></div>
-        <div class="big-stat-num" id="statUndone">0</div>
+        <div class="big-stat-num" id="statUndone" style="color:var(--orange);">0</div>
       </div>
     </div>
 
@@ -474,33 +321,6 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
               <input type="date" id="doneEndDate" onchange="executeFilter('done')">
             </div>
           </div>
-          <div class="filter-item">
-            <button type="button" class="popover-btn" onclick="openPopover(event, 'doneMediaPopover')">
-              📺 Media Type <span class="badge-count" id="doneMediaCount">ทั้งหมด</span> ▾
-            </button>
-            <div id="doneMediaPopover" class="toggle-popover" onclick="event.stopPropagation()">
-              <input type="text" class="popover-search" placeholder="ค้นหาประเภทสื่อ..." oninput="filterSearchList(this)">
-              <div class="popover-list" id="doneMediaList"></div>
-            </div>
-          </div>
-          <div class="filter-item">
-            <button type="button" class="popover-btn" onclick="openPopover(event, 'doneAssigneePopover')">
-              👤 Assignee <span class="badge-count" id="doneAssigneeCount">ทุกคน</span> ▾
-            </button>
-            <div id="doneAssigneePopover" class="toggle-popover" onclick="event.stopPropagation()">
-              <input type="text" class="popover-search" placeholder="ค้นหาผู้รับผิดชอบ..." oninput="filterSearchList(this)">
-              <div class="popover-list" id="doneAssigneeList"></div>
-            </div>
-          </div>
-          <div class="filter-item">
-            <button type="button" class="popover-btn" onclick="openPopover(event, 'doneDetailPopover')">
-              📝 Solution Detail <span class="badge-count" id="doneDetailCount">ทั้งหมด</span> ▾
-            </button>
-            <div id="doneDetailPopover" class="toggle-popover" onclick="event.stopPropagation()">
-              <input type="text" class="popover-search" placeholder="ค้นหา Solution Detail..." oninput="filterSearchList(this)">
-              <div class="popover-list" id="doneDetailList"></div>
-            </div>
-          </div>
         </div>
       </div>
       <div class="tw">
@@ -518,51 +338,6 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
     <div id="viewUndone" class="section-box table-view-container">
       <div class="table-header-row">
         <div class="table-label">⏳ --Pending, Ready to Work & Working On--⏳ (รายการตั๋วที่อยู่ระหว่างดำเนินการทั้งหมด)</div>
-        <div class="filter-bar">
-          <div class="filter-item">
-            <span>⏳ ช่วงเวลา:</span>
-            <select id="undoneTimeFilter" class="filter-select" onchange="handleTimeFilterChange('undone')">
-              <option value="ALL">-- ทั้งหมด --</option>
-              <option value="3D">3 วันล่าสุด</option>
-              <option value="7D">7 วันล่าสุด</option>
-              <option value="1M">1 เดือน</option>
-              <option value="90D">90 วัน</option>
-              <option value="1Y">1 ปี</option>
-              <option value="CUSTOM">📅 เลือกวันเอง (Advance)</option>
-            </select>
-            <div id="undoneCustomBox" class="custom-date-box">
-              <input type="date" id="undoneStartDate" onchange="executeFilter('undone')"> -
-              <input type="date" id="undoneEndDate" onchange="executeFilter('undone')">
-            </div>
-          </div>
-          <div class="filter-item">
-            <button type="button" class="popover-btn" onclick="openPopover(event, 'undoneMediaPopover')">
-              📺 Media Type <span class="badge-count" id="undoneMediaCount">ทั้งหมด</span> ▾
-            </button>
-            <div id="undoneMediaPopover" class="toggle-popover" onclick="event.stopPropagation()">
-              <input type="text" class="popover-search" placeholder="ค้นหาประเภทสื่อ..." oninput="filterSearchList(this)">
-              <div class="popover-list" id="undoneMediaList"></div>
-            </div>
-          </div>
-          <div class="filter-item">
-            <button type="button" class="popover-btn" onclick="openPopover(event, 'undoneAssigneePopover')">
-              👤 Assignee <span class="badge-count" id="undoneAssigneeCount">ทุกคน</span> ▾
-            </button>
-            <div id="undoneAssigneePopover" class="toggle-popover" onclick="event.stopPropagation()">
-              <input type="text" class="popover-search" placeholder="ค้นหาผู้รับผิดชอบ..." oninput="filterSearchList(this)">
-              <div class="popover-list" id="undoneAssigneeList"></div>
-            </div>
-          </div>
-          <div class="filter-item">
-            <button type="button" class="popover-btn" onclick="openPopover(event, 'undoneDetailPopover')">
-              📝 Detail <span class="badge-count" id="undoneDetailCount">ทั้งหมด</span> ▾
-            </button>
-            <div id="undoneDetailPopover" class="toggle-popover" onclick="event.stopPropagation()">
-              <input type="text" class="popover-search" placeholder="ค้นหารายละเอียด..." oninput="filterSearchList(this)">
-              <div class="popover-list" id="undoneDetailList"></div>
-            </div>
-          </div>
-        </div>
       </div>
       <div class="tw">
         <table>
@@ -573,223 +348,6 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
         </table>
       </div>
       <div class="table-bottom-stat"><div class="bottom-stat-pill" id="undoneBottomStat">รายการทั้งหมด: 0 รายการ</div></div>
-    </div>
-  </section>
-
-  <!-- ════════ LAYER 2: ปัญหาพบบ่อย & เคลมซ้ำ (สลับเอาป้ายปัญหาบ่อยขึ้นก่อน) ════════ -->
-  <section id="layer2" class="panel hidden">
-    <div class="panel-title">
-      <span>📊 Layer 2: การวิเคราะห์เชิงลึก (ป้ายที่เคลมซ้ำ & ปัญหาที่พบบ่อย)</span>
-      <div class="filter-bar">
-        <div class="filter-item">
-          <span>⏳ ช่วงเวลา:</span>
-          <select id="layer2TimeFilter" class="filter-select" onchange="handleTimeFilterChange('layer2')">
-            <option value="ALL">-- ทั้งหมด --</option>
-            <option value="1D">1 วันล่าสุด</option>
-            <option value="3D">3 วันล่าสุด</option>
-            <option value="7D">7 วันล่าสุด</option>
-            <option value="1M">1 เดือน</option>
-            <option value="90D">90 วัน</option>
-            <option value="1Y">1 ปี</option>
-            <option value="CUSTOM">📅 เลือกวันเอง (Advance)</option>
-          </select>
-          <div id="layer2CustomBox" class="custom-date-box">
-            <input type="date" id="layer2StartDate" onchange="renderLayer2()"> -
-            <input type="date" id="layer2EndDate" onchange="renderLayer2()">
-          </div>
-        </div>
-        <div class="filter-item">
-          <span>📝 Detail:</span>
-          <select id="layer2DetailFilter" class="filter-select" onchange="renderLayer2()">
-            <option value="ALL">-- ทุกปัญหา (ALL) --</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- ตาราง 1 (สลับขึ้นมาบนสุด): ป้ายเคลมซ้ำ > 3 ครั้ง -->
-    <div class="section-box" style="background:#fffafa; border:1.5px solid #fbdada; border-radius:12px; padding:18px;">
-      <div class="table-header-row">
-        <div class="table-label" style="color:var(--red);">⚠️ 1. ตารางป้ายที่มีปัญหาบ่อยผิดปกติ (> 3 ครั้ง)</div>
-        <div class="bottom-stat-pill" id="chronicAssetStat" style="font-size:12.5px; border-color:#fca5a5; color:var(--red);">พบป้ายซ่อมซ้ำ: 0 ป้าย</div>
-      </div>
-      <div class="tw" style="margin-top:8px;">
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 60px; text-align: center;">อันดับ</th>
-              <th class="sortable" onclick="toggleChronicSort('asset')">Asset / Code <span id="sortIcon-chronic-asset" class="sort-icon">⇅</span></th>
-              <th class="sortable" onclick="toggleChronicSort('mediaType')">ประเภทสื่อ <span id="sortIcon-chronic-mediaType" class="sort-icon">⇅</span></th>
-              <th class="sortable" onclick="toggleChronicSort('totalClaims')" style="width: 140px; text-align: center;">จำนวนการเคลม <span id="sortIcon-chronic-totalClaims" class="sort-icon">⇅</span></th>
-              <th style="width: 180px; text-align: center;">สถานะ (เสร็จ / ค้าง)</th>
-              <th>รายการปัญหาที่เกิดซ้ำ</th>
-            </tr>
-          </thead>
-          <tbody id="chronicAssetTableBody"><tr><td colspan="6" style="text-align:center; color:var(--grey); padding:18px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ตาราง 2 (เลื่อนลงมาอันล่าง): ปัญหาที่พบบ่อย Top 10 -->
-    <div class="section-box" style="background:#fcfcfe; border:1.5px solid #eaeaf5; border-radius:12px; padding:18px;">
-      <div class="table-header-row">
-        <div class="table-label">🚨 2. ตารางปัญหาที่พบบ่อย (Top 10 รายการสูงสุด)</div>
-        <div class="bottom-stat-pill" id="frequentProblemsStat" style="font-size:12.5px;">รวมปัญหา: 0 เคส</div>
-      </div>
-      <div class="tw" style="margin-top:8px;">
-        <table>
-          <thead>
-            <tr><th style="width: 60px; text-align: center;">อันดับ</th><th>รายละเอียดปัญหา (Problem / Detail)</th><th style="width: 140px; text-align: center;">จำนวนครั้งที่พบ</th><th style="width: 130px; text-align: center;">สัดส่วน (%)</th><th style="width: 250px;">แถบสัดส่วนปัญหา</th></tr>
-          </thead>
-          <tbody id="frequentProblemsTableBody"><tr><td colspan="5" style="text-align:center; color:var(--grey); padding:18px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════ LAYER 3: Monitoring Lookup (Asset Code) ════════ -->
-  <section id="layer3" class="panel hidden">
-    <div class="panel-title">
-      <span>🔍 Layer 3: Asset Code Monitoring Lookup (ตรวจเช็ครหัสป้ายเพื่อไปเคลมต่อ)</span>
-    </div>
-    
-    <div class="section-box">
-      <label style="font-family:'Kanit'; font-weight:600; color:var(--navy);">
-        กรอกหรือวางรหัสโค้ด (กด <b>Enter</b> หรือ <b>Ctrl+V วางชิปจะขึ้นทันที</b> — รองรับการเว้นวรรค เช่น MTP A75 ได้ตามปกติ):
-      </label>
-      <div class="tag-input-container" id="tagContainer" onclick="focusTagInput()">
-        <input type="text" id="tagRealInput" class="tag-real-input" placeholder="พิมพ์หรือวางโค้ด เช่น MTP A75, DS012...">
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-navy" onclick="searchAssetCodes()">🔍 ตรวจสอบสถานะโค้ดเหล่านี้</button>
-        <button class="btn btn-red" onclick="clearAllTags()">🗑️ ล้างโค้ดทั้งหมด (Clear All)</button>
-      </div>
-    </div>
-
-    <!-- Stat Box สรุปสถานะตั๋วรายโค้ด (ออกตั๋วแล้ว / ยังไม่ได้ออกตั๋ว / ตั๋วซ้ำ) -->
-    <div id="statBoxContainer" class="stat-box-container"></div>
-
-    <div class="section-box">
-      <div class="table-header-row">
-        <label style="font-family:'Kanit'; font-weight:700; font-size:16px; color:var(--navy);">ผลการตรวจสอบตั๋วงาน:</label>
-        <div class="filter-bar">
-          <div class="filter-item">
-            <span>⏳ ช่วงเวลางาน:</span>
-            <select id="l3TimeFilter" class="filter-select" onchange="handleTimeFilterChange('l3')">
-              <option value="ALL">ทั้งหมด (ALL)</option>
-              <option value="1D">1 วันล่าสุด</option>
-              <option value="3D">3 วันล่าสุด</option>
-              <option value="7D">7 วันล่าสุด</option>
-              <option value="30D">30 วันล่าสุด</option>
-              <option value="90D">90 วันล่าสุด</option>
-              <option value="1Y">1 ปีล่าสุด</option>
-              <option value="CUSTOM">📅 เลือกวันเอง (Advance)</option>
-            </select>
-            <div id="l3CustomBox" class="custom-date-box">
-              <input type="date" id="l3StartDate" onchange="renderL3Table()"> -
-              <input type="date" id="l3EndDate" onchange="renderL3Table()">
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="tw">
-        <table>
-          <thead>
-            <tr>
-              <th class="sortable" onclick="toggleL3Sort('asset')">Asset / Code <span id="sortIcon-asset" class="sort-icon">⇅</span></th>
-              <th>Ref No</th><th>Ticket Status</th><th>SLA</th><th>Assignee</th>
-              <th class="sortable" onclick="toggleL3Sort('sched')">Schedule Date <span id="sortIcon-sched" class="sort-icon">⇅</span></th>
-              <th class="sortable" onclick="toggleL3Sort('updated')">วันที่อัปเดตล่าสุด / Finish <span id="sortIcon-updated" class="sort-icon">⇅</span></th>
-              <th>Created By</th>
-            </tr>
-          </thead>
-          <tbody id="lookupTableBody"><tr><td colspan="8" style="text-align:center; color:var(--grey); padding:20px;">ยังไม่มีการค้นหาข้อมูล</td></tr></tbody>
-        </table>
-      </div>
-      <div class="table-bottom-stat"><div class="bottom-stat-pill" id="l3BottomStat">ผลการค้นหา: 0 รายการ</div></div>
-    </div>
-  </section>
-
-  <!-- ════════ LAYER 4: Map & Route Planner ════════ -->
-  <section id="layer4" class="panel hidden">
-    <div class="panel-title">
-      <span>🗺️ Layer 4: แผนที่งานเคลม & วางแผนเส้นทางเข้าตรวจ (Multi-Select Route)</span>
-      <span id="mapStatusChip" class="badge badge-red">🔄 กำลังโหลดพิกัดจาก Google Sheets...</span>
-    </div>
-
-    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; position:relative;">
-      <!-- 📌 1. สถานะงาน -->
-      <div class="filter-item" style="position:relative;">
-        <button type="button" class="popover-btn" onclick="openPopover(event, 'mapStatusPopover')">
-          📌 สถานะงาน <span class="badge-count" id="mapStatusCount">ทั้งหมด</span> ▾
-        </button>
-        <div id="mapStatusPopover" class="toggle-popover" onclick="event.stopPropagation()">
-          <input type="text" class="popover-search" placeholder="ค้นหาสถานะ..." oninput="filterSearchList(this)">
-          <div class="popover-list" id="mapStatusList"></div>
-        </div>
-      </div>
-
-      <!-- 📺 2. Media Type Popover -->
-      <div class="filter-item" style="position:relative;">
-        <button type="button" class="popover-btn" onclick="openPopover(event, 'mapMediaPopover')">
-          📺 Media Type <span class="badge-count" id="mapMediaCount">ทั้งหมด</span> ▾
-        </button>
-        <div id="mapMediaPopover" class="toggle-popover" onclick="event.stopPropagation()">
-          <input type="text" class="popover-search" placeholder="ค้นหาประเภทสื่อ..." oninput="filterSearchList(this)">
-          <div class="popover-list" id="mapMediaList"></div>
-        </div>
-      </div>
-
-      <!-- 📝 3. Detail Popover -->
-      <div class="filter-item" style="position:relative;">
-        <button type="button" class="popover-btn" onclick="openPopover(event, 'mapDetailPopover')">
-          📝 ปัญหา (Detail) <span class="badge-count" id="mapDetailCount">ทั้งหมด</span> ▾
-        </button>
-        <div id="mapDetailPopover" class="toggle-popover" onclick="event.stopPropagation()">
-          <input type="text" class="popover-search" placeholder="ค้นหารายละเอียดปัญหา..." oninput="filterSearchList(this)">
-          <div class="popover-list" id="mapDetailList"></div>
-        </div>
-      </div>
-
-      <!-- 🎨 ธีมแผนที่ -->
-      <div class="filter-item">
-        <span>🎨 ธีมแผนที่:</span>
-        <select id="mapThemeSelector" class="filter-select" onchange="changeMapTheme(this.value)">
-          <option value="osm_hot">🗺️ Google/OSM Style (สว่างชัดเจน)</option>
-          <option value="esri_topo">🏞️ ESRI Topo Map (ภูมิประเทศ)</option>
-          <option value="esri_sat">🛰️ Satellite (ดาวเทียมจริง)</option>
-        </select>
-      </div>
-
-      <button type="button" class="btn btn-navy" onclick="clearSelectedPins()">🔄 รีเซ็ตการเลือกหมุด</button>
-    </div>
-
-    <div class="map-layout">
-      <div id="map"></div>
-      <div class="map-sidebar">
-        <div style="font-family:'Kanit'; font-weight:700; color:var(--navy); display:flex; justify-content:space-between; align-items:center;">
-          <span>📍 ป้ายที่เลือกจัดรูทวิ่ง</span>
-          <span id="selectedCountBadge" class="badge" style="background:#f0f0fa; color:var(--navy);">0 ป้าย</span>
-        </div>
-
-        <div style="display:flex; gap:6px;">
-          <input type="text" id="manualAssetInput" placeholder="พิมพ์รหัสป้าย เช่น FLY A, DS001..." 
-                 style="flex:1; padding:8px 10px; border-radius:6px; border:1.5px solid #d5d5ec; font-family:'Sarabun',sans-serif; font-size:13px; outline:none;"
-                 onkeydown="if(event.key==='Enter'){ event.preventDefault(); addManualAssetPin(); }">
-          <button type="button" class="btn btn-navy" style="padding:8px 12px; font-size:12.5px; white-space:nowrap;" onclick="addManualAssetPin()">
-            ➕ เพิ่ม
-          </button>
-        </div>
-
-        <div id="selectedContainer" class="selected-list">
-          <div style="text-align:center; color:var(--grey); margin-top:30px; font-size:13px;">
-            คลิกที่หมุดบนแผนที่ หรือพิมพ์รหัสป้ายด้านบนเพื่อจัดรูทวิ่ง
-          </div>
-        </div>
-        <button class="btn btn-green" style="padding:12px; justify-content:center;" onclick="openGoogleMapsRoute()">
-          🚗 เปิด Google Maps นำทาง
-        </button>
-      </div>
     </div>
   </section>
 </div>
@@ -807,36 +365,11 @@ let globalDoneRows = [];
 let globalUndoneRows = [];
 let globalDupList = [];
 
-let currentChronicList = [];
-let currentChronicSort = { col: 'totalClaims', asc: false };
-
 let activeFilterStates = {
   sla: { media: new Set(), assignee: new Set(), detail: new Set() },
   done: { media: new Set(), assignee: new Set(), detail: new Set() },
   undone: { media: new Set(), assignee: new Set(), detail: new Set() }
 };
-
-let mapFilterStates = {
-  status: new Set(),
-  media: new Set(),
-  detail: new Set()
-};
-
-let masterSignsMap = {};
-let mapInstance = null;
-let currentTileLayer = null;
-let allMapItems = [];
-let allPinsOnMap = [];
-let selectedPins = [];
-
-function normalizeCodeKey(str) {
-  if (!str) return '';
-  let s = str.toString().toUpperCase().trim();
-  s = s.replace(/\(.*?\)/g, '');
-  s = s.replace(/[-_\s\/]/g, '');
-  s = s.replace(/PAC/g, '');
-  return s;
-}
 
 async function autoFetchLiveSheetData() {
   const statusEl = document.getElementById('fileStatus');
@@ -845,111 +378,23 @@ async function autoFetchLiveSheetData() {
   try {
     const res = await fetch(SCRIPT_URL, { method: 'GET', redirect: 'follow' });
     const result = await res.json();
-    
-    let masterList = result.masterSigns || (Array.isArray(result) ? result : []);
-    masterSignsMap = {};
-    if (Array.isArray(masterList)) {
-      masterList.forEach(item => {
-        const rawCode = (item['code'] || item['code_raw'] || item['Asset Code'] || item['Asset'] || '').toString().trim().toUpperCase();
-        const lat = parseFloat(item['Latitude'] || item['Lat']);
-        const lng = parseFloat(item['Longitude'] || item['Long'] || item['Lng']);
-        
-        if (rawCode && !isNaN(lat) && !isNaN(lng)) {
-          const coordData = {
-            lat: lat,
-            lng: lng,
-            mediaType: item['Media Type'] || item['MediaType'] || 'General',
-            location: item['Location Name'] || item['Location'] || item['road'] || ''
-          };
-          masterSignsMap[rawCode] = coordData;
-          masterSignsMap[normalizeCodeKey(rawCode)] = coordData;
-
-          if (rawCode.startsWith('FLY')) {
-            const letter = rawCode.replace('FLY', '').replace(/[\s\-_]/g, '');
-            if (letter) masterSignsMap[letter] = coordData;
-          }
-        }
-      });
-    }
-
-    const masterCount = Object.keys(masterSignsMap).length;
-    const mapChip = document.getElementById('mapStatusChip');
-    if (mapChip) {
-      if (masterCount > 0) {
-        mapChip.innerText = `✅ โหลดพิกัดป้ายสำเร็จ (${masterCount} รูปแบบ)`;
-        mapChip.className = 'badge badge-green';
-      } else {
-        mapChip.innerText = `⚠️ อ่านชีตได้ แต่แปลงพิกัดไม่สำเร็จ`;
-        mapChip.className = 'badge badge-red';
-      }
-    }
-
-    let ticketsList = result.tickets || (Array.isArray(result) && !result.masterSigns ? result : []);
+    let ticketsList = result.tickets || (Array.isArray(result) ? result : []);
     
     if (ticketsList && ticketsList.length > 0) {
-      const seenRef = new Set();
-      globalData = [];
-      ticketsList.forEach(row => {
-        const ref = (row['RefNo'] || row['Ref No'] || '').toString().trim();
-        if (ref) {
-          if (!seenRef.has(ref)) { seenRef.add(ref); globalData.push(row); }
-        } else { globalData.push(row); }
-      });
-
-      const updateTime = result.lastUpdate || new Date().toLocaleTimeString('th-TH');
-      statusEl.innerHTML = `✅ อัปเดตสดจากชีต (${globalData.length} งาน) • ${updateTime}`;
-      
+      globalData = ticketsList;
+      statusEl.innerHTML = `✅ อัปเดตสดจากชีต (${globalData.length} งาน)`;
       processLayer1(globalData);
-      
-      if (!document.getElementById('layer4').classList.contains('hidden')) {
-        renderPinsOnMap();
-      }
     } else {
-      statusEl.innerHTML = '⚠️ แท็บ zongdudata ยังไม่มีข้อมูลตั๋วงาน';
+      statusEl.innerHTML = '⚠️ ยังไม่มีข้อมูลตั๋วงาน';
     }
   } catch (err) {
     statusEl.innerHTML = `❌ ดึงข้อมูลไม่สำเร็จ: ${err.message}`;
-    console.error("Auto Fetch Error:", err);
-  }
-}
-
-function openSidebar() {
-  document.getElementById('sidebarSlider').classList.add('open');
-  document.getElementById('sidebarOverlay').classList.add('active');
-}
-
-function closeSidebar() {
-  document.getElementById('sidebarSlider').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('active');
-}
-
-function selectLayer(panelId, displayTitle, element) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
-  const target = document.getElementById(panelId);
-  if (target) target.classList.remove('hidden');
-
-  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
-  if (element) element.classList.add('active');
-
-  document.getElementById('currentLayerDisplayTitle').innerText = displayTitle;
-  closeSidebar();
-
-  if (panelId === 'layer2') {
-    renderLayer2();
-  } else if (panelId === 'layer4') {
-    initMap();
-    renderPinsOnMap();
   }
 }
 
 function cleanSttText(str) {
   if (!str) return '';
-  return str.toString()
-    .replace(/^stt[_-]/i, '')
-    .replace(/\bstt[_-]/gi, '')
-    .replace(/\bstt\b/gi, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return str.toString().replace(/^stt[_-]/i, '').replace(/\bstt[_-]/gi, '').trim();
 }
 
 function getCleanDetail(row, isDone = false) {
@@ -962,94 +407,12 @@ function getCleanDetail(row, isDone = false) {
   return [pos, dt].filter(Boolean).join(' - ') || '-';
 }
 
-const MEDIA_COLOR_MAP = {
-  'Smart Bus Shelter':     { bg: '#0284c7', color: '#ffffff' },
-  'Standard Bus Shelter':  { bg: '#ea580c', color: '#ffffff' },
-  'Cookies':               { bg: '#0d9488', color: '#ffffff' },
-  'Cream':                 { bg: '#ca8a04', color: '#ffffff' },
-  'Metro Poster (LED)':    { bg: '#7c3aed', color: '#ffffff' },
-  'Metro Poster':          { bg: '#4f46e5', color: '#ffffff' },
-  'Flyover 2.0':           { bg: '#db2777', color: '#ffffff' },
-  'Serie Poster':          { bg: '#059669', color: '#ffffff' },
-  'Pole wrap':             { bg: '#475569', color: '#ffffff' },
-  'Gateway Billboard':     { bg: '#b91c1c', color: '#ffffff' },
-  'ป้ายจราจร':             { bg: '#1e3a8a', color: '#ffffff' },
-  'งานเสร็จเมื่อวาน':      { bg: '#1F9D57', color: '#ffffff' },
-  'ระหว่างดำเนินการ':      { bg: '#CB3A3A', color: '#ffffff' }
-};
-
-const PASTEL_COLORS = [
-  { bg: '#0284c7', color: '#ffffff' },
-  { bg: '#ea580c', color: '#ffffff' },
-  { bg: '#0d9488', color: '#ffffff' },
-  { bg: '#ca8a04', color: '#ffffff' },
-  { bg: '#7c3aed', color: '#ffffff' },
-  { bg: '#4f46e5', color: '#ffffff' },
-  { bg: '#db2777', color: '#ffffff' },
-  { bg: '#059669', color: '#ffffff' }
-];
-
-function getBadgeColor(str) {
-  if (MEDIA_COLOR_MAP[str]) return MEDIA_COLOR_MAP[str];
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  return PASTEL_COLORS[Math.abs(hash) % PASTEL_COLORS.length];
-}
-
-function openPopover(event, id) {
-  if (event) { event.preventDefault(); event.stopPropagation(); }
-  const target = document.getElementById(id);
-  if (!target) return;
-  const isAlreadyOpen = target.classList.contains('show');
-  document.querySelectorAll('.toggle-popover').forEach(p => p.classList.remove('show'));
-  if (!isAlreadyOpen) {
-    target.classList.add('show');
-    const searchInput = target.querySelector('.popover-search');
-    if (searchInput) searchInput.focus();
-  }
-}
-
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.toggle-popover') && !e.target.closest('.popover-btn')) {
-    document.querySelectorAll('.toggle-popover').forEach(p => p.classList.remove('show'));
-  }
-});
-
-function filterSearchList(input) {
-  const query = input.value.toLowerCase();
-  const list = input.nextElementSibling;
-  list.querySelectorAll('.popover-item').forEach(item => {
-    const text = item.getAttribute('data-val').toLowerCase();
-    item.style.display = text.includes(query) ? 'flex' : 'none';
-  });
-}
-
 function classifyMediaType(assetStr, row = {}) {
   if (!assetStr) return 'อื่นๆ';
-  const asset = assetStr.toString().trim();
-  const u = asset.toUpperCase();
-
-  if (u.startsWith('FLY') || u.includes('FLYOVER') || /^[A-V]$/.test(u)) return 'Flyover 2.0';
-  if (u.startsWith('BECL') || u.startsWith('EXAT') || u.includes('GATEWAY')) return 'Gateway Billboard';
-  if (u.startsWith('MTP')) {
-    const ledSample = ['MTP A5', 'MTP A11', 'MTP A18', 'MTP A05'];
-    const rowDetail = ((row['Problem Category'] || '') + (row['Informed Position'] || '') + (row['Informed Detail'] || '')).toUpperCase();
-    if (ledSample.some(c => u.startsWith(c)) || u.includes('LED') || rowDetail.includes('LED') || rowDetail.includes('จอภาพ')) {
-      return 'Metro Poster (LED)';
-    }
-    return 'Metro Poster';
-  }
-  const matchDs = u.match(/^DS0*(\d+)/);
-  if (matchDs) {
-    const num = parseInt(matchDs[1], 10);
-    return num <= 343 ? 'Smart Bus Shelter' : 'Standard Bus Shelter';
-  }
-  const creamSample = ['DP234', 'DP235', 'DP236'];
-  const projectStr = (row['Project'] || '').toString().toUpperCase();
-  if (u.includes('CREAM') || projectStr.includes('CREAM') || creamSample.some(c => u.startsWith(c))) return 'Cream';
-  if (u.startsWith('DP') || u.startsWith('DDP')) return 'Cookies';
-  if (u.startsWith('SP') || /^\d\.\d$/.test(u)) return 'Serie Poster';
-  if (u.startsWith('PW') || u.startsWith('POLE') || /^\d+(\.\d+)?$/.test(u)) return 'Pole wrap';
+  const u = assetStr.toString().trim().toUpperCase();
+  if (u.startsWith('FLY')) return 'Flyover 2.0';
+  if (u.startsWith('MTP')) return 'Metro Poster';
+  if (u.startsWith('DS')) return 'Smart Bus Shelter';
   return 'อื่นๆ';
 }
 
@@ -1060,45 +423,16 @@ function switchTableView(viewId, cardElement) {
   cardElement.classList.add('active');
 }
 
-function parseRowDate(row, preferFinishDate = false) {
-  let val = null;
-  if (preferFinishDate) {
-    val = row['ActualEndDateTime'] || row['Modified Date Time'] || row['ModifiedDateTime'];
-  }
-  if (!val) {
-    val = row['Created Date Time'] || row['Created'] || row['Schedule Date'] || row['CreatedDate'];
-  }
+function parseRowDate(row) {
+  let val = row['Created Date Time'] || row['Created'] || row['Schedule Date'];
   if (!val) return null;
   if (typeof val === 'number') return new Date((val - (25567 + 2)) * 86400 * 1000);
-  let str = val.toString().trim().replace('T', ' ');
-  let d = new Date(str);
-  if (!isNaN(d.getTime())) return d;
-  let parts = str.split(' ')[0].split(/[-\/]/);
-  if (parts.length === 3) {
-    if (parts[0].length === 4) return new Date(Number(parts[0]), Number(parts[1])-1, Number(parts[2]));
-    return new Date(Number(parts[2]), Number(parts[1])-1, Number(parts[0]));
-  }
-  return null;
-}
-
-function formatDateTimeString(val) {
-  if (!val) return '-';
-  if (typeof val === 'number') {
-    const d = new Date((val - (25567 + 2)) * 86400 * 1000);
-    if (!isNaN(d.getTime())) {
-      let dd = String(d.getDate()).padStart(2, '0');
-      let mm = String(d.getMonth() + 1).padStart(2, '0');
-      let yy = d.getFullYear();
-      let hh = String(d.getHours()).padStart(2, '0');
-      let min = String(d.getMinutes()).padStart(2, '0');
-      return `${dd}-${mm}-${yy} ${hh}:${min}`;
-    }
-  }
-  return val.toString().trim();
+  let d = new Date(val.toString().trim().replace('T', ' '));
+  return isNaN(d.getTime()) ? null : d;
 }
 
 function classifyStatus(row) {
-  const st = (row['Status'] || row['สถานะ'] || '').toString().trim().toLowerCase();
+  const st = (row['Status'] || '').toLowerCase();
   if (st.includes('approve')) return 'approve';
   if (st.includes('finish') || st.includes('close') || st.includes('done')) return 'finish';
   if (st.includes('working')) return 'working';
@@ -1106,8 +440,8 @@ function classifyStatus(row) {
 }
 
 function isClaimJob(row) {
-  const cat = (row['Ticket Category'] || row['Category'] || row['Job Team'] || '').toString().trim().toLowerCase();
-  const ref = (row['RefNo'] || '').toString().trim().toUpperCase();
+  const cat = (row['Ticket Category'] || row['Category'] || '').toLowerCase();
+  const ref = (row['RefNo'] || '').toUpperCase();
   return cat.includes('claim') || ref.startsWith('CLM');
 }
 
@@ -1115,101 +449,26 @@ function parseSlaDetails(row) {
   const stType = classifyStatus(row);
   if (stType === 'approve' || stType === 'finish') return { text: 'END', isOverdue: false, sortVal: 999999999 };
   let rt = row['SLA RT'];
-  let slaAll = row['SLA ALL'] || '';
-  let slaStatus = (row['SLA Status'] || '').toString().toLowerCase();
-
   let seconds = (rt !== undefined && rt !== '' && !isNaN(Number(rt))) ? Number(rt) : null;
   if (seconds !== null) {
-    let isOver = seconds < 0 || slaStatus.includes('overdue');
+    let isOver = seconds < 0;
     let absSec = Math.abs(seconds);
     let days = Math.floor(absSec / 86400);
     let hours = Math.floor((absSec % 86400) / 3600);
-    return { text: isOver ? `เกิน ${days}วัน${hours}ชั่วโมง` : `เหลือ ${days}วัน${hours}ชั่วโมง`, isOverdue: isOver, sortVal: seconds };
+    return { text: isOver ? `เกิน ${days}วัน${hours}ชม.` : `เหลือ ${days}วัน${hours}ชม.`, isOverdue: isOver, sortVal: seconds };
   }
-  if (slaStatus.includes('overdue')) return { text: 'เลยกำหนด (Overdue)', isOverdue: true, sortVal: -50000000 };
-  return { text: slaAll || 'OnTrack', isOverdue: false, sortVal: 50000000 };
+  return { text: 'OnTrack', isOverdue: false, sortVal: 50000000 };
 }
 
-function handleTimeFilterChange(prefix) {
-  const selVal = document.getElementById(`${prefix}TimeFilter`).value;
-  const customBox = document.getElementById(`${prefix}CustomBox`);
-  if (customBox) {
-    if (selVal === 'CUSTOM') customBox.classList.add('active');
-    else customBox.classList.remove('active');
-  }
-
-  if (prefix === 'sla' || prefix === 'done' || prefix === 'undone') onFilterCriteriaChanged(prefix);
-  else if (prefix === 'dup') filterDupTable();
-  else if (prefix === 'layer2') renderLayer2();
-  else if (prefix === 'l3') renderL3Table();
-}
-
-function isWithinTimeRangePrefix(d, prefix) {
-  const timeKey = document.getElementById(`${prefix}TimeFilter`).value;
-  if (timeKey === 'ALL') return true;
-  if (!d || isNaN(d.getTime())) return false;
-
-  if (timeKey === 'CUSTOM') {
-    const sInput = document.getElementById(`${prefix}StartDate`).value;
-    const eInput = document.getElementById(`${prefix}EndDate`).value;
-    if (!sInput && !eInput) return true;
-    let targetTime = d.getTime();
-    if (sInput) {
-      let sDate = new Date(sInput); sDate.setHours(0, 0, 0, 0);
-      if (targetTime < sDate.getTime()) return false;
-    }
-    if (eInput) {
-      let eDate = new Date(eInput); eDate.setHours(23, 59, 59, 999);
-      if (targetTime > eDate.getTime()) return false;
-    }
-    return true;
-  }
-
-  const diffDays = (datasetRefDate.getTime() - d.getTime()) / (1000 * 60 * 60 * 24);
-  if (timeKey === '1D') return diffDays >= -0.5 && diffDays <= 1.5;
-  if (timeKey === '3D') return diffDays >= -0.5 && diffDays <= 3.5;
-  if (timeKey === '7D') return diffDays >= -0.5 && diffDays <= 7.5;
-  if (timeKey === '30D' || timeKey === '1M') return diffDays >= -0.5 && diffDays <= 31.5;
-  if (timeKey === '90D') return diffDays >= -0.5 && diffDays <= 91.5;
-  if (timeKey === '1Y') return diffDays >= -0.5 && diffDays <= 366.5;
-  return true;
-}
-
-// ─── การประมวลผล LAYER 1: ปรับคำนวณเคลมเพิ่มเป็น "เมื่อวาน" ───
 function processLayer1(data) {
   const total = data.length;
   document.getElementById('totalBadge').innerText = `รวมทั้งหมด: ${total} รายการ`;
 
-  let dateObjs = data.map(r => parseRowDate(r)).filter(d => d && !isNaN(d.getTime()));
+  let dateObjs = data.map(r => parseRowDate(r)).filter(d => d);
   datasetRefDate = dateObjs.length > 0 ? new Date(Math.max(...dateObjs.map(d => d.getTime()))) : new Date();
 
-  const targetYear = datasetRefDate.getFullYear();
-  const targetMonth = datasetRefDate.getMonth();
-
-  let dayOfWeek = datasetRefDate.getDay();
-  let diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-  let startOfWeek = new Date(datasetRefDate);
-  startOfWeek.setDate(datasetRefDate.getDate() - diffToMonday);
-  startOfWeek.setHours(0, 0, 0, 0);
-
-  let endOfWeek = new Date(datasetRefDate);
-  endOfWeek.setHours(23, 59, 59, 999);
-
-  // กำหนดช่วงเวลาของ "เมื่อวาน" แบบเป๊ะๆ
-  const yStart = new Date(datasetRefDate.getFullYear(), datasetRefDate.getMonth(), datasetRefDate.getDate() - 1, 0, 0, 0, 0);
-  const yEnd = new Date(datasetRefDate.getFullYear(), datasetRefDate.getMonth(), datasetRefDate.getDate() - 1, 23, 59, 59, 999);
-
-  const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-  const dayNames = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
-
-  document.getElementById('monthSubLabel').innerText = `ข้อมูลเดือน ${monthNames[targetMonth]} ${targetYear}`;
-  document.getElementById('weekSubLabel').innerText = `จันทร์ ${startOfWeek.getDate()} - ${dayNames[datasetRefDate.getDay()]} ${datasetRefDate.getDate()} ${monthNames[datasetRefDate.getMonth()]}`;
-
-  let monthDoneInMonth = 0, inMonthTotal = 0, backlogTotal = 0;
   let monthDonutStats = { approve: 0, finish: 0, working: 0, pending_ready: 0 };
   let weekStats = { approve: 0, finish: 0, working: 0, pending_ready: 0 };
-  let weekTotal = 0;
-  let claimAddedYesterdayCount = 0; // เคลมที่เปิดเพิ่มเมื่อวาน
 
   globalSlaRows = []; globalDoneRows = []; globalUndoneRows = [];
   let activeAssetMap = {};
@@ -1225,175 +484,30 @@ function processLayer1(data) {
     const itemObj = { row, sla, mediaType, date: d };
     if (isDone) globalDoneRows.push(itemObj); else globalUndoneRows.push(itemObj);
 
-    if (d && d.getFullYear() === targetYear && d.getMonth() === targetMonth) {
-      inMonthTotal++; monthDonutStats[stType]++;
-      if (isDone) monthDoneInMonth++;
-    } else {
-      if (!isDone) { backlogTotal++; monthDonutStats[stType]++; }
-    }
-
-    if (d && d >= startOfWeek && d <= endOfWeek) {
-      weekStats[stType]++; weekTotal++;
-    }
-
-    // นับงานเคลมที่สร้างขึ้น "เมื่อวาน"
-    if (d && d >= yStart && d <= yEnd && isClaimJob(row)) {
-      claimAddedYesterdayCount++;
-    }
+    monthDonutStats[stType]++;
+    weekStats[stType]++;
 
     if (stType === 'pending_ready' || stType === 'working') {
       if (asset) {
-        const tokens = asset.split(/[,;]+/).map(t => t.trim()).filter(Boolean);
-        tokens.forEach(tok => {
-          if (!activeAssetMap[tok]) activeAssetMap[tok] = [];
-          activeAssetMap[tok].push({ row, mediaType: classifyMediaType(tok, row) });
-        });
+        if (!activeAssetMap[asset]) activeAssetMap[asset] = [];
+        activeAssetMap[asset].push({ row, mediaType });
       }
     }
 
     if (sla.isOverdue) globalSlaRows.push(itemObj);
   });
 
-  if (backlogTotal > 0) {
-    document.getElementById('monthCenterVal').innerText = `${monthDoneInMonth} / ${inMonthTotal}(${backlogTotal})`;
-  } else {
-    document.getElementById('monthCenterVal').innerText = `${monthDoneInMonth} / ${inMonthTotal}`;
-  }
-
-  const weekDone = weekStats.approve + weekStats.finish;
-  // แสดงผล 73 / 116(ยอดเคลมเปิดเพิ่มเมื่อวาน)
-  document.getElementById('weekCenterVal').innerText = `${weekDone} / ${weekTotal}(${claimAddedYesterdayCount})`;
+  document.getElementById('monthCenterVal').innerText = `${monthDonutStats.approve + monthDonutStats.finish} / ${total}`;
+  document.getElementById('weekCenterVal').innerText = `${weekStats.approve + weekStats.finish} / ${total}`;
 
   monthChartInst = renderSingleDonut('monthChart', 'monthLegend', monthDonutStats, monthChartInst);
   weekChartInst = renderSingleDonut('weekChart', 'weekLegend', weekStats, weekChartInst);
 
-  globalDupList = [];
-  const dupAssets = Object.keys(activeAssetMap).filter(asset => activeAssetMap[asset].length >= 2).sort();
-  dupAssets.forEach(asset => {
-    const uniqueTickets = Array.from(new Set(activeAssetMap[asset]));
-    uniqueTickets.forEach(item => {
-      globalDupList.push({ asset, ticket: item.row, mediaType: item.mediaType, date: parseRowDate(item.row) });
-    });
-  });
+  document.getElementById('statSlaOver').innerText = globalSlaRows.length;
+  document.getElementById('statDone').innerText = globalDoneRows.length;
+  document.getElementById('statUndone').innerText = globalUndoneRows.length;
 
-  globalSlaRows.sort((a, b) => a.sla.sortVal - b.sla.sortVal);
-  initAllPopovers('sla', globalSlaRows);
   executeFilter('sla');
-
-  filterDupTable();
-
-  initAllPopovers('done', globalDoneRows);
-  executeFilter('done');
-
-  globalUndoneRows.sort((a, b) => a.sla.sortVal - b.sla.sortVal);
-  initAllPopovers('undone', globalUndoneRows);
-  executeFilter('undone');
-}
-
-function initAllPopovers(prefix, sourceRows) {
-  activeFilterStates[prefix].media.clear();
-  activeFilterStates[prefix].assignee.clear();
-  activeFilterStates[prefix].detail.clear();
-
-  updateMediaPopoverOptions(prefix, sourceRows);
-  updateDependentPopovers(prefix, sourceRows);
-}
-
-function onFilterCriteriaChanged(prefix) {
-  let source = globalSlaRows;
-  if (prefix === 'done') source = globalDoneRows;
-  if (prefix === 'undone') source = globalUndoneRows;
-  updateMediaPopoverOptions(prefix, source);
-  updateDependentPopovers(prefix, source);
-  executeFilter(prefix);
-}
-
-function updateMediaPopoverOptions(prefix, sourceRows) {
-  const timeFilteredRows = sourceRows.filter(it => isWithinTimeRangePrefix(it.date, prefix));
-  const mediaSet = new Set();
-  timeFilteredRows.forEach(it => { if (it.mediaType) mediaSet.add(it.mediaType); });
-
-  renderPopoverItems(`${prefix}MediaList`, `${prefix}MediaCount`, Array.from(mediaSet).sort(), activeFilterStates[prefix].media, () => {
-    let source = globalSlaRows;
-    if (prefix === 'done') source = globalDoneRows;
-    if (prefix === 'undone') source = globalUndoneRows;
-    updateDependentPopovers(prefix, source);
-    executeFilter(prefix);
-  });
-}
-
-function updateDependentPopovers(prefix, sourceRows) {
-  const selectedMedias = activeFilterStates[prefix].media;
-  const matchingRows = sourceRows.filter(it => {
-    const timeMatch = isWithinTimeRangePrefix(it.date, prefix);
-    const mediaMatch = selectedMedias.size === 0 || selectedMedias.has(it.mediaType);
-    return timeMatch && mediaMatch;
-  });
-
-  const assigneeSet = new Set(), detailSet = new Set();
-  matchingRows.forEach(({ row }) => {
-    const rawAssignee = (row['Assignee'] || '').toString().trim();
-    if (rawAssignee) {
-      rawAssignee.split(/[,;]+/).map(n => n.trim()).filter(Boolean).forEach(n => assigneeSet.add(n));
-    }
-    const cleanDetail = getCleanDetail(row, prefix === 'done');
-    if (cleanDetail && cleanDetail !== '-') detailSet.add(cleanDetail);
-  });
-
-  renderPopoverItems(`${prefix}AssigneeList`, `${prefix}AssigneeCount`, Array.from(assigneeSet).sort(), activeFilterStates[prefix].assignee, () => executeFilter(prefix));
-  renderPopoverItems(`${prefix}DetailList`, `${prefix}DetailCount`, Array.from(detailSet).sort(), activeFilterStates[prefix].detail, () => executeFilter(prefix));
-}
-
-function renderPopoverItems(listContainerId, countBadgeId, items, selectedSet, onChangeCallback) {
-  const container = document.getElementById(listContainerId);
-  const countBadge = document.getElementById(countBadgeId);
-  if (!container || !countBadge) return;
-
-  const validItems = new Set(items);
-  selectedSet.forEach(val => { if (!validItems.has(val)) selectedSet.delete(val); });
-  countBadge.textContent = selectedSet.size === 0 ? 'ทั้งหมด' : `${selectedSet.size}`;
-
-  if (items.length === 0) {
-    container.innerHTML = '<div style="font-size:12px; color:var(--grey); padding:8px; text-align:center;">ไม่มีข้อมูล</div>';
-    return;
-  }
-
-  container.innerHTML = '';
-  items.forEach(itemText => {
-    const itemRow = document.createElement('div');
-    itemRow.className = 'popover-item';
-    itemRow.setAttribute('data-val', itemText);
-
-    const isChecked = selectedSet.has(itemText);
-    const badgeStyle = getBadgeColor(itemText);
-
-    itemRow.innerHTML = `
-      <label class="switch">
-        <input type="checkbox" ${isChecked ? 'checked' : ''}>
-        <span class="slider"></span>
-      </label>
-      <span class="pill-badge" style="background:${badgeStyle.bg}; color:${badgeStyle.color};" title="${itemText}">
-        ${itemText}
-      </span>
-    `;
-
-    const checkbox = itemRow.querySelector('input');
-    checkbox.addEventListener('change', function(e) {
-      e.stopPropagation();
-      if (this.checked) selectedSet.add(itemText); else selectedSet.delete(itemText);
-      countBadge.textContent = selectedSet.size === 0 ? 'ทั้งหมด' : `${selectedSet.size}`;
-      onChangeCallback();
-    });
-
-    itemRow.addEventListener('click', function(e) {
-      if (e.target.tagName !== 'INPUT' && !e.target.classList.contains('slider')) {
-        checkbox.checked = !checkbox.checked;
-        checkbox.dispatchEvent(new Event('change'));
-      }
-    });
-
-    container.appendChild(itemRow);
-  });
 }
 
 function executeFilter(prefix) {
@@ -1401,100 +515,17 @@ function executeFilter(prefix) {
   if (prefix === 'done') source = globalDoneRows;
   if (prefix === 'undone') source = globalUndoneRows;
 
-  const sMedias = activeFilterStates[prefix].media;
-  const sAssignees = activeFilterStates[prefix].assignee;
-  const sDetails = activeFilterStates[prefix].detail;
-
-  const filtered = source.filter(({ row, mediaType, date }) => {
-    const rawAssignee = (row['Assignee'] || '').toString();
-    const cleanDetail = getCleanDetail(row, prefix === 'done');
-    if (!isWithinTimeRangePrefix(date, prefix)) return false;
-    if (sMedias.size > 0 && !sMedias.has(mediaType)) return false;
-    if (sAssignees.size > 0 && !Array.from(sAssignees).some(name => rawAssignee.includes(name))) return false;
-    if (sDetails.size > 0 && !Array.from(sDetails).some(dt => cleanDetail.includes(dt))) return false;
-    return true;
-  });
-
   if (prefix === 'sla') {
-    renderFilteredSlaTable(filtered);
-    document.getElementById('slaBottomStat').innerText = `รายการทั้งหมด: ${filtered.length} รายการ`;
-  } else if (prefix === 'done') {
-    renderFilteredDoneTable(filtered);
-    document.getElementById('doneBottomStat').innerText = `รายการทั้งหมด: ${filtered.length} รายการ`;
-  } else if (prefix === 'undone') {
-    renderFilteredUndoneTable(filtered);
-    document.getElementById('undoneBottomStat').innerText = `รายการทั้งหมด: ${filtered.length} รายการ`;
+    renderFilteredSlaTable(source);
+    document.getElementById('slaBottomStat').innerText = `รายการทั้งหมด: ${source.length} รายการ`;
   }
-
-  updateAllStatBoxesByFilter(prefix);
-}
-
-function updateAllStatBoxesByFilter(activePrefix) {
-  const sMedias = activeFilterStates[activePrefix].media;
-  const sAssignees = activeFilterStates[activePrefix].assignee;
-  const sDetails = activeFilterStates[activePrefix].detail;
-
-  function checkMatch(itemObj, isDoneMode) {
-    const { row, mediaType, date } = itemObj;
-    const rawAssignee = (row['Assignee'] || '').toString();
-    const cleanDetail = getCleanDetail(row, isDoneMode);
-
-    if (!isWithinTimeRangePrefix(date, activePrefix)) return false;
-    if (sMedias.size > 0 && !sMedias.has(mediaType)) return false;
-    if (sAssignees.size > 0 && !Array.from(sAssignees).some(name => rawAssignee.includes(name))) return false;
-    if (sDetails.size > 0 && !Array.from(sDetails).some(dt => cleanDetail.includes(dt))) return false;
-    return true;
-  }
-
-  const matchSla = globalSlaRows.filter(it => checkMatch(it, false));
-  document.getElementById('statSlaOver').innerText = matchSla.length;
-
-  const matchDone = globalDoneRows.filter(it => checkMatch(it, true));
-  document.getElementById('statDone').innerText = matchDone.length;
-
-  const matchUndone = globalUndoneRows.filter(it => checkMatch(it, false));
-  document.getElementById('statUndone').innerText = matchUndone.length;
-
-  let activeAssetMap = {};
-  matchUndone.forEach(({ row }) => {
-    const asset = (row['Asset'] || '').toString().trim();
-    if (asset) {
-      const tokens = asset.split(/[,;]+/).map(t => t.trim()).filter(Boolean);
-      tokens.forEach(tok => {
-        if (!activeAssetMap[tok]) activeAssetMap[tok] = 0;
-        activeAssetMap[tok]++;
-      });
-    }
-  });
-
-  let dupTotalTickets = 0;
-  Object.keys(activeAssetMap).forEach(asset => {
-    if (activeAssetMap[asset] >= 2) {
-      dupTotalTickets += activeAssetMap[asset];
-    }
-  });
-  document.getElementById('statDup').innerText = dupTotalTickets;
-}
-
-function filterDupTable() {
-  const filtered = globalDupList.filter(item => isWithinTimeRangePrefix(item.date, 'dup'));
-  renderDupTable(filtered);
-  document.getElementById('statDup').innerText = filtered.length;
-
-  const matchSla = globalSlaRows.filter(it => isWithinTimeRangePrefix(it.date, 'dup'));
-  const matchDone = globalDoneRows.filter(it => isWithinTimeRangePrefix(it.date, 'dup'));
-  const matchUndone = globalUndoneRows.filter(it => isWithinTimeRangePrefix(it.date, 'dup'));
-
-  document.getElementById('statSlaOver').innerText = matchSla.length;
-  document.getElementById('statDone').innerText = matchDone.length;
-  document.getElementById('statUndone').innerText = matchUndone.length;
 }
 
 function renderFilteredSlaTable(rows) {
   const slaTbody = document.getElementById('slaTableBody');
   slaTbody.innerHTML = '';
   if (rows.length === 0) {
-    slaTbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">ไม่พบรายการที่ตรงกับตัวกรอง</td></tr>`;
+    slaTbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">ไม่พบรายการ SLA เกินกำหนด</td></tr>`;
     return;
   }
   rows.forEach(({ row, sla, mediaType }, index) => {
@@ -1513,737 +544,14 @@ function renderFilteredSlaTable(rows) {
   });
 }
 
-function renderDupTable(dupList) {
-  const dupTbody = document.getElementById('dupTableBody');
-  dupTbody.innerHTML = '';
-  document.getElementById('dupBottomStat').innerText = `รายการทั้งหมด: ${dupList.length} รายการ`;
-
-  if (dupList.length === 0) {
-    dupTbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">ไม่พบรายการ Claim ซ้ำที่ตรงกับเงื่อนไข</td></tr>`;
-  } else {
-    dupList.forEach(({ asset, ticket, mediaType }, index) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td style="text-align:center; font-weight:600; color:var(--grey);">${index + 1}</td>
-        <td style="font-weight:600; color:var(--navy);">${ticket['RefNo'] || '-'}</td>
-        <td style="font-weight:700; color:var(--red);">${asset}</td>
-        <td><span class="badge-media">${mediaType}</span></td>
-        <td><span class="badge badge-no">${ticket['Status'] || '-'}</span></td>
-        <td style="font-size:12.5px; white-space:nowrap;">${formatDateTimeString(ticket['Created Date Time'] || ticket['CreatedDate'] || ticket['Created'])}</td>
-        <td>${ticket['Created By'] || '-'}</td>
-        <td style="font-size:12.5px;">${getCleanDetail(ticket, false)}</td>
-      `;
-      dupTbody.appendChild(tr);
-    });
-  }
-}
-
-function renderFilteredDoneTable(rows) {
-  const tbody = document.getElementById('doneTableBody');
-  tbody.innerHTML = '';
-  if (rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--grey); padding:16px;">ไม่พบรายการที่ตรงกับตัวกรอง</td></tr>`;
-    return;
-  }
-  rows.forEach(({ row, mediaType }, index) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="text-align:center; font-weight:600; color:var(--grey);">${index + 1}</td>
-      <td style="font-weight:600; color:var(--navy);">${row['RefNo'] || '-'}</td>
-      <td><b>${row['Asset'] || '-'}</b></td>
-      <td><span class="badge-media">${mediaType}</span></td>
-      <td><span class="badge badge-green">${row['Status'] || '-'}</span></td>
-      <td>${formatDateTimeString(row['Schedule Date'] || row['Created Date Time'])}</td>
-      <td>${formatDateTimeString(row['Modified Date Time'] || row['ActualEndDateTime'])}</td>
-      <td>${row['Assignee'] || '-'}</td>
-      <td style="font-size:12.5px;">${getCleanDetail(row, true)}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function renderFilteredUndoneTable(rows) {
-  const tbody = document.getElementById('undoneTableBody');
-  tbody.innerHTML = '';
-  if (rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--grey); padding:16px;">ไม่พบรายการที่ตรงกับตัวกรอง</td></tr>`;
-    return;
-  }
-  rows.forEach(({ row, sla, mediaType }, index) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="text-align:center; font-weight:600; color:var(--grey);">${index + 1}</td>
-      <td style="font-weight:600; color:var(--navy);">${row['RefNo'] || '-'}</td>
-      <td><b>${row['Asset'] || '-'}</b></td>
-      <td><span class="badge-media">${mediaType}</span></td>
-      <td><span class="badge badge-red">${row['Status'] || '-'}</span></td>
-      <td style="color:${sla.isOverdue ? 'var(--red)' : 'var(--green)'}; font-weight:600;">${sla.text}</td>
-      <td>${formatDateTimeString(row['Schedule Date'])}</td>
-      <td>${row['Assignee'] || '-'}</td>
-      <td style="font-size:12.5px;">${getCleanDetail(row, false)}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-// ─── การประมวลผล LAYER 2: ป้ายที่มีปัญหาบ่อยขึ้นก่อน + Filter Detail ───
-function renderLayer2() {
-  const probTbody = document.getElementById('frequentProblemsTableBody');
-  const probStat = document.getElementById('frequentProblemsStat');
-  const assetStat = document.getElementById('chronicAssetStat');
-  const detailFilterSelect = document.getElementById('layer2DetailFilter');
-  const selectedDetail = detailFilterSelect ? detailFilterSelect.value : 'ALL';
-
-  probTbody.innerHTML = '';
-
-  if (globalData.length === 0) {
-    probTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--grey); padding:18px;">ยังไม่มีข้อมูลในระบบ</td></tr>`;
-    document.getElementById('chronicAssetTableBody').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--grey); padding:18px;">ยังไม่มีข้อมูลในระบบ</td></tr>`;
-    probStat.innerText = `รวมปัญหา: 0 เคส`;
-    assetStat.innerText = `พบป้ายซ่อมซ้ำ: 0 ป้าย`;
-    return;
-  }
-
-  const layer2Rows = globalData.filter(row => isWithinTimeRangePrefix(parseRowDate(row), 'layer2'));
-  
-  // รวบรวมตัวเลือก Detail ใส่ Dropdown
-  const detailSet = new Set();
-  layer2Rows.forEach(row => {
-    let p = getCleanDetail(row, false);
-    if (!p || p === '-') p = cleanSttText(row['Problem Category'] || '');
-    if (p && p !== '-') detailSet.add(p);
-  });
-
-  if (detailFilterSelect && detailFilterSelect.options.length <= 1) {
-    Array.from(detailSet).sort().forEach(dt => {
-      const opt = document.createElement('option');
-      opt.value = dt;
-      opt.textContent = dt.length > 35 ? dt.substring(0, 35) + '...' : dt;
-      detailFilterSelect.appendChild(opt);
-    });
-  }
-
-  let problemCountMap = {}, totalProblems = 0, assetClaimMap = {};
-
-  layer2Rows.forEach(row => {
-    let pText = getCleanDetail(row, false);
-    if (!pText || pText === '-') pText = cleanSttText(row['Problem Category'] || 'ปัญหาทั่วไป');
-
-    // กรองด้วย Detail Dropdown
-    if (selectedDetail !== 'ALL' && pText !== selectedDetail) {
-      return;
-    }
-
-    if (pText && pText !== '-') {
-      problemCountMap[pText] = (problemCountMap[pText] || 0) + 1;
-      totalProblems++;
-    }
-
-    let rawAsset = (row['Asset'] || '').toString().trim();
-    if (rawAsset) {
-      let tokens = rawAsset.split(/[,;]+/).map(t => t.trim()).filter(Boolean);
-      tokens.forEach(tok => {
-        if (!assetClaimMap[tok]) {
-          assetClaimMap[tok] = { asset: tok, mediaType: classifyMediaType(tok, row), totalClaims: 0, doneCount: 0, undoneCount: 0, problems: new Set() };
-        }
-        assetClaimMap[tok].totalClaims++;
-        let stType = classifyStatus(row);
-        if (stType === 'approve' || stType === 'finish') assetClaimMap[tok].doneCount++;
-        else assetClaimMap[tok].undoneCount++;
-        if (pText && pText !== '-') assetClaimMap[tok].problems.add(pText);
-      });
-    }
-  });
-
-  // 1. ตารางปัญหาพบบ่อย
-  const top10Problems = Object.keys(problemCountMap)
-    .map(key => ({ name: key, count: problemCountMap[key] }))
-    .sort((a, b) => b.count - a.count).slice(0, 10);
-
-  probStat.innerText = `รวมปัญหา: ${totalProblems} เคส (แสดง Top ${top10Problems.length})`;
-
-  if (top10Problems.length === 0) {
-    probTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--grey); padding:18px;">ไม่พบรายการปัญหา</td></tr>`;
-  } else {
-    top10Problems.forEach((item, index) => {
-      const pct = totalProblems > 0 ? ((item.count / totalProblems) * 100).toFixed(1) : 0;
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td style="text-align:center; font-weight:700; color:${index < 3 ? 'var(--red)' : 'var(--navy)'};">${index + 1}</td>
-        <td style="font-weight:600; color:var(--navy);">${item.name}</td>
-        <td style="text-align:center; font-weight:700;">${item.count}</td>
-        <td style="text-align:center; font-weight:600; color:var(--grey);">${pct}%</td>
-        <td>
-          <div style="background:#eef0f8; border-radius:6px; height:12px; width:100%; overflow:hidden;">
-            <div style="background:linear-gradient(90deg, #232084, #1E88E5); width:${pct}%; height:100%;"></div>
-          </div>
-        </td>
-      `;
-      probTbody.appendChild(tr);
-    });
-  }
-
-  // 2. ตารางป้ายซ่อมซ้ำ (> 3 ครั้ง)
-  currentChronicList = Object.values(assetClaimMap).filter(it => it.totalClaims > 3);
-  assetStat.innerText = `พบป้ายซ่อมซ้ำ (>3 ครั้ง): ${currentChronicList.length} ป้าย`;
-  renderChronicTable();
-}
-
-function renderChronicTable() {
-  const assetTbody = document.getElementById('chronicAssetTableBody');
-  assetTbody.innerHTML = '';
-  if (currentChronicList.length === 0) {
-    assetTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--grey); padding:18px;">ไม่พบป้ายที่เคลมเกิน 3 ครั้ง</td></tr>`;
-    return;
-  }
-
-  currentChronicList.sort((a, b) => {
-    let valA = a[currentChronicSort.col] || 0, valB = b[currentChronicSort.col] || 0;
-    if (typeof valA === 'string') return currentChronicSort.asc ? valA.localeCompare(valB) : valB.localeCompare(valA);
-    return currentChronicSort.asc ? valA - valB : valB - valA;
-  });
-
-  currentChronicList.forEach((item, index) => {
-    const tr = document.createElement('tr');
-    let probListStr = Array.from(item.problems).slice(0, 3).join(', ');
-    tr.innerHTML = `
-      <td style="text-align:center; font-weight:700; color:var(--red);">${index + 1}</td>
-      <td style="font-weight:700; color:var(--navy);">${item.asset}</td>
-      <td><span class="badge-media">${item.mediaType}</span></td>
-      <td style="text-align:center;"><b style="color:var(--red); background:#ffeaea; padding:3px 10px; border-radius:20px;">🚨 ${item.totalClaims} ครั้ง</b></td>
-      <td style="text-align:center; font-size:12.5px;"><span style="color:var(--green); font-weight:600;">ปิดแล้ว: ${item.doneCount}</span> | <span style="color:var(--red); font-weight:700;">ค้าง: ${item.undoneCount}</span></td>
-      <td style="font-size:12.5px; color:var(--grey);">${probListStr || '-'}</td>
-    `;
-    assetTbody.appendChild(tr);
-  });
-}
-
-function toggleChronicSort(col) {
-  currentChronicSort.asc = (currentChronicSort.col === col) ? !currentChronicSort.asc : true;
-  currentChronicSort.col = col;
-  renderChronicTable();
-}
-
-// ─── LAYER 3: Tag Input (Paste อัตโนมัติ + Stat Box ออกตั๋วแล้ว/ยังไม่ออกตั๋ว/ตั๋วซ้ำ) ───
-let enteredTags = new Set();
-let l3SearchResults = [];
-let currentL3Sort = { col: 'sched', asc: false };
-
-function focusTagInput() { document.getElementById('tagRealInput').focus(); }
-
-const tagRealInput = document.getElementById('tagRealInput');
-
-// พิมพ์ Enter หรือ Comma
-tagRealInput.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' || e.key === ',') {
-    e.preventDefault(); addTag(this.value); this.value = '';
-  } else if (e.key === 'Backspace' && this.value === '' && enteredTags.size > 0) {
-    const arr = Array.from(enteredTags); removeTag(arr[arr.length - 1]);
-  }
-});
-
-// วาง (Paste / Ctrl+V) แล้วขึ้น Tag ทันทีอัตโนมัติ
-tagRealInput.addEventListener('paste', function(e) {
-  e.preventDefault();
-  const pastedData = (e.clipboardData || window.clipboardData).getData('text');
-  if (!pastedData) return;
-  
-  // แยกคำด้วย Comma, Semicolon หรือขึ้นบรรทัดใหม่
-  const tokens = pastedData.split(/[\r\n,;]+/).map(t => t.trim()).filter(Boolean);
-  tokens.forEach(tok => addTag(tok));
-  this.value = '';
-});
-
-function addTag(text) {
-  const clean = text.trim();
-  if (!clean || enteredTags.has(clean.toUpperCase())) return;
-  enteredTags.add(clean.toUpperCase());
-  renderTagChips();
-}
-
-function removeTag(tag) { enteredTags.delete(tag); renderTagChips(); }
-
-function clearAllTags() {
-  enteredTags.clear(); renderTagChips();
-  document.getElementById('statBoxContainer').innerHTML = '';
-  document.getElementById('lookupTableBody').innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--grey); padding:20px;">ยังไม่มีการค้นหาข้อมูล</td></tr>`;
-  document.getElementById('l3BottomStat').innerText = 'ผลการค้นหา: 0 รายการ';
-}
-
-function renderTagChips() {
-  const container = document.getElementById('tagContainer');
-  container.querySelectorAll('.code-chip').forEach(c => c.remove());
-  enteredTags.forEach(tag => {
-    const chip = document.createElement('span');
-    chip.className = 'code-chip';
-    chip.innerHTML = `${tag} <span class="chip-remove" onclick="removeTag('${tag}')">&times;</span>`;
-    container.insertBefore(chip, tagRealInput);
-  });
-}
-
-function searchAssetCodes() {
-  if (globalData.length === 0) { alert('ระบบกำลังดึงข้อมูลจาก Google Sheets หรือยังไม่มีข้อมูล'); return; }
-  if (tagRealInput.value.trim()) { addTag(tagRealInput.value); tagRealInput.value = ''; }
-  if (enteredTags.size === 0) { alert('กรุณากรอกรหัส Asset Code ที่ต้องการตรวจ'); return; }
-
-  const statContainer = document.getElementById('statBoxContainer');
-  statContainer.innerHTML = '';
-  l3SearchResults = [];
-
-  enteredTags.forEach(code => {
-    // ค้นหาแถวที่มีรหัสนี้
-    let rows = globalData.filter(row => {
-      const rawA = (row['Asset'] || '').toString().trim().toUpperCase();
-      const tokens = rawA.split(/[,;]+/).map(t => t.trim());
-      return tokens.includes(code) || rawA.includes(code);
-    });
-
-    let statDiv = document.createElement('div');
-
-    if (rows.length === 0) {
-      // 1. ไม่มีตั๋ว
-      statDiv.className = 'stat-box stat-red';
-      statDiv.innerHTML = `📌 โค้ด: ${code} — 🔴 ยังไม่ได้ออกตั๋ว`;
-    } else {
-      // ตรวจสอบตั๋วค้างดำเนินงาน (Pending, Ready to work, Working on)
-      let activeTickets = rows.filter(r => {
-        let st = (r['Status'] || '').toLowerCase();
-        return st.includes('pending') || st.includes('working') || st.includes('ready');
-      });
-
-      if (activeTickets.length >= 2) {
-        // 2. ตั๋วซ้ำ (มีตั๋วค้าง >= 2)
-        statDiv.className = 'stat-box stat-red';
-        statDiv.innerHTML = `📌 โค้ด: ${code} — 🔴 ตั๋วซ้ำ (${activeTickets.length} รายการ)`;
-      } else {
-        // 3. ออกตั๋วแล้ว (มีตั๋วในระบบ)
-        statDiv.className = 'stat-box stat-green';
-        statDiv.innerHTML = `📌 โค้ด: ${code} — 🟢 ออกตั๋วแล้ว`;
-      }
-      rows.forEach(r => l3SearchResults.push(r));
-    }
-    statContainer.appendChild(statDiv);
-  });
-
-  renderL3Table();
-}
-
-function renderL3Table() {
-  const tbody = document.getElementById('lookupTableBody');
-  tbody.innerHTML = '';
-  let filtered = l3SearchResults.filter(r => isWithinTimeRangePrefix(parseRowDate(r), 'l3'));
-
-  document.getElementById('l3BottomStat').innerText = `ผลการค้นหา: ${filtered.length} รายการ`;
-  if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--grey); padding:20px;">ไม่พบรายการที่ตรงกับเงื่อนไข</td></tr>`;
-    return;
-  }
-
-  // ระบบ Sort ที่แก้ไขให้ทำงานได้จริง
-  filtered.sort((a, b) => {
-    if (currentL3Sort.col === 'asset') {
-      let aVal = (a['Asset'] || '').toString();
-      let bVal = (b['Asset'] || '').toString();
-      return currentL3Sort.asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-    } else if (currentL3Sort.col === 'sched') {
-      let aD = parseRowDate(a) ? parseRowDate(a).getTime() : 0;
-      let bD = parseRowDate(b) ? parseRowDate(b).getTime() : 0;
-      return currentL3Sort.asc ? aD - bD : bD - aD;
-    } else if (currentL3Sort.col === 'updated') {
-      let aD = parseRowDate(a, true) ? parseRowDate(a, true).getTime() : 0;
-      let bD = parseRowDate(b, true) ? parseRowDate(b, true).getTime() : 0;
-      return currentL3Sort.asc ? aD - bD : bD - aD;
-    }
-    return 0;
-  });
-
-  filtered.forEach(row => {
-    const isDone = ['finish', 'approve', 'close'].some(s => (row['Status'] || '').toLowerCase().includes(s));
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="font-weight:700; color:var(--navy);">${row['Asset'] || '-'}</td>
-      <td>${row['RefNo'] || '-'}</td>
-      <td><span class="badge ${isDone ? 'badge-green' : 'badge-red'}">${row['Status'] || '-'}</span></td>
-      <td>${parseSlaDetails(row).text}</td>
-      <td>${row['Assignee'] || '-'}</td>
-      <td>${formatDateTimeString(row['Schedule Date'])}</td>
-      <td>${formatDateTimeString(row['Modified Date Time'] || row['ActualEndDateTime'])}</td>
-      <td>${row['Created By'] || '-'}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function toggleL3Sort(col) {
-  currentL3Sort.asc = (currentL3Sort.col === col) ? !currentL3Sort.asc : true;
-  currentL3Sort.col = col;
-
-  // อัปเดตไอคอนลูกศร
-  ['asset', 'sched', 'updated'].forEach(k => {
-    const icon = document.getElementById(`sortIcon-${k}`);
-    if (icon) {
-      if (k === col) icon.innerText = currentL3Sort.asc ? '▲' : '▼';
-      else icon.innerText = '⇅';
-    }
-  });
-
-  renderL3Table();
-}
-
-// ─── LAYER 4: MAP & ROUTE PLANNER ───
-const MAP_THEMES = {
-  osm_hot: {
-    url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-    options: { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }
-  },
-  esri_topo: {
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-    options: { maxZoom: 18, attribution: 'Tiles &copy; Esri' }
-  },
-  esri_sat: {
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    options: { maxZoom: 18, attribution: 'Tiles &copy; Esri &mdash; Earthstar Geographics' }
-  }
-};
-
-function initMap() {
-  if (!mapInstance) {
-    mapInstance = L.map('map', {
-      center: [13.7563, 100.5018],
-      zoom: 11.5,
-      zoomSnap: 0.25,
-      zoomDelta: 0.5,
-      wheelPxPerZoomLevel: 120
-    });
-
-    changeMapTheme('osm_hot');
-  }
-  setTimeout(() => mapInstance.invalidateSize(), 200);
-}
-
-function changeMapTheme(themeKey) {
-  if (!mapInstance) return;
-  const theme = MAP_THEMES[themeKey] || MAP_THEMES.osm_hot;
-
-  if (currentTileLayer) {
-    mapInstance.removeLayer(currentTileLayer);
-  }
-
-  currentTileLayer = L.tileLayer(theme.url, theme.options).addTo(mapInstance);
-}
-
-function renderPinsOnMap() {
-  if (!mapInstance) return;
-
-  allMapItems = [];
-
-  const slaSourceRows = (typeof globalSlaRows !== 'undefined' && globalSlaRows.length > 0) ? globalSlaRows : [];
-  slaSourceRows.forEach(item => {
-    prepareMapItem(item, false);
-  });
-
-  const baseDate = (datasetRefDate && !isNaN(datasetRefDate.getTime())) ? new Date(datasetRefDate) : new Date();
-  const yStart = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() - 1, 0, 0, 0, 0);
-  const yEnd = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() - 1, 23, 59, 59, 999);
-
-  const doneSourceRows = (typeof globalDoneRows !== 'undefined' && globalDoneRows.length > 0) ? globalDoneRows : [];
-  doneSourceRows.forEach(item => {
-    const row = item.row || {};
-    const finishDateStr = row['ActualEndDateTime'] || row['Modified Date Time'] || row['ModifiedDateTime'];
-    if (!finishDateStr) return;
-
-    let finishDate = null;
-    if (typeof finishDateStr === 'number') {
-      finishDate = new Date((finishDateStr - (25567 + 2)) * 86400 * 1000);
-    } else {
-      let str = finishDateStr.toString().trim().replace('T', ' ');
-      let d = new Date(str);
-      if (!isNaN(d.getTime())) {
-        finishDate = d;
-      } else {
-        let parts = str.split(' ')[0].split(/[-\/]/);
-        if (parts.length === 3) {
-          if (parts[0].length === 4) finishDate = new Date(Number(parts[0]), Number(parts[1])-1, Number(parts[2]));
-          else finishDate = new Date(Number(parts[2]), Number(parts[1])-1, Number(parts[0]));
-        }
-      }
-    }
-
-    if (finishDate && finishDate >= yStart && finishDate <= yEnd) {
-      prepareMapItem(item, true);
-    }
-  });
-
-  buildMapPinsAndFilters();
-}
-
-function prepareMapItem(item, isYesterdayDone) {
-  const row = item.row || {};
-  const rawAssetField = (row['Asset'] || '').toString().trim();
-  const detail = getCleanDetail(row, isYesterdayDone);
-  const slaText = item.sla ? item.sla.text : (parseSlaDetails(row).text || '-');
-
-  const assetTokens = rawAssetField.split(/[,;]+/).map(t => t.trim()).filter(Boolean);
-
-  assetTokens.forEach(rawAsset => {
-    const uAsset = rawAsset.toUpperCase();
-    
-    let coordInfo = masterSignsMap[uAsset] || masterSignsMap[normalizeCodeKey(uAsset)];
-    if (!coordInfo && uAsset.startsWith('FLY')) {
-      const letter = uAsset.replace('FLY', '').replace(/[\s\-_]/g, '');
-      coordInfo = masterSignsMap[letter] || masterSignsMap[normalizeCodeKey(letter)];
-    }
-
-    if (coordInfo) {
-      const media = classifyMediaType(uAsset, row) || coordInfo.mediaType || item.mediaType || 'อื่นๆ';
-      const statusCategory = isYesterdayDone ? 'งานเสร็จเมื่อวาน' : 'ระหว่างดำเนินการ';
-
-      allMapItems.push({
-        asset: uAsset,
-        media: media,
-        detail: detail,
-        statusCategory: statusCategory,
-        isYesterdayDone: isYesterdayDone,
-        row: row,
-        coordInfo: coordInfo,
-        slaText: slaText
-      });
-    }
-  });
-}
-
-function buildMapPinsAndFilters() {
-  allPinsOnMap.forEach(p => mapInstance.removeLayer(p.marker));
-  allPinsOnMap = [];
-
-  allMapItems.forEach(item => {
-    const isSelected = selectedPins.some(p => p.asset === item.asset);
-    const selectedClass = isSelected ? 'pin-selected' : '';
-
-    const pinColorBg = item.isYesterdayDone ? '#1F9D57' : (getBadgeColor(item.media).bg);
-    const pinLabel = item.asset.replace(/[^A-Z0-9]/gi, '').slice(0, 3);
-
-    const icon = L.divIcon({
-      className: 'custom-pin-wrapper',
-      html: `<div id="pin-${item.asset}" class="custom-pin ${selectedClass}" style="background-color: ${pinColorBg}; color: #ffffff;">${pinLabel}</div>`,
-      iconSize: [30, 30],
-      iconAnchor: [15, 15]
-    });
-
-    const marker = L.marker([item.coordInfo.lat, item.coordInfo.lng], { icon: icon }).addTo(mapInstance);
-
-    const doneBadge = item.isYesterdayDone
-      ? `<span style="background:#e6f7ee; color:#1F9D57; padding:2px 6px; border-radius:4px; font-weight:700; font-size:11px;">✅ งานเสร็จเมื่อวาน</span><br>`
-      : `<span style="color:#CB3A3A; font-weight:bold;">⏱ SLA: ${item.slaText}</span><br>`;
-
-    marker.bindPopup(`
-      <div style="font-family:'Kanit'; font-size:13px; line-height: 1.5;">
-        <b>📌 ${item.asset}</b> <span style="background:${pinColorBg}; color:#fff; padding:2px 6px; border-radius:4px; font-size:11px;">${item.media}</span><br>
-        ${doneBadge}
-        <b>สถานะ:</b> ${item.row['Status'] || '-'}<br>
-        <b>ปัญหา/การแก้ไข:</b> ${item.detail}<br>
-        <b>จุดติดตั้ง:</b> ${item.coordInfo.location || '-'}
-      </div>
-    `);
-
-    marker.on('click', () => toggleSelectPin(item.asset, item.coordInfo.lat, item.coordInfo.lng, item.detail));
-
-    allPinsOnMap.push({
-      asset: item.asset,
-      media: item.media,
-      detail: item.detail,
-      statusCategory: item.statusCategory,
-      marker: marker
-    });
-  });
-
-  const statusSet = new Set(['ระหว่างดำเนินการ', 'งานเสร็จเมื่อวาน']);
-  renderPopoverItems('mapStatusList', 'mapStatusCount', Array.from(statusSet), mapFilterStates.status, () => {
-    updateDynamicMediaAndDetailOptions();
-    applyMapFilters();
-  });
-
-  updateDynamicMediaAndDetailOptions();
-  applyMapFilters();
-}
-
-function updateDynamicMediaAndDetailOptions() {
-  const selectedStatuses = mapFilterStates.status;
-  const mediaSet = new Set();
-
-  allMapItems.forEach(item => {
-    const matchStatus = selectedStatuses.size === 0 || selectedStatuses.has(item.statusCategory);
-    if (matchStatus) {
-      mediaSet.add(item.media);
-    }
-  });
-
-  renderPopoverItems('mapMediaList', 'mapMediaCount', Array.from(mediaSet).sort(), mapFilterStates.media, () => {
-    updateDynamicDetailOptions();
-    applyMapFilters();
-  });
-
-  updateDynamicDetailOptions();
-}
-
-function updateDynamicDetailOptions() {
-  const selectedStatuses = mapFilterStates.status;
-  const selectedMedias = mapFilterStates.media;
-  const detailSet = new Set();
-
-  allMapItems.forEach(item => {
-    const matchStatus = selectedStatuses.size === 0 || selectedStatuses.has(item.statusCategory);
-    const matchMedia = selectedMedias.size === 0 || selectedMedias.has(item.media);
-
-    if (matchStatus && matchMedia && item.detail && item.detail !== '-') {
-      detailSet.add(item.detail);
-    }
-  });
-
-  mapFilterStates.detail.forEach(dt => {
-    if (!detailSet.has(dt)) mapFilterStates.detail.delete(dt);
-  });
-
-  renderPopoverItems('mapDetailList', 'mapDetailCount', Array.from(detailSet).sort(), mapFilterStates.detail, () => {
-    applyMapFilters();
-  });
-}
-
-function applyMapFilters() {
-  if (!mapInstance) return;
-
-  const sStatuses = mapFilterStates.status;
-  const sMedias = mapFilterStates.media;
-  const sDetails = mapFilterStates.detail;
-
-  allPinsOnMap.forEach(item => {
-    const matchStatus = sStatuses.size === 0 || sStatuses.has(item.statusCategory);
-    const matchMedia = sMedias.size === 0 || sMedias.has(item.media);
-    const matchDetail = sDetails.size === 0 || sDetails.has(item.detail);
-
-    if (matchStatus && matchMedia && matchDetail) {
-      if (!mapInstance.hasLayer(item.marker)) mapInstance.addLayer(item.marker);
-    } else {
-      if (mapInstance.hasLayer(item.marker)) mapInstance.removeLayer(item.marker);
-    }
-  });
-}
-
-function addManualAssetPin() {
-  const inputEl = document.getElementById('manualAssetInput');
-  const code = (inputEl.value || '').trim().toUpperCase();
-
-  if (!code) return;
-
-  if (selectedPins.some(p => p.asset === code)) {
-    alert(`ป้าย ${code} อยู่ในรายการจัดรูทวิ่งเรียบร้อยแล้ว`);
-    inputEl.value = '';
-    return;
-  }
-
-  let coordInfo = masterSignsMap[code] || masterSignsMap[normalizeCodeKey(code)];
-  if (!coordInfo && code.startsWith('FLY')) {
-    const letter = code.replace('FLY', '').replace(/[\s\-_]/g, '');
-    coordInfo = masterSignsMap[letter] || masterSignsMap[normalizeCodeKey(letter)];
-  }
-
-  if (!coordInfo) {
-    alert(`❌ ไม่พบข้อมูลพิกัดของป้ายรหัส "${code}" ในฐานข้อมูล Master Signs`);
-    return;
-  }
-
-  let issueDetail = 'ป้อนรหัสด้วยตนเอง';
-  const foundTicket = (typeof globalSlaRows !== 'undefined') ? globalSlaRows.find(item => {
-    const a = (item.row && item.row['Asset'] ? item.row['Asset'] : '').toString().trim().toUpperCase();
-    return a.includes(code);
-  }) : null;
-
-  if (foundTicket && foundTicket.row) {
-    issueDetail = getCleanDetail(foundTicket.row, false);
-  }
-
-  selectedPins.push({
-    asset: code,
-    lat: coordInfo.lat,
-    lng: coordInfo.lng,
-    detail: issueDetail
-  });
-
-  const pinEl = document.getElementById(`pin-${code}`);
-  if (pinEl) pinEl.classList.add('pin-selected');
-
-  if (mapInstance) {
-    mapInstance.flyTo([coordInfo.lat, coordInfo.lng], 15.5, { duration: 1.2 });
-  }
-
-  inputEl.value = '';
-  renderSelectedList();
-}
-
-function toggleSelectPin(asset, lat, lng, detail) {
-  const idx = selectedPins.findIndex(p => p.asset === asset);
-  const pinEl = document.getElementById(`pin-${asset}`);
-
-  if (idx > -1) {
-    selectedPins.splice(idx, 1);
-    if (pinEl) pinEl.classList.remove('pin-selected');
-  } else {
-    selectedPins.push({ asset, lat, lng, detail });
-    if (pinEl) pinEl.classList.add('pin-selected');
-  }
-  renderSelectedList();
-}
-
-function renderSelectedList() {
-  const container = document.getElementById('selectedContainer');
-  const countBadge = document.getElementById('selectedCountBadge');
-  countBadge.innerText = `${selectedPins.length} ป้าย`;
-
-  if (selectedPins.length === 0) {
-    container.innerHTML = `<div style="text-align:center; color:var(--grey); margin-top:30px; font-size:13px;">คลิกที่หมุดบนแผนที่ หรือพิมพ์รหัสป้ายด้านบนเพื่อจัดรูทวิ่ง</div>`;
-    return;
-  }
-
-  container.innerHTML = '';
-  selectedPins.forEach((p, i) => {
-    container.innerHTML += `
-      <div class="selected-item">
-        <div>
-          <b>${i + 1}. ${p.asset}</b>
-          <div style="font-size:11px; color:var(--grey);">${p.detail}</div>
-        </div>
-        <button onclick="toggleSelectPin('${p.asset}', ${p.lat}, ${p.lng}, '')" style="border:none; background:none; cursor:pointer; color:var(--red); font-size:14px;">✖</button>
-      </div>
-    `;
-  });
-}
-
-function clearSelectedPins() {
-  selectedPins.forEach(p => {
-    const el = document.getElementById(`pin-${p.asset}`);
-    if (el) el.classList.remove('pin-selected');
-  });
-  selectedPins = [];
-  renderSelectedList();
-}
-
-function openGoogleMapsRoute() {
-  if (selectedPins.length === 0) {
-    alert("กรุณาเลือกหมุดป้ายอย่างน้อย 1 จุดครับ");
-    return;
-  }
-  const coords = selectedPins.map(p => `${p.lat},${p.lng}`).join('/');
-  window.open(`https://www.google.com/maps/dir/${coords}`, '_blank');
-}
-
 function renderSingleDonut(canvasId, legendId, stats, chartInstance) {
   if (chartInstance) chartInstance.destroy();
-  const labels = ['Approve', 'Finish', 'Working On', 'Pending & Ready To Work'];
+  const labels = ['Approve', 'Finish', 'Working On', 'Pending'];
   const colors = ['#1E88E5', '#1F9D57', '#FBC02D', '#CB3A3A'];
   const dataVals = [stats.approve, stats.finish, stats.working, stats.pending_ready];
 
   const ctx = document.getElementById(canvasId).getContext('2d');
-  const newChart = new Chart(ctx, {
+  return new Chart(ctx, {
     type: 'doughnut',
     data: {
       labels: labels,
@@ -2255,19 +563,6 @@ function renderSingleDonut(canvasId, legendId, stats, chartInstance) {
     },
     options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false } } }
   });
-
-  const legendBox = document.getElementById(legendId);
-  legendBox.innerHTML = '';
-  const icons = ['🔵', '🟢', '🟡', '🔴'];
-  labels.forEach((lbl, idx) => {
-    legendBox.innerHTML += `
-      <div class="legend-item">
-        <span class="legend-dot" style="background:${colors[idx]};"></span>
-        <span>${icons[idx]} ${lbl}: <b>${dataVals[idx]}</b></span>
-      </div>
-    `;
-  });
-  return newChart;
 }
 
 window.addEventListener('DOMContentLoaded', autoFetchLiveSheetData);
