@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Operation Daily Report - Layer 3 Asset Lookup</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root {
+  --navy: #232084; --navy2: #171560; --teal: #0F9B8E; --green: #1F9D57;
+  --blue: #1E88E5; --red: #CB3A3A; --orange: #E8842B; --yellow: #FBC02D;
+  --page: #E9E9F2; --ink: #1c1a4a; --grey: #6b6b80;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
+body { background: var(--page); color: var(--ink); padding: 20px; }
+.container { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+/* ─── Sidebar Slider Navigation ─── */
+.sidebar-overlay {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(4px);
+  z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+}
+.sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+.sidebar-slider {
+  position: fixed; top: 0; left: -320px; width: 300px; height: 100vh;
+  background: #ffffff; box-shadow: 6px 0 25px rgba(0,0,0,0.18);
+  z-index: 10001; transition: left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex; flex-direction: column;
+}
+.sidebar-slider.open { left: 0; }
+
+.sidebar-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+  color: #fff; padding: 22px 20px; display: flex; justify-content: space-between; align-items: center;
+}
+.sidebar-header h2 { font-family: 'Kanit', sans-serif; font-size: 18px; font-weight: 700; }
+.sidebar-close-btn {
+  background: rgba(255,255,255,0.2); border: none; color: #fff; font-size: 20px;
+  width: 34px; height: 34px; border-radius: 8px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; transition: background 0.15s;
+}
+.sidebar-close-btn:hover { background: rgba(255,255,255,0.35); }
+
+.sidebar-menu { padding: 18px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; }
+.sidebar-item {
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 10px;
+  font-family: 'Kanit', sans-serif; font-size: 14px; font-weight: 600; color: var(--navy);
+  background: transparent; border: none; text-align: left; width: 100%; cursor: pointer;
+  transition: all 0.2s ease; text-decoration: none;
+}
+.sidebar-item:hover { background: #f0f0fa; transform: translateX(4px); }
+.sidebar-item.active {
+  background: var(--navy); color: #ffffff; box-shadow: 0 4px 12px rgba(35, 32, 132, 0.25);
+}
+.sidebar-item .item-icon { font-size: 18px; }
+
+/* Header & Toggle Button */
+.head {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+  border-radius: 14px; padding: 18px 24px; color: #fff; display: flex;
+  justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  box-shadow: 0 6px 20px rgba(23,21,96,.2);
+}
+.head-left { display: flex; align-items: center; gap: 16px; }
+.menu-toggle-btn {
+  background: rgba(255,255,255,0.18); border: 1.5px solid rgba(255,255,255,0.4);
+  color: #fff; padding: 8px 14px; border-radius: 8px; font-family: 'Kanit', sans-serif;
+  font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center;
+  gap: 8px; transition: all 0.2s;
+}
+.menu-toggle-btn:hover { background: #fff; color: var(--navy); }
+.head h1 { font-family: 'Kanit', sans-serif; font-size: 22px; font-weight: 700; }
+.head p { font-family: 'Kanit', sans-serif; font-size: 13.5px; color: #c9c9ee; margin-top: 2px; }
+
+/* Indicator Badge */
+.layer-indicator-badge {
+  background: #ffffff; border-radius: 10px; padding: 10px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(30,27,74,.05); border: 1.5px solid #d5d5ec;
+}
+.layer-indicator-badge span.lbl { font-family: 'Kanit', sans-serif; font-size: 14px; color: var(--grey); }
+.layer-indicator-badge span.name { font-family: 'Kanit', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
+
+.panel { background: #fff; border-radius: 12px; box-shadow: 0 4px 14px rgba(30,27,74,.06); padding: 22px; display: flex; flex-direction: column; gap: 20px; }
+.panel-title { font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 18px; color: var(--navy); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+
+/* Tag Input Layer 3 */
+.tag-input-container { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 44px; padding: 6px 10px; border: 1.5px solid #d5d5ec; border-radius: 8px; background: #fff; cursor: text; }
+.tag-input-container:focus-within { border-color: var(--navy); }
+.code-chip { display: inline-flex; align-items: center; gap: 6px; background: #f0f0fa; color: var(--navy); border: 1px solid #c9c9ee; border-radius: 6px; padding: 4px 8px; font-family: 'Kanit', sans-serif; font-size: 13px; font-weight: 600; }
+.code-chip .chip-remove { cursor: pointer; color: var(--grey); font-size: 14px; }
+.code-chip .chip-remove:hover { color: var(--red); }
+.tag-real-input { border: none; outline: none; font-size: 13.5px; flex: 1; min-width: 180px; padding: 4px; background: transparent; }
+
+.stat-box-container { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+.stat-box { font-family: 'Kanit', sans-serif; font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; }
+.stat-green { background: #e6f7ee; color: var(--green); border: 1px solid #a3e8c0; }
+.stat-red { background: #ffeaea; color: var(--red); border: 1px solid #f8b8b8; }
+
+.btn { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 13.5px; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.btn-navy { background: var(--navy); color: #fff; }
+.btn-red { background: var(--red); color: #fff; }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px; }
+
+/* Filter & Table */
+.section-box { display: flex; flex-direction: column; gap: 10px; position: relative; }
+.table-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.filter-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: #f4f4fa; padding: 8px 12px; border-radius: 8px; }
+.filter-select { font-family: 'Sarabun', sans-serif; font-size: 12.5px; padding: 6px 10px; border-radius: 6px; border: 1.5px solid #d5d5ec; background: #fff; color: var(--ink); outline: none; cursor: pointer; }
+.custom-date-box { display: none; align-items: center; gap: 5px; background: #fff; padding: 2px 6px; border-radius: 6px; border: 1.5px solid #d5d5ec; }
+.custom-date-box.active { display: flex; }
+.custom-date-box input[type="date"] { border: none; font-size: 12px; outline: none; font-family: 'Sarabun', sans-serif; cursor: pointer; color: var(--ink); }
+
+.tw { overflow-x: auto; max-height: 480px; border-radius: 8px; border: 1px solid #eaeaf5; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+th { background: var(--navy); color: #fff; font-family: 'Kanit', sans-serif; padding: 10px 12px; position: sticky; top: 0; z-index: 2; white-space: nowrap; }
+td { padding: 9px 12px; border-bottom: 1px solid #f0f0f8; vertical-align: middle; }
+tr:hover { background: #f8f8fc; }
+
+.table-bottom-stat { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.bottom-stat-pill { background: #f0f0fa; border: 1.5px solid #d5d5ec; border-radius: 8px; padding: 6px 16px; font-family: 'Kanit', sans-serif; font-size: 13.5px; font-weight: 700; color: var(--navy); }
+
+.badge { font-family: 'Kanit', sans-serif; font-size: 11.5px; padding: 4px 10px; border-radius: 6px; font-weight: 600; display: inline-block; white-space: nowrap; }
+.badge-green { background: #e6f7ee; color: var(--green); }
+.badge-red { background: #ffeaea; color: var(--red); }
+th.sortable { cursor: pointer; user-select: none; }
+th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar-slider" id="sidebarSlider">
+  <div class="sidebar-header">
+    <h2>📌 เลือกระบบการทำงาน</h2>
+    <button class="sidebar-close-btn" onclick="closeSidebar()">&times;</button>
+  </div>
+  <nav class="sidebar-menu">
+    <a href="index.html" class="sidebar-item">
+      <span class="item-icon">🍩</span>
+      <span>Layer 1: Dashboard ภาพรวม</span>
+    </a>
+    <a href="layer2.html" class="sidebar-item">
+      <span class="item-icon">📊</span>
+      <span>Layer 2: ปัญหาพบบ่อย & เคลมซ้ำ</span>
+    </a>
+    <a href="layer3.html" class="sidebar-item active">
+      <span class="item-icon">🔍</span>
+      <span>Layer 3: Asset Code Lookup</span>
+    </a>
+    <a href="layer4.html" class="sidebar-item">
+      <span class="item-icon">🗺️</span>
+      <span>Layer 4: Map & Route Planner</span>
+    </a>
+  </nav>
+</aside>
+
+<div class="container">
+  <div class="head">
+    <div class="head-left">
+      <button type="button" class="menu-toggle-btn" onclick="openSidebar()">
+        ☰ เปิดเมนูเลเยอร์
+      </button>
+      <div>
+        <h1>AI Operation Daily Report & Monitoring</h1>
+        <p>Layer 3: Asset Code Monitoring Lookup (ตรวจเช็ครหัสป้ายเพื่อไปเคลมต่อ)[cite: 2]</p>
+      </div>
+    </div>
+    <div id="fileStatus" style="font-family:'Kanit'; font-size:13px; background:rgba(255,255,255,0.15); padding:6px 14px; border-radius:8px;">
+      🔄 กำลังเชื่อมต่อข้อมูลสดจาก Google Sheets...
+    </div>
+  </div>
+
+  <div class="layer-indicator-badge">
+    <span class="lbl">กำลังแสดงผล:</span>
+    <span class="name">Layer 3: Asset Code Monitoring Lookup</span>
+  </div>
+
+  <!-- ════════ LAYER 3: Monitoring Lookup (Asset Code) ════════ -->
+  <section id="layer3" class="panel">
+    <div class="panel-title">
+      <span>🔍 Layer 3: Asset Code Monitoring Lookup (ตรวจเช็ครหัสป้ายเพื่อไปเคลมต่อ)[cite: 2]</span>
+    </div>
+    
+    <div class="section-box">
+      <label style="font-family:'Kanit'; font-weight:600; color:var(--navy);">
+        กรอกหรือวางรหัสโค้ด (กด <b>Enter</b> หรือ <b>Ctrl+V วางชิปจะขึ้นทันที</b> — รองรับการเว้นวรรค เช่น MTP A75 ได้ตามปกติ):
+      </label>
+      <div class="tag-input-container" id="tagContainer" onclick="focusTagInput()">
+        <input type="text" id="tagRealInput" class="tag-real-input" placeholder="พิมพ์หรือวางโค้ด เช่น MTP A75, DS012...">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-navy" onclick="searchAssetCodes()">🔍 ตรวจสอบสถานะโค้ดเหล่านี้</button>
+        <button class="btn btn-red" onclick="clearAllTags()">🗑️ ล้างโค้ดทั้งหมด (Clear All)</button>
+      </div>
+    </div>
+
+    <!-- Stat Box สรุปสถานะตั๋วรายโค้ด -->
+    <div id="statBoxContainer" class="stat-box-container"></div>
+
+    <div class="section-box">
+      <div class="table-header-row">
+        <label style="font-family:'Kanit'; font-weight:700; font-size:16px; color:var(--navy);">ผลการตรวจสอบตั๋วงาน:</label>
+        <div class="filter-bar">
+          <div class="filter-item">
+            <span>⏳ ช่วงเวลางาน:</span>
+            <select id="l3TimeFilter" class="filter-select" onchange="handleTimeFilterChange('l3')">
+              <option value="ALL">ทั้งหมด (ALL)</option>
+              <option value="1D">1 วันล่าสุด</option>
+              <option value="3D">3 วันล่าสุด</option>
+              <option value="7D">7 วันล่าสุด</option>
+              <option value="30D">30 วันล่าสุด</option>
+              <option value="90D">90 วันล่าสุด</option>
+              <option value="1Y">1 ปีล่าสุด</option>
+              <option value="CUSTOM">📅 เลือกวันเอง (Advance)</option>
+            </select>
+            <div id="l3CustomBox" class="custom-date-box">
+              <input type="date" id="l3StartDate" onchange="renderL3Table()"> -
+              <input type="date" id="l3EndDate" onchange="renderL3Table()">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tw">
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable" onclick="toggleL3Sort('asset')">Asset / Code <span id="sortIcon-asset" class="sort-icon">⇅</span></th>
+              <th>Ref No</th>
+              <th>Ticket Status</th>
+              <th>SLA</th>
+              <th>Assignee</th>
+              <th class="sortable" onclick="toggleL3Sort('sched')">Schedule Date <span id="sortIcon-sched" class="sort-icon">⇅</span></th>
+              <th class="sortable" onclick="toggleL3Sort('updated')">วันที่อัปเดตล่าสุด / Finish <span id="sortIcon-updated" class="sort-icon">⇅</span></th>
+              <th>Created By</th>
+            </tr>
+          </thead>
+          <tbody id="lookupTableBody">
+            <tr><td colspan="8" style="text-align:center; color:var(--grey); padding:20px;">ยังไม่มีการค้นหาข้อมูล</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-bottom-stat"><div class="bottom-stat-pill" id="l3BottomStat">ผลการค้นหา: 0 รายการ</div></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSm3Ebdqj-8iKxOGN0Xle5TAlblBPIb9ZLkrCv5aCgtCOM_LdXA7TCD1_YlRWsSkk6PQ/exec';
+
+let globalData = [];
+let datasetRefDate = new Date();
+let enteredTags = new Set();
+let l3SearchResults = [];
+let currentL3Sort = { col: 'sched', asc: false };
+
+function openSidebar() {
+  document.getElementById('sidebarSlider').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('active');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebarSlider').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('active');
+}
+
+async function autoFetchLiveSheetData() {
+  const statusEl = document.getElementById('fileStatus');
+  statusEl.innerHTML = '🔄 กำลังดึงข้อมูลสดจาก Google Sheets...';
+  
+  try {
+    const res = await fetch(SCRIPT_URL, { method: 'GET', redirect: 'follow' });
+    const result = await res.json();
+    let ticketsList = result.tickets || (Array.isArray(result) ? result : []);
+    
+    if (ticketsList && ticketsList.length > 0) {
+      globalData = ticketsList;
+      let dateObjs = globalData.map(r => parseRowDate(r)).filter(d => d && !isNaN(d.getTime()));
+      datasetRefDate = dateObjs.length > 0 ? new Date(Math.max(...dateObjs.map(d => d.getTime()))) : new Date();
+
+      statusEl.innerHTML = `✅ อัปเดตสดจากชีต (${globalData.length} งาน)`;
+    } else {
+      statusEl.innerHTML = '⚠️ แท็บ zongdudata ยังไม่มีข้อมูลตั๋วงาน';
+    }
+  } catch (err) {
+    statusEl.innerHTML = `❌ ดึงข้อมูลไม่สำเร็จ: ${err.message}`;
+  }
+}
+
+function parseRowDate(row, preferFinishDate = false) {
+  let val = null;
+  if (preferFinishDate) {
+    val = row['ActualEndDateTime'] || row['Modified Date Time'] || row['ModifiedDateTime'];
+  }
+  if (!val) {
+    val = row['Created Date Time'] || row['Created'] || row['Schedule Date'] || row['CreatedDate'];
+  }
+  if (!val) return null;
+  if (typeof val === 'number') return new Date((val - (25567 + 2)) * 86400 * 1000);
+  let str = val.toString().trim().replace('T', ' ');
+  let d = new Date(str);
+  if (!isNaN(d.getTime())) return d;
+  let parts = str.split(' ')[0].split(/[-\/]/);
+  if (parts.length === 3) {
+    if (parts[0].length === 4) return new Date(Number(parts[0]), Number(parts[1])-1, Number(parts[2]));
+    return new Date(Number(parts[2]), Number(parts[1])-1, Number(parts[0]));
+  }
+  return null;
+}
+
+function formatDateTimeString(val) {
+  if (!val) return '-';
+  if (typeof val === 'number') {
+    const d = new Date((val - (25567 + 2)) * 86400 * 1000);
+    if (!isNaN(d.getTime())) {
+      let dd = String(d.getDate()).padStart(2, '0');
+      let mm = String(d.getMonth() + 1).padStart(2, '0');
+      let yy = d.getFullYear();
+      let hh = String(d.getHours()).padStart(2, '0');
+      let min = String(d.getMinutes()).padStart(2, '0');
+      return `${dd}-${mm}-${yy} ${hh}:${min}`;
+    }
+  }
+  return val.toString().trim();
+}
+
+function classifyStatus(row) {
+  const st = (row['Status'] || row['สถานะ'] || '').toString().trim().toLowerCase();
+  if (st.includes('approve')) return 'approve';
+  if (st.includes('finish') || st.includes('close') || st.includes('done')) return 'finish';
+  if (st.includes('working')) return 'working';
+  return 'pending_ready';
+}
+
+function parseSlaDetails(row) {
+  const stType = classifyStatus(row);
+  if (stType === 'approve' || stType === 'finish') return { text: 'END', isOverdue: false, sortVal: 999999999 };
+  let rt = row['SLA RT'];
+  let slaAll = row['SLA ALL'] || '';
+  let slaStatus = (row['SLA Status'] || '').toString().toLowerCase();
+
+  let seconds = (rt !== undefined && rt !== '' && !isNaN(Number(rt))) ? Number(rt) : null;
+  if (seconds !== null) {
+    let isOver = seconds < 0 || slaStatus.includes('overdue');
+    let absSec = Math.abs(seconds);
+    let days = Math.floor(absSec / 86400);
+    let hours = Math.floor((absSec % 86400) / 3600);
+    return { text: isOver ? `เกิน ${days}วัน${hours}ชั่วโมง` : `เหลือ ${days}วัน${hours}ชั่วโมง`, isOverdue: isOver, sortVal: seconds };
+  }
+  if (slaStatus.includes('overdue')) return { text: 'เลยกำหนด (Overdue)', isOverdue: true, sortVal: -50000000 };
+  return { text: slaAll || 'OnTrack', isOverdue: false, sortVal: 50000000 };
+}
+
+function handleTimeFilterChange(prefix) {
+  const selVal = document.getElementById(`${prefix}TimeFilter`).value;
+  const customBox = document.getElementById(`${prefix}CustomBox`);
+  if (customBox) {
+    if (selVal === 'CUSTOM') customBox.classList.add('active');
+    else customBox.classList.remove('active');
+  }
+  renderL3Table();
+}
+
+function isWithinTimeRangePrefix(d, prefix) {
+  const timeKey = document.getElementById(`${prefix}TimeFilter`).value;
+  if (timeKey === 'ALL') return true;
+  if (!d || isNaN(d.getTime())) return false;
+
+  if (timeKey === 'CUSTOM') {
+    const sInput = document.getElementById(`${prefix}StartDate`).value;
+    const eInput = document.getElementById(`${prefix}EndDate`).value;
+    if (!sInput && !eInput) return true;
+    let targetTime = d.getTime();
+    if (sInput) {
+      let sDate = new Date(sInput); sDate.setHours(0, 0, 0, 0);
+      if (targetTime < sDate.getTime()) return false;
+    }
+    if (eInput) {
+      let eDate = new Date(eInput); eDate.setHours(23, 59, 59, 999);
+      if (targetTime > eDate.getTime()) return false;
+    }
+    return true;
+  }
+
+  const diffDays = (datasetRefDate.getTime() - d.getTime()) / (1000 * 60 * 60 * 24);
+  if (timeKey === '1D') return diffDays >= -0.5 && diffDays <= 1.5;
+  if (timeKey === '3D') return diffDays >= -0.5 && diffDays <= 3.5;
+  if (timeKey === '7D') return diffDays >= -0.5 && diffDays <= 7.5;
+  if (timeKey === '30D' || timeKey === '1M') return diffDays >= -0.5 && diffDays <= 31.5;
+  if (timeKey === '90D') return diffDays >= -0.5 && diffDays <= 91.5;
+  if (timeKey === '1Y') return diffDays >= -0.5 && diffDays <= 366.5;
+  return true;
+}
+
+// ─── Tag Input Logic ───
+const tagRealInput = document.getElementById('tagRealInput');
+function focusTagInput() { document.getElementById('tagRealInput').focus(); }
+
+tagRealInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault(); addTag(this.value); this.value = '';
+  } else if (e.key === 'Backspace' && this.value === '' && enteredTags.size > 0) {
+    const arr = Array.from(enteredTags); removeTag(arr[arr.length - 1]);
+  }
+});
+
+tagRealInput.addEventListener('paste', function(e) {
+  e.preventDefault();
+  const pastedData = (e.clipboardData || window.clipboardData).getData('text');
+  if (!pastedData) return;
+  const tokens = pastedData.split(/[\r\n,;]+/).map(t => t.trim()).filter(Boolean);
+  tokens.forEach(tok => addTag(tok));
+  this.value = '';
+});
+
+function addTag(text) {
+  const clean = text.trim();
+  if (!clean || enteredTags.has(clean.toUpperCase())) return;
+  enteredTags.add(clean.toUpperCase());
+  renderTagChips();
+}
+
+function removeTag(tag) { enteredTags.delete(tag); renderTagChips(); }
+
+function clearAllTags() {
+  enteredTags.clear(); renderTagChips();
+  document.getElementById('statBoxContainer').innerHTML = '';
+  document.getElementById('lookupTableBody').innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--grey); padding:20px;">ยังไม่มีการค้นหาข้อมูล</td></tr>`;
+  document.getElementById('l3BottomStat').innerText = 'ผลการค้นหา: 0 รายการ';
+}
+
+function renderTagChips() {
+  const container = document.getElementById('tagContainer');
+  container.querySelectorAll('.code-chip').forEach(c => c.remove());
+  enteredTags.forEach(tag => {
+    const chip = document.createElement('span');
+    chip.className = 'code-chip';
+    chip.innerHTML = `${tag} <span class="chip-remove" onclick="removeTag('${tag}')">&times;</span>`;
+    container.insertBefore(chip, tagRealInput);
+  });
+}
+
+function searchAssetCodes() {
+  if (globalData.length === 0) { alert('ระบบกำลังดึงข้อมูลจาก Google Sheets หรือยังไม่มีข้อมูล'); return; }
+  if (tagRealInput.value.trim()) { addTag(tagRealInput.value); tagRealInput.value = ''; }
+  if (enteredTags.size === 0) { alert('กรุณากรอกรหัส Asset Code ที่ต้องการตรวจ'); return; }
+
+  const statContainer = document.getElementById('statBoxContainer');
+  statContainer.innerHTML = '';
+  l3SearchResults = [];
+
+  enteredTags.forEach(code => {
+    let rows = globalData.filter(row => {
+      const rawA = (row['Asset'] || '').toString().trim().toUpperCase();
+      const tokens = rawA.split(/[,;]+/).map(t => t.trim());
+      return tokens.includes(code) || rawA.includes(code);
+    });
+
+    let statDiv = document.createElement('div');
+
+    if (rows.length === 0) {
+      statDiv.className = 'stat-box stat-red';
+      statDiv.innerHTML = `📌 โค้ด: ${code} — 🔴 ยังไม่ได้ออกตั๋ว`;
+    } else {
+      let activeTickets = rows.filter(r => {
+        let st = (r['Status'] || '').toLowerCase();
+        return st.includes('pending') || st.includes('working') || st.includes('ready');
+      });
+
+      if (activeTickets.length >= 2) {
+        statDiv.className = 'stat-box stat-red';
+        statDiv.innerHTML = `📌 โค้ด: ${code} — 🔴 ตั๋วซ้ำ (${activeTickets.length} รายการ)`;
+      } else {
+        statDiv.className = 'stat-box stat-green';
+        statDiv.innerHTML = `📌 โค้ด: ${code} — 🟢 ออกตั๋วแล้ว`;
+      }
+      rows.forEach(r => l3SearchResults.push(r));
+    }
+    statContainer.appendChild(statDiv);
+  });
+
+  renderL3Table();
+}
+
+function renderL3Table() {
+  const tbody = document.getElementById('lookupTableBody');
+  tbody.innerHTML = '';
+  let filtered = l3SearchResults.filter(r => isWithinTimeRangePrefix(parseRowDate(r), 'l3'));
+
+  document.getElementById('l3BottomStat').innerText = `ผลการค้นหา: ${filtered.length} รายการ`;
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--grey); padding:20px;">ไม่พบรายการที่ตรงกับเงื่อนไข</td></tr>`;
+    return;
+  }
+
+  filtered.sort((a, b) => {
+    if (currentL3Sort.col === 'asset') {
+      let aVal = (a['Asset'] || '').toString();
+      let bVal = (b['Asset'] || '').toString();
+      return currentL3Sort.asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+    } else if (currentL3Sort.col === 'sched') {
+      let aD = parseRowDate(a) ? parseRowDate(a).getTime() : 0;
+      let bD = parseRowDate(b) ? parseRowDate(b).getTime() : 0;
+      return currentL3Sort.asc ? aD - bD : bD - aD;
+    } else if (currentL3Sort.col === 'updated') {
+      let aD = parseRowDate(a, true) ? parseRowDate(a, true).getTime() : 0;
+      let bD = parseRowDate(b, true) ? parseRowDate(b, true).getTime() : 0;
+      return currentL3Sort.asc ? aD - bD : bD - aD;
+    }
+    return 0;
+  });
+
+  filtered.forEach(row => {
+    const isDone = ['finish', 'approve', 'close'].some(s => (row['Status'] || '').toLowerCase().includes(s));
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight:700; color:var(--navy);">${row['Asset'] || '-'}</td>
+      <td>${row['RefNo'] || '-'}</td>
+      <td><span class="badge ${isDone ? 'badge-green' : 'badge-red'}">${row['Status'] || '-'}</span></td>
+      <td>${parseSlaDetails(row).text}</td>
+      <td>${row['Assignee'] || '-'}</td>
+      <td>${formatDateTimeString(row['Schedule Date'])}</td>
+      <td>${formatDateTimeString(row['Modified Date Time'] || row['ActualEndDateTime'])}</td>
+      <td>${row['Created By'] || '-'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function toggleL3Sort(col) {
+  currentL3Sort.asc = (currentL3Sort.col === col) ? !currentL3Sort.asc : true;
+  currentL3Sort.col = col;
+
+  ['asset', 'sched', 'updated'].forEach(k => {
+    const icon = document.getElementById(`sortIcon-${k}`);
+    if (icon) {
+      if (k === col) icon.innerText = currentL3Sort.asc ? '▲' : '▼';
+      else icon.innerText = '⇅';
+    }
+  });
+
+  renderL3Table();
+}
+
+window.addEventListener('DOMContentLoaded', autoFetchLiveSheetData);
+</script>
+</body>
+</html>
