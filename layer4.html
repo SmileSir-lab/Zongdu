@@ -712,6 +712,21 @@ function openGoogleMapsRoute() {
 }
 
 window.addEventListener('DOMContentLoaded', autoFetchLiveSheetData);
+function loadSharedData() {
+  const cached = localStorage.getItem('zongdu_cache_data');
+  if (cached) {
+    const data = JSON.parse(cached);
+    const tickets = data.tickets || (Array.isArray(data) ? data : []);
+    console.log("⚡ โหลดข้อมูลจากแคชสำเร็จทันที:", tickets.length, "รายการ");
+    // เรียกฟังก์ชันเรนเดอร์ของ Layer นั้น ๆ ได้เลย
+    renderLayer4Data(tickets);
+  } else {
+    // ถ้าเพิ่งเปิดหน้านี้เป็นหน้าแรก ให้ fallback ไปดึงสด
+    fetchLiveData();
+  }
+}
+
+window.addEventListener('DOMContentLoaded', loadSharedData);
 </script>
 </body>
 </html>
