@@ -1781,9 +1781,10 @@ function renderTagChips() {
   });
 }
 
+// 🎯 ฟังก์ชันตรวจเช็คสถานะตั๋ว Layer 3 (นับเฉพาะ Pending, Ready to work, Working on เท่านั้น)
 function searchAssetCodes() {
   if (globalData.length === 0) { alert('ระบบกำลังดึงข้อมูลจาก Google Sheets หรือยังไม่มีข้อมูล'); return; }
-  if (tagRealInput.value.trim()) { addTag(tagRealInput.value); tagRealInput.value = ''; }
+  if (tagRealInput && tagRealInput.value.trim()) { addTag(tagRealInput.value); tagRealInput.value = ''; }
   if (enteredTags.size === 0) { alert('กรุณากรอกรหัส Asset Code ที่ต้องการตรวจ'); return; }
 
   const statContainer = document.getElementById('statBoxContainer');
@@ -1791,38 +1792,50 @@ function searchAssetCodes() {
   l3SearchResults = [];
 
   enteredTags.forEach(code => {
-    // ค้นหาแถวที่มีรหัสนี้
+    const searchCode = code.trim().toUpperCase();
+
+    // 1. ค้นหาตั๋วทั้งหมดที่มีรหัสนี้ (ดึงทุกสถานะเพื่อไปโชว์ในตารางด้านล่างให้ดูรายละเอียด)
     let rows = globalData.filter(row => {
-      const rawA = (row['Asset'] || '').toString().trim().toUpperCase();
+      const rawA = (row['Asset'] || row['Asset Code'] || row['รหัส'] || '').toString().trim().toUpperCase();
       const tokens = rawA.split(/[,;]+/).map(t => t.trim());
-      return tokens.includes(code) || rawA.includes(code);
+      return tokens.includes(searchCode) || rawA === searchCode;
+    });
+
+    // 2. ⚡ นับเฉพาะตั๋วที่ค้างดำเนินงานจริง (Active Tickets) เท่านั้น!
+    // งานที่ Finish / Approve ตัดทิ้ง ไม่นำมานับว่าออกตั๋วแล้วเด็ดขาด
+    let activeTickets = rows.filter(r => {
+      let st = (r['Status'] || r['Ticket Status'] || r['Ticket'] || r['สถานะ'] || '').toString().toLowerCase().trim();
+      
+      // ถ้าปิดงานแล้ว (Finish / Approve / Close) ให้ตัดออกทันที
+      if (st.includes('finish') || st.includes('approve') || st.includes('close')) {
+        return false;
+      }
+      
+      // ต้องเป็นตั๋วที่ค้างดำเนินงานอยู่จริงเท่านั้น
+      return st.includes('pending') || st.includes('working') || st.includes('ready');
     });
 
     let statDiv = document.createElement('div');
 
-    if (rows.length === 0) {
-      // 1. ไม่มีตั๋ว
+    // 3. 🎯 เงื่อนไขการแสดงผล Stat Box ตามจำนวน Active Tickets:
+    if (activeTickets.length === 0) {
+      // ไม่มีตั๋วค้างในระบบเลย (มีแต่ Finished / Approved ถือว่างานจบแล้ว -> พร้อมเคลมใหม่)
       statDiv.className = 'stat-box stat-red';
-      statDiv.innerHTML = `📌 โค้ด: ${code} — 🔴 ยังไม่ได้ออกตั๋ว`;
+      statDiv.innerHTML = `📌 โค้ด: ${searchCode} — 🔴 ยังไม่ได้ออกตั๋ว`;
+    } else if (activeTickets.length === 1) {
+      // มีตั๋วค้างดำเนินงานอยู่ 1 ใบ
+      statDiv.className = 'stat-box stat-green';
+      statDiv.innerHTML = `📌 โค้ด: ${searchCode} — 🟢 ออกตั๋วแล้ว`;
     } else {
-      // ตรวจสอบตั๋วค้างดำเนินงาน (Pending, Ready to work, Working on)
-      let activeTickets = rows.filter(r => {
-        let st = (r['Status'] || '').toLowerCase();
-        return st.includes('pending') || st.includes('working') || st.includes('ready');
-      });
-
-      if (activeTickets.length >= 2) {
-        // 2. ตั๋วซ้ำ (มีตั๋วค้าง >= 2)
-        statDiv.className = 'stat-box stat-red';
-        statDiv.innerHTML = `📌 โค้ด: ${code} — 🔴 ตั๋วซ้ำ (${activeTickets.length} รายการ)`;
-      } else {
-        // 3. ออกตั๋วแล้ว (มีตั๋วในระบบ)
-        statDiv.className = 'stat-box stat-green';
-        statDiv.innerHTML = `📌 โค้ด: ${code} — 🟢 ออกตั๋วแล้ว`;
-      }
-      rows.forEach(r => l3SearchResults.push(r));
+      // มีตั๋วค้างดำเนินงานตั้งแต่ 2 ใบขึ้นไป
+      statDiv.className = 'stat-box stat-red';
+      statDiv.innerHTML = `📌 โค้ด: ${searchCode} — 🔴 ตั๋วซ้ำ (${activeTickets.length} รายการ)`;
     }
+    
     statContainer.appendChild(statDiv);
+
+    // เก็บตั๋วทั้งหมด (รวมประวัติ Finish / Approve) ส่งไปแสดงในตารางตรวจสอบ
+    rows.forEach(r => l3SearchResults.push(r));
   });
 
   renderL3Table();
