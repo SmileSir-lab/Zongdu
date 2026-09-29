@@ -125,7 +125,7 @@ body { background: var(--page); color: var(--ink); padding: 20px; }
 .big-stat-card.card-undone .big-stat-num { color: var(--orange); }
 .big-stat-card.card-dup .big-stat-num { color: #6f42c1; }
 
-/* Filter & Table */
+/* Filter & Table (Layer 1, 2, 3) */
 .section-box { display: flex; flex-direction: column; gap: 10px; position: relative; }
 .table-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 .table-label { font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 16px; color: var(--navy); }
@@ -179,31 +179,46 @@ tr:hover { background: #f8f8fc; }
 .badge-no { background: #ffeaea; color: var(--red); border: 1px solid #f5b5b5; border-radius: 20px; }
 .badge-media { background: #f0f0fa; color: var(--navy); border: 1px solid #d5d5ec; font-size: 11px; padding: 2px 7px; border-radius: 4px; }
 
-/* Tag Input Layer 3 */
+/* ─── LAYER 3: Tag Input, Penalty & Leaderboard (จาก test2.html) ─── */
 .tag-input-container { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 44px; padding: 6px 10px; border: 1.5px solid #d5d5ec; border-radius: 8px; background: #fff; cursor: text; }
 .tag-input-container:focus-within { border-color: var(--navy); }
-.code-chip { display: inline-flex; align-items: center; gap: 6px; background: #f0f0fa; color: var(--navy); border: 1px solid #c9c9ee; border-radius: 6px; padding: 4px 8px; font-family: 'Kanit', sans-serif; font-size: 13px; font-weight: 600; }
-.code-chip .chip-remove { cursor: pointer; color: var(--grey); font-size: 14px; }
+.code-chip { display: inline-flex; align-items: center; gap: 6px; background: #f0f0fa; color: var(--navy); border: 1px solid #c9c9ee; border-radius: 6px; padding: 4px 10px; font-family: 'Kanit'; font-size: 13px; font-weight: 600; }
+.code-chip .chip-remove { cursor: pointer; color: var(--grey); font-size: 15px; margin-left: 2px; }
 .code-chip .chip-remove:hover { color: var(--red); }
 .tag-real-input { border: none; outline: none; font-size: 13.5px; flex: 1; min-width: 180px; padding: 4px; background: transparent; }
 
-.stat-box-container { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
-.stat-box { font-family: 'Kanit', sans-serif; font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; }
-.stat-green { background: #e6f7ee; color: var(--green); border: 1px solid #a3e8c0; }
-.stat-red { background: #ffeaea; color: var(--red); border: 1px solid #f8b8b8; }
+.code-status-list { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.code-status-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px 14px; border-radius: 8px; font-family: 'Kanit'; font-size: 13.5px; border: 1px solid transparent; }
+.code-status-row.status-done { background: #e6f7ee; border-color: #a3e8c0; color: var(--green); font-weight: 600; }
+.code-status-row.status-pending { background: #fff5f5; border-color: #fca5a5; color: var(--red); }
+.code-status-row.status-dup { background: #f3e8ff; border-color: #d8b4fe; color: #6b21a8; font-weight: 600; }
 
-.btn { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 13.5px; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.assignee-select { padding: 5px 10px; border-radius: 6px; border: 1.5px solid #d5d5ec; font-size: 12.5px; outline: none; background: #fff; font-family: 'Kanit'; }
+.kpi-scroll-box { max-height: 480px; overflow-y: auto; border: 1.5px solid #e3e6f0; border-radius: 8px; }
+/* กราฟแท่งแนวนอน 3 สี Layer 3 */
+.kpi-bar-wrapper { display: flex; flex-direction: column; gap: 4px; width: 100%; min-width: 140px; }
+.kpi-stacked-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: #e2e8f0; width: 100%; }
+.kpi-bar-rem { background: var(--green); height: 100%; }
+.kpi-bar-nopop { background: var(--red); height: 100%; }
+.kpi-bar-dup { background: #6b21a8; height: 100%; }
+.kpi-legend-row { display: flex; gap: 6px; font-size: 11px; align-items: center; justify-content: flex-start; }
+.kpi-badge { font-family: 'Kanit'; font-weight: 700; padding: 2px 10px; border-radius: 12px; font-size: 12px; }
+.kpi-high { background: #e6f7ee; color: var(--green); }
+.kpi-mid { background: #fff8e6; color: var(--orange); }
+.kpi-low { background: #ffeaea; color: var(--red); }
+
+.btn { font-family: 'Kanit'; font-weight: 600; font-size: 13px; padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
 .btn-navy { background: var(--navy); color: #fff; }
-.btn-green { background: var(--green); color: #fff; }
 .btn-red { background: var(--red); color: #fff; }
-.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px; }
+.btn-green { background: var(--green); color: #fff; }
+
 .table-view-container { display: none; }
 .table-view-container.active { display: flex; }
 .hidden { display: none !important; }
 th.sortable { cursor: pointer; user-select: none; }
 th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
 
-/* ─── LAYER 4 MAP STYLES ─── */
+/* ─── LAYER 4: MAP & ROUTE PLANNER ─── */
 .map-layout { display: grid; grid-template-columns: 1fr 340px; gap: 16px; margin-top: 8px; }
 #map { width: 100%; height: 580px; border-radius: 12px; border: 1.5px solid #d5d5ec; z-index: 1; }
 .map-sidebar { background: #fafafc; border: 1.5px solid #eaeaf5; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; height: 580px; }
@@ -231,26 +246,11 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
   .head { padding: 14px 16px; gap: 10px; }
   .head h1 { font-size: 18px; }
   .head p { font-size: 12px; }
-  .menu-toggle-btn { padding: 6px 10px; font-size: 12.5px; }
-
   .donut-grid { grid-template-columns: 1fr; gap: 14px; }
-  .donut-card { padding: 14px; }
   .chart-wrapper { width: 200px; height: 200px; }
   .big-stat-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .big-stat-card { padding: 12px 14px; }
-  .big-stat-num { font-size: 26px; }
-
-  .filter-bar, .btn-row { flex-direction: column; align-items: stretch !important; gap: 8px; }
-  .filter-item, .popover-btn, .btn { width: 100%; justify-content: center; }
-  .toggle-popover { width: 90vw; left: 5% !important; }
-
-  .map-layout { grid-template-columns: 1fr !important; gap: 12px; }
+  .map-layout { grid-template-columns: 1fr !important; }
   #map { height: 380px !important; }
-  .map-sidebar { height: auto !important; max-height: 380px; padding: 12px; }
-
-  .tw { max-height: 350px; -webkit-overflow-scrolling: touch; }
-  table { font-size: 12px; }
-  th, td { padding: 7px 8px; }
 }
 </style>
 </head>
@@ -272,9 +272,9 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
       <span class="item-icon">📊</span>
       <span>Layer 2: ปัญหาพบบ่อย & เคลมซ้ำ</span>
     </button>
-    <button class="sidebar-item" id="sideBtn-layer3" onclick="selectLayer('layer3', 'Layer 3: Asset Code Monitoring Lookup', this)">
+    <button class="sidebar-item" id="sideBtn-layer3" onclick="selectLayer('layer3', 'Layer 3: Asset Code Monitoring & KPI', this)">
       <span class="item-icon">🔍</span>
-      <span>Layer 3: Asset Code Lookup</span>
+      <span>Layer 3: Asset Code Lookup & KPI</span>
     </button>
     <button class="sidebar-item" id="sideBtn-layer4" onclick="selectLayer('layer4', 'Layer 4: แผนที่งานเคลม & วางแผนรูทวิ่ง', this)">
       <span class="item-icon">🗺️</span>
@@ -286,16 +286,14 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
 <div class="container">
   <div class="head">
     <div class="head-left">
-      <button type="button" class="menu-toggle-btn" onclick="openSidebar()">
-        ☰ เปิดเมนูเลเยอร์
-      </button>
+      <button type="button" class="menu-toggle-btn" onclick="openSidebar()">☰ เปิดเมนูเลเยอร์</button>
       <div>
         <h1>AI Operation Daily Report & Monitoring</h1>
-        <p>ระบบบริหารจัดการติดตามตั๋วงาน วิเคราะห์ปัญหา ตรวจเช็ครหัสป้าย และวางแผนเส้นทาง (4 Layers)</p>
+        <p>เชื่อมต่อ Google Sheets สด · จัดอันดับช่างประจำรูท · แผนที่นำทาง</p>
       </div>
     </div>
     <div id="fileStatus" style="font-family:'Kanit'; font-size:13px; background:rgba(255,255,255,0.15); padding:6px 14px; border-radius:8px;">
-      🔄 กำลังเชื่อมต่อข้อมูลสดจาก Google Sheets...
+      🔄 กำลังเชื่อมต่อ Apps Script...
     </div>
   </div>
 
@@ -304,7 +302,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
     <span class="name" id="currentLayerDisplayTitle">Layer 1: Dashboard ภาพรวม</span>
   </div>
 
-  <!-- ════════ LAYER 1: Dashboard ภาพรวม ════════ -->
+  <!-- ════════ LAYER 1: Dashboard ภาพรวม (จาก ai.html) ════════ -->
   <section id="layer1" class="panel">
     <div class="panel-title">
       <span>🍩 Summary Special & Claim Job</span>
@@ -413,7 +411,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
           <thead>
             <tr><th style="width: 50px; text-align: center;">No</th><th>RefNo</th><th>Asset</th><th>Media Type</th><th>SLA</th><th>Status</th><th>Assignee</th><th>DETAIL</th></tr>
           </thead>
-          <tbody id="slaTableBody"><tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
+          <tbody id="slaTableBody"><tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูล...</td></tr></tbody>
         </table>
       </div>
       <div class="table-bottom-stat"><div class="bottom-stat-pill" id="slaBottomStat">รายการทั้งหมด: 0 รายการ</div></div>
@@ -447,7 +445,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
           <thead>
             <tr><th style="width: 50px; text-align: center;">No</th><th>RefNo</th><th>Asset</th><th>Media Type</th><th>Status</th><th>Created Date Time</th><th>Created By</th><th>DETAIL</th></tr>
           </thead>
-          <tbody id="dupTableBody"><tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
+          <tbody id="dupTableBody"><tr><td colspan="8" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูล...</td></tr></tbody>
         </table>
       </div>
       <div class="table-bottom-stat"><div class="bottom-stat-pill" id="dupBottomStat">รายการทั้งหมด: 0 รายการ</div></div>
@@ -508,7 +506,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
           <thead>
             <tr><th style="width: 50px; text-align: center;">No</th><th>RefNo</th><th>Asset</th><th>Media Type</th><th>Status</th><th>Schedule Date</th><th>Finish / Updated</th><th>Assignee</th><th>DETAIL (Solution Detail)</th></tr>
           </thead>
-          <tbody id="doneTableBody"><tr><td colspan="9" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
+          <tbody id="doneTableBody"><tr><td colspan="9" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูล...</td></tr></tbody>
         </table>
       </div>
       <div class="table-bottom-stat"><div class="bottom-stat-pill" id="doneBottomStat">รายการทั้งหมด: 0 รายการ</div></div>
@@ -569,14 +567,14 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
           <thead>
             <tr><th style="width: 50px; text-align: center;">No</th><th>RefNo</th><th>Asset</th><th>Media Type</th><th>Status</th><th>SLA</th><th>Schedule Date</th><th>Assignee</th><th>DETAIL</th></tr>
           </thead>
-          <tbody id="undoneTableBody"><tr><td colspan="9" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
+          <tbody id="undoneTableBody"><tr><td colspan="9" style="text-align:center; color:var(--grey); padding:16px;">กำลังโหลดข้อมูล...</td></tr></tbody>
         </table>
       </div>
       <div class="table-bottom-stat"><div class="bottom-stat-pill" id="undoneBottomStat">รายการทั้งหมด: 0 รายการ</div></div>
     </div>
   </section>
 
-  <!-- ════════ LAYER 2: ปัญหาพบบ่อย & เคลมซ้ำ (สลับเอาป้ายปัญหาบ่อยขึ้นก่อน) ════════ -->
+  <!-- ════════ LAYER 2: ปัญหาพบบ่อย & เคลมซ้ำ (จาก ai.html) ════════ -->
   <section id="layer2" class="panel hidden">
     <div class="panel-title">
       <span>📊 Layer 2: การวิเคราะห์เชิงลึก (ป้ายที่เคลมซ้ำ & ปัญหาที่พบบ่อย)</span>
@@ -607,7 +605,7 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
       </div>
     </div>
 
-    <!-- ตาราง 1 (สลับขึ้นมาบนสุด): ป้ายเคลมซ้ำ > 3 ครั้ง -->
+    <!-- ตาราง 1: ป้ายเคลมซ้ำ > 3 ครั้ง -->
     <div class="section-box" style="background:#fffafa; border:1.5px solid #fbdada; border-radius:12px; padding:18px;">
       <div class="table-header-row">
         <div class="table-label" style="color:var(--red);">⚠️ 1. ตารางป้ายที่มีปัญหาบ่อยผิดปกติ (> 3 ครั้ง)</div>
@@ -625,12 +623,12 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
               <th>รายการปัญหาที่เกิดซ้ำ</th>
             </tr>
           </thead>
-          <tbody id="chronicAssetTableBody"><tr><td colspan="6" style="text-align:center; color:var(--grey); padding:18px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
+          <tbody id="chronicAssetTableBody"><tr><td colspan="6" style="text-align:center; color:var(--grey); padding:18px;">กำลังโหลดข้อมูล...</td></tr></tbody>
         </table>
       </div>
     </div>
 
-    <!-- ตาราง 2 (เลื่อนลงมาอันล่าง): ปัญหาที่พบบ่อย Top 10 -->
+    <!-- ตาราง 2: ปัญหาที่พบบ่อย Top 10 -->
     <div class="section-box" style="background:#fcfcfe; border:1.5px solid #eaeaf5; border-radius:12px; padding:18px;">
       <div class="table-header-row">
         <div class="table-label">🚨 2. ตารางปัญหาที่พบบ่อย (Top 10 รายการสูงสุด)</div>
@@ -641,37 +639,46 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
           <thead>
             <tr><th style="width: 60px; text-align: center;">อันดับ</th><th>รายละเอียดปัญหา (Problem / Detail)</th><th style="width: 140px; text-align: center;">จำนวนครั้งที่พบ</th><th style="width: 130px; text-align: center;">สัดส่วน (%)</th><th style="width: 250px;">แถบสัดส่วนปัญหา</th></tr>
           </thead>
-          <tbody id="frequentProblemsTableBody"><tr><td colspan="5" style="text-align:center; color:var(--grey); padding:18px;">กำลังโหลดข้อมูลจาก Google Sheets...</td></tr></tbody>
+          <tbody id="frequentProblemsTableBody"><tr><td colspan="5" style="text-align:center; color:var(--grey); padding:18px;">กำลังโหลดข้อมูล...</td></tr></tbody>
         </table>
       </div>
     </div>
   </section>
 
-  <!-- ════════ LAYER 3: Monitoring Lookup (Asset Code) ════════ -->
+ <!-- ════════ LAYER 3: Monitoring & KPI Tracker + ตารางแสดงรายละเอียดตั๋วครบชุด ════════ -->
   <section id="layer3" class="panel hidden">
     <div class="panel-title">
-      <span>🔍 Layer 3: Asset Code Monitoring Lookup (ตรวจเช็ครหัสป้ายเพื่อไปเคลมต่อ)</span>
+      <span>🔍 Layer 3: Asset Code Monitoring & KPI Evaluation Dashboard</span>
+      <button class="btn btn-navy" onclick="autoFetchLiveSheetData()">🔄 รีเฟรชข้อมูล</button>
     </div>
     
     <div class="section-box">
       <label style="font-family:'Kanit'; font-weight:600; color:var(--navy);">
-        กรอกหรือวางรหัสโค้ด (กด <b>Enter</b> หรือ <b>Ctrl+V วางชิปจะขึ้นทันที</b> — รองรับการเว้นวรรค เช่น MTP A75 ได้ตามปกติ):
+        กรอกหรือวางรหัสโค้ด (กด <b>Enter</b> หรือ <b>Ctrl+V วางชิปจะขึ้นทันที</b> — รองรับเคาะวรรค เช่น <code>MTP A75</code> ได้ตามปกติ):
       </label>
       <div class="tag-input-container" id="tagContainer" onclick="focusTagInput()">
-        <input type="text" id="tagRealInput" class="tag-real-input" placeholder="พิมพ์หรือวางโค้ด เช่น MTP A75, DS012...">
+        <input type="text" id="tagRealInput" class="tag-real-input" placeholder="พิมพ์หรือวางโค้ด เช่น ds121, ds123, DP223...">
       </div>
-      <div class="btn-row">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;">
         <button class="btn btn-navy" onclick="searchAssetCodes()">🔍 ตรวจสอบสถานะโค้ดเหล่านี้</button>
         <button class="btn btn-red" onclick="clearAllTags()">🗑️ ล้างโค้ดทั้งหมด (Clear All)</button>
       </div>
     </div>
 
-    <!-- Stat Box สรุปสถานะตั๋วรายโค้ด (ออกตั๋วแล้ว / ยังไม่ได้ออกตั๋ว / ตั๋วซ้ำ) -->
-    <div id="statBoxContainer" class="stat-box-container"></div>
-
+    <!-- ส่วนที่ 1: ผลตรวจสถานะรายป้าย & ปุ่มตัดแต้ม (-1) ทั้งไม่เปิดตั๋วและเปิดตั๋วซ้ำ -->
     <div class="section-box">
+      <label style="font-family:'Kanit'; font-weight:700; font-size:15px; color:var(--navy);">ผลการตรวจสถานะตั๋วรายป้าย:</label>
+      <div id="codeStatusList" class="code-status-list">
+        <div style="color:var(--grey); font-size:13px; padding:10px; background:#f9f9fc; border-radius:8px;">
+          ยังไม่มีการตรวจค้นหา กรุณาใส่รหัสป้ายด้านบนแล้วกด "ตรวจสอบสถานะโค้ดเหล่านี้"
+        </div>
+      </div>
+    </div>
+
+    <!-- ส่วนที่ 2: ตารางโชว์รายละเอียดตั๋วงาน พร้อม Filter และ Sort -->
+    <div class="section-box" style="margin-top:10px;">
       <div class="table-header-row">
-        <label style="font-family:'Kanit'; font-weight:700; font-size:16px; color:var(--navy);">ผลการตรวจสอบตั๋วงาน:</label>
+        <label style="font-family:'Kanit'; font-weight:700; font-size:16px; color:var(--navy);">ผลการตรวจสอบตั๋วงานในระบบ:</label>
         <div class="filter-bar">
           <div class="filter-item">
             <span>⏳ ช่วงเวลางาน:</span>
@@ -697,7 +704,10 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
           <thead>
             <tr>
               <th class="sortable" onclick="toggleL3Sort('asset')">Asset / Code <span id="sortIcon-asset" class="sort-icon">⇅</span></th>
-              <th>Ref No</th><th>Ticket Status</th><th>SLA</th><th>Assignee</th>
+              <th>Ref No</th>
+              <th>Ticket Status</th>
+              <th>SLA</th>
+              <th>Assignee</th>
               <th class="sortable" onclick="toggleL3Sort('sched')">Schedule Date <span id="sortIcon-sched" class="sort-icon">⇅</span></th>
               <th class="sortable" onclick="toggleL3Sort('updated')">วันที่อัปเดตล่าสุด / Finish <span id="sortIcon-updated" class="sort-icon">⇅</span></th>
               <th>Created By</th>
@@ -708,9 +718,44 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
       </div>
       <div class="table-bottom-stat"><div class="bottom-stat-pill" id="l3BottomStat">ผลการค้นหา: 0 รายการ</div></div>
     </div>
+
+    <!-- ส่วนที่ 3: ตารางจัดอันดับ KPI พร้อมกราฟแท่งแนวนอน 3 สี (เต็ม 100) -->
+    <div class="section-box" style="margin-top:14px;">
+      <div class="table-header-row">
+        <div>
+          <label style="font-family:'Kanit'; font-weight:700; font-size:16px; color:var(--navy);">
+            🏆 ตารางจัดอันดับคะแนนช่างประจำรูทวิ่ง (KPI Leaderboard)
+          </label>
+          <p style="font-size:12px; color:var(--grey);">
+            ทุกคนเริ่มต้น 100 คะแนน · <span style="color:var(--green)">🟢 คงเหลือ</span> · <span style="color:var(--red)">🔴 ไม่เปิดตั๋ว (-1)</span> · <span style="color:#6b21a8">🟣 เปิดตั๋วซ้ำ (-1)</span>
+          </p>
+        </div>
+        <button class="btn btn-navy" id="btnSortScore" onclick="toggleScoreSort()">↕ เรียงคะแนน: สูง ➔ ต่ำ</button>
+      </div>
+
+      <div class="kpi-scroll-box">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:60px; text-align:center;">อันดับ</th>
+              <th>ชื่อ-นามสกุลพนักงาน</th>
+              <th style="text-align:center; width:90px;">คะแนนเต็ม</th>
+              <th style="text-align:center; width:110px;">หักไม่เปิดตั๋ว</th>
+              <th style="text-align:center; width:110px;">หักเปิดตั๋วซ้ำ</th>
+              <th style="text-align:center; width:100px;">คะแนนสุทธิ</th>
+              <th style="width:200px;">สัดส่วนคะแนน (100 แต้ม)</th>
+              <th style="text-align:center; width:110px;">สถานะ</th>
+            </tr>
+          </thead>
+          <tbody id="kpiTableBody">
+            <tr><td colspan="8" style="text-align:center; padding:18px;">กำลังโหลดตารางคะแนน...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </section>
 
-  <!-- ════════ LAYER 4: Map & Route Planner ════════ -->
+  <!-- ════════ LAYER 4: Map & Route Planner (จาก ai.html) ════════ -->
   <section id="layer4" class="panel hidden">
     <div class="panel-title">
       <span>🗺️ Layer 4: แผนที่งานเคลม & วางแผนเส้นทางเข้าตรวจ (Multi-Select Route)</span>
@@ -795,9 +840,26 @@ th.sortable .sort-icon { font-size: 11px; margin-left: 4px; color: #a5b4fc; }
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSm3Ebdqj-8iKxOGN0Xle5TAlblBPIb9ZLkrCv5aCgtCOM_LdXA7TCD1_YlRWsSkk6PQ/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_2KFc4-NNnaR6qWLEj-cBKRIpfypodu-WN-PpLumBwzm_SuRxz3GYxrLAIwLvFjTOng/exec';
+
+const MASTER_ASSIGNEES = [
+  "ทองพูน เปลี่ยนประเสริฐ", "น้ำผึ้ง สิงห์ทอง", "ธนายุทธ สอนมณี", "ทศพร พ่อค้า",
+  "ปริญญา นาโควงค์", "ธีรวัฒน์ พูนขุนทด", "จิรายุทธ เที่ยงธรรม", "สำเริง ฤทธิ์เต็ม",
+  "คณินท์ ทับทิมแสง", "ธนโชติ แซ่โง้ว", "เสนาะ ซิมประเสริฐ", "เรวัฒน์ ขวัญคุ้ม",
+  "เกรียงไกร ไชยะ", "สิทธิชัย พันธ์เดช", "นิติ ขันธเวช", "ณัฐวัชต์ ไกรสมโภชน์",
+  "อนุชา คงเพชรศักดิ์", "ทรานนท์ ทองมีมา", "ธาวิน จันนะวราห์", "จักรพงษ์ คาสันเทียะ",
+  "ศุภณัฐ มัดทน", "ชานนท์ เพ็งอุ่น", "ฐิติยศ รี้พลไกร"
+];
 
 let globalData = [];
+let kpiLogsData = [];
+let masterSignsMap = {};
+let enteredTags = new Set();
+let l3SearchResults = [];
+let currentL3Sort = { col: 'sched', asc: false };
+let kpiLeaderboard = [];
+let isSortDesc = true;
+
 let monthChartInst = null;
 let weekChartInst = null;
 let datasetRefDate = new Date();
@@ -822,107 +884,20 @@ let mapFilterStates = {
   detail: new Set()
 };
 
-let masterSignsMap = {};
 let mapInstance = null;
 let currentTileLayer = null;
 let allMapItems = [];
 let allPinsOnMap = [];
 let selectedPins = [];
 
-function normalizeCodeKey(str) {
-  if (!str) return '';
-  let s = str.toString().toUpperCase().trim();
-  s = s.replace(/\(.*?\)/g, '');
-  s = s.replace(/[-_\s\/]/g, '');
-  s = s.replace(/PAC/g, '');
-  return s;
-}
-
-async function autoFetchLiveSheetData() {
-  const statusEl = document.getElementById('fileStatus');
-  statusEl.innerHTML = '🔄 กำลังดึงข้อมูลสดจากชีต zongdudata...';
-  
-  try {
-    const res = await fetch(SCRIPT_URL, { method: 'GET', redirect: 'follow' });
-    const result = await res.json();
-    
-    let masterList = result.masterSigns || (Array.isArray(result) ? result : []);
-    masterSignsMap = {};
-    if (Array.isArray(masterList)) {
-      masterList.forEach(item => {
-        const rawCode = (item['code'] || item['code_raw'] || item['Asset Code'] || item['Asset'] || '').toString().trim().toUpperCase();
-        const lat = parseFloat(item['Latitude'] || item['Lat']);
-        const lng = parseFloat(item['Longitude'] || item['Long'] || item['Lng']);
-        
-        if (rawCode && !isNaN(lat) && !isNaN(lng)) {
-          const coordData = {
-            lat: lat,
-            lng: lng,
-            mediaType: item['Media Type'] || item['MediaType'] || 'General',
-            location: item['Location Name'] || item['Location'] || item['road'] || ''
-          };
-          masterSignsMap[rawCode] = coordData;
-          masterSignsMap[normalizeCodeKey(rawCode)] = coordData;
-
-          if (rawCode.startsWith('FLY')) {
-            const letter = rawCode.replace('FLY', '').replace(/[\s\-_]/g, '');
-            if (letter) masterSignsMap[letter] = coordData;
-          }
-        }
-      });
-    }
-
-    const masterCount = Object.keys(masterSignsMap).length;
-    const mapChip = document.getElementById('mapStatusChip');
-    if (mapChip) {
-      if (masterCount > 0) {
-        mapChip.innerText = `✅ โหลดพิกัดป้ายสำเร็จ (${masterCount} รูปแบบ)`;
-        mapChip.className = 'badge badge-green';
-      } else {
-        mapChip.innerText = `⚠️ อ่านชีตได้ แต่แปลงพิกัดไม่สำเร็จ`;
-        mapChip.className = 'badge badge-red';
-      }
-    }
-
-    let ticketsList = result.tickets || (Array.isArray(result) && !result.masterSigns ? result : []);
-    
-    if (ticketsList && ticketsList.length > 0) {
-      const seenRef = new Set();
-      globalData = [];
-      ticketsList.forEach(row => {
-        const ref = (row['RefNo'] || row['Ref No'] || '').toString().trim();
-        if (ref) {
-          if (!seenRef.has(ref)) { seenRef.add(ref); globalData.push(row); }
-        } else { globalData.push(row); }
-      });
-
-      const updateTime = result.lastUpdate || new Date().toLocaleTimeString('th-TH');
-      statusEl.innerHTML = `✅ อัปเดตสดจากชีต (${globalData.length} งาน) • ${updateTime}`;
-      
-      processLayer1(globalData);
-      
-      if (!document.getElementById('layer4').classList.contains('hidden')) {
-        renderPinsOnMap();
-      }
-    } else {
-      statusEl.innerHTML = '⚠️ แท็บ zongdudata ยังไม่มีข้อมูลตั๋วงาน';
-    }
-  } catch (err) {
-    statusEl.innerHTML = `❌ ดึงข้อมูลไม่สำเร็จ: ${err.message}`;
-    console.error("Auto Fetch Error:", err);
-  }
-}
-
 function openSidebar() {
   document.getElementById('sidebarSlider').classList.add('open');
   document.getElementById('sidebarOverlay').classList.add('active');
 }
-
 function closeSidebar() {
   document.getElementById('sidebarSlider').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('active');
 }
-
 function selectLayer(panelId, displayTitle, element) {
   document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
   const target = document.getElementById(panelId);
@@ -940,6 +915,15 @@ function selectLayer(panelId, displayTitle, element) {
     initMap();
     renderPinsOnMap();
   }
+}
+
+function normalizeCodeKey(str) {
+  if (!str) return '';
+  let s = str.toString().toUpperCase().trim();
+  s = s.replace(/\(.*?\)/g, '');
+  s = s.replace(/[-_\s\/]/g, '');
+  s = s.replace(/PAC/g, '');
+  return s;
 }
 
 function cleanSttText(str) {
@@ -996,34 +980,6 @@ function getBadgeColor(str) {
   return PASTEL_COLORS[Math.abs(hash) % PASTEL_COLORS.length];
 }
 
-function openPopover(event, id) {
-  if (event) { event.preventDefault(); event.stopPropagation(); }
-  const target = document.getElementById(id);
-  if (!target) return;
-  const isAlreadyOpen = target.classList.contains('show');
-  document.querySelectorAll('.toggle-popover').forEach(p => p.classList.remove('show'));
-  if (!isAlreadyOpen) {
-    target.classList.add('show');
-    const searchInput = target.querySelector('.popover-search');
-    if (searchInput) searchInput.focus();
-  }
-}
-
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.toggle-popover') && !e.target.closest('.popover-btn')) {
-    document.querySelectorAll('.toggle-popover').forEach(p => p.classList.remove('show'));
-  }
-});
-
-function filterSearchList(input) {
-  const query = input.value.toLowerCase();
-  const list = input.nextElementSibling;
-  list.querySelectorAll('.popover-item').forEach(item => {
-    const text = item.getAttribute('data-val').toLowerCase();
-    item.style.display = text.includes(query) ? 'flex' : 'none';
-  });
-}
-
 function classifyMediaType(assetStr, row = {}) {
   if (!assetStr) return 'อื่นๆ';
   const asset = assetStr.toString().trim();
@@ -1051,13 +1007,6 @@ function classifyMediaType(assetStr, row = {}) {
   if (u.startsWith('SP') || /^\d\.\d$/.test(u)) return 'Serie Poster';
   if (u.startsWith('PW') || u.startsWith('POLE') || /^\d+(\.\d+)?$/.test(u)) return 'Pole wrap';
   return 'อื่นๆ';
-}
-
-function switchTableView(viewId, cardElement) {
-  document.querySelectorAll('.table-view-container').forEach(el => el.classList.remove('active'));
-  document.getElementById(viewId).classList.add('active');
-  document.querySelectorAll('.big-stat-card').forEach(el => el.classList.remove('active'));
-  cardElement.classList.add('active');
 }
 
 function parseRowDate(row, preferFinishDate = false) {
@@ -1130,6 +1079,209 @@ function parseSlaDetails(row) {
   return { text: slaAll || 'OnTrack', isOverdue: false, sortVal: 50000000 };
 }
 
+// ─── โหลดข้อมูลสดจาก Apps Script ───
+async function autoFetchLiveSheetData() {
+  const statusEl = document.getElementById('fileStatus');
+  statusEl.innerHTML = '🔄 กำลังดึงข้อมูลสดจาก Apps Script...';
+
+  try {
+    const res = await fetch(SCRIPT_URL, { method: 'GET', redirect: 'follow' });
+    const result = await res.json();
+
+    globalData = result.tickets || [];
+    kpiLogsData = result.kpiLogs || [];
+
+    masterSignsMap = {};
+    if (result.masterSigns && Array.isArray(result.masterSigns)) {
+      result.masterSigns.forEach(item => {
+        const rawCode = (item['code'] || item['code_raw'] || item['Asset Code'] || item['Asset'] || '').toString().trim().toUpperCase();
+        const lat = parseFloat(item['Latitude'] || item['Lat']);
+        const lng = parseFloat(item['Longitude'] || item['Long'] || item['Lng']);
+        if (rawCode && !isNaN(lat) && !isNaN(lng)) {
+          const coordData = {
+            lat: lat,
+            lng: lng,
+            mediaType: item['Media Type'] || item['MediaType'] || 'General',
+            location: item['Location Name'] || item['Location'] || item['road'] || ''
+          };
+          masterSignsMap[rawCode] = coordData;
+          masterSignsMap[normalizeCodeKey(rawCode)] = coordData;
+          if (rawCode.startsWith('FLY')) {
+            const letter = rawCode.replace('FLY', '').replace(/[\s\-_]/g, '');
+            if (letter) masterSignsMap[letter] = coordData;
+          }
+        }
+      });
+    }
+
+    const mapChip = document.getElementById('mapStatusChip');
+    if (mapChip) {
+      mapChip.innerText = `✅ โหลดพิกัดป้ายสำเร็จ (${Object.keys(masterSignsMap).length} จุด)`;
+      mapChip.className = 'badge badge-green';
+    }
+
+    statusEl.innerHTML = `✅ ซิงค์สำเร็จ: ${globalData.length} ตั๋ว · ${kpiLogsData.length} Logs`;
+
+    processLayer1(globalData);
+    renderLayer2();
+    computeAndRenderKPI();
+
+    if (!document.getElementById('layer4').classList.contains('hidden')) {
+      renderPinsOnMap();
+    }
+  } catch (err) {
+    statusEl.innerHTML = `❌ เชื่อมต่อล้มเหลว: ${err.message}`;
+    console.error(err);
+  }
+}
+
+// ─── 1. ประมวลผล Layer 1 (จาก ai.html) ───
+function processLayer1(data) {
+  const total = data.length;
+  document.getElementById('totalBadge').innerText = `รวมทั้งหมด: ${total} รายการ`;
+
+  let dateObjs = data.map(r => parseRowDate(r)).filter(d => d && !isNaN(d.getTime()));
+  datasetRefDate = dateObjs.length > 0 ? new Date(Math.max(...dateObjs.map(d => d.getTime()))) : new Date();
+
+  const targetYear = datasetRefDate.getFullYear();
+  const targetMonth = datasetRefDate.getMonth();
+
+  let dayOfWeek = datasetRefDate.getDay();
+  let diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  let startOfWeek = new Date(datasetRefDate);
+  startOfWeek.setDate(datasetRefDate.getDate() - diffToMonday);
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  let endOfWeek = new Date(datasetRefDate);
+  endOfWeek.setHours(23, 59, 59, 999);
+
+  const yStart = new Date(datasetRefDate.getFullYear(), datasetRefDate.getMonth(), datasetRefDate.getDate() - 1, 0, 0, 0, 0);
+  const yEnd = new Date(datasetRefDate.getFullYear(), datasetRefDate.getMonth(), datasetRefDate.getDate() - 1, 23, 59, 59, 999);
+
+  const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+  const dayNames = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+
+  document.getElementById('monthSubLabel').innerText = `ข้อมูลเดือน ${monthNames[targetMonth]} ${targetYear}`;
+  document.getElementById('weekSubLabel').innerText = `จันทร์ ${startOfWeek.getDate()} - ${dayNames[datasetRefDate.getDay()]} ${datasetRefDate.getDate()} ${monthNames[datasetRefDate.getMonth()]}`;
+
+  let monthDoneInMonth = 0, inMonthTotal = 0, backlogTotal = 0;
+  let monthDonutStats = { approve: 0, finish: 0, working: 0, pending_ready: 0 };
+  let weekStats = { approve: 0, finish: 0, working: 0, pending_ready: 0 };
+  let weekTotal = 0;
+  let claimAddedYesterdayCount = 0;
+
+  globalSlaRows = []; globalDoneRows = []; globalUndoneRows = [];
+  let activeAssetMap = {};
+
+  data.forEach(row => {
+    const stType = classifyStatus(row);
+    const d = parseRowDate(row);
+    const isDone = (stType === 'approve' || stType === 'finish');
+    const asset = (row['Asset'] || '').toString().trim();
+    const mediaType = classifyMediaType(asset, row);
+    const sla = parseSlaDetails(row);
+
+    const itemObj = { row, sla, mediaType, date: d };
+    if (isDone) globalDoneRows.push(itemObj); else globalUndoneRows.push(itemObj);
+
+    if (d && d.getFullYear() === targetYear && d.getMonth() === targetMonth) {
+      inMonthTotal++; monthDonutStats[stType]++;
+      if (isDone) monthDoneInMonth++;
+    } else {
+      if (!isDone) { backlogTotal++; monthDonutStats[stType]++; }
+    }
+
+    if (d && d >= startOfWeek && d <= endOfWeek) {
+      weekStats[stType]++; weekTotal++;
+    }
+
+    if (d && d >= yStart && d <= yEnd && isClaimJob(row)) {
+      claimAddedYesterdayCount++;
+    }
+
+    if (stType === 'pending_ready' || stType === 'working') {
+      if (asset) {
+        const tokens = asset.split(/[,;]+/).map(t => t.trim()).filter(Boolean);
+        tokens.forEach(tok => {
+          if (!activeAssetMap[tok]) activeAssetMap[tok] = [];
+          activeAssetMap[tok].push({ row, mediaType: classifyMediaType(tok, row) });
+        });
+      }
+    }
+
+    if (sla.isOverdue) globalSlaRows.push(itemObj);
+  });
+
+  if (backlogTotal > 0) {
+    document.getElementById('monthCenterVal').innerText = `${monthDoneInMonth} / ${inMonthTotal}(${backlogTotal})`;
+  } else {
+    document.getElementById('monthCenterVal').innerText = `${monthDoneInMonth} / ${inMonthTotal}`;
+  }
+
+  const weekDone = weekStats.approve + weekStats.finish;
+  document.getElementById('weekCenterVal').innerText = `${weekDone} / ${weekTotal}(${claimAddedYesterdayCount})`;
+
+  monthChartInst = renderSingleDonut('monthChart', 'monthLegend', monthDonutStats, monthChartInst);
+  weekChartInst = renderSingleDonut('weekChart', 'weekLegend', weekStats, weekChartInst);
+
+  globalDupList = [];
+  const dupAssets = Object.keys(activeAssetMap).filter(asset => activeAssetMap[asset].length >= 2).sort();
+  dupAssets.forEach(asset => {
+    const uniqueTickets = Array.from(new Set(activeAssetMap[asset]));
+    uniqueTickets.forEach(item => {
+      globalDupList.push({ asset, ticket: item.row, mediaType: item.mediaType, date: parseRowDate(item.row) });
+    });
+  });
+
+  globalSlaRows.sort((a, b) => a.sla.sortVal - b.sla.sortVal);
+  initAllPopovers('sla', globalSlaRows);
+  executeFilter('sla');
+
+  filterDupTable();
+
+  initAllPopovers('done', globalDoneRows);
+  executeFilter('done');
+
+  globalUndoneRows.sort((a, b) => a.sla.sortVal - b.sla.sortVal);
+  initAllPopovers('undone', globalUndoneRows);
+  executeFilter('undone');
+}
+
+function openPopover(event, id) {
+  if (event) { event.preventDefault(); event.stopPropagation(); }
+  const target = document.getElementById(id);
+  if (!target) return;
+  const isAlreadyOpen = target.classList.contains('show');
+  document.querySelectorAll('.toggle-popover').forEach(p => p.classList.remove('show'));
+  if (!isAlreadyOpen) {
+    target.classList.add('show');
+    const searchInput = target.querySelector('.popover-search');
+    if (searchInput) searchInput.focus();
+  }
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.toggle-popover') && !e.target.closest('.popover-btn')) {
+    document.querySelectorAll('.toggle-popover').forEach(p => p.classList.remove('show'));
+  }
+});
+
+function filterSearchList(input) {
+  const query = input.value.toLowerCase();
+  const list = input.nextElementSibling;
+  list.querySelectorAll('.popover-item').forEach(item => {
+    const text = item.getAttribute('data-val').toLowerCase();
+    item.style.display = text.includes(query) ? 'flex' : 'none';
+  });
+}
+
+function switchTableView(viewId, cardElement) {
+  document.querySelectorAll('.table-view-container').forEach(el => el.classList.remove('active'));
+  document.getElementById(viewId).classList.add('active');
+  document.querySelectorAll('.big-stat-card').forEach(el => el.classList.remove('active'));
+  cardElement.classList.add('active');
+}
+
 function handleTimeFilterChange(prefix) {
   const selVal = document.getElementById(`${prefix}TimeFilter`).value;
   const customBox = document.getElementById(`${prefix}CustomBox`);
@@ -1173,121 +1325,6 @@ function isWithinTimeRangePrefix(d, prefix) {
   if (timeKey === '90D') return diffDays >= -0.5 && diffDays <= 91.5;
   if (timeKey === '1Y') return diffDays >= -0.5 && diffDays <= 366.5;
   return true;
-}
-
-// ─── การประมวลผล LAYER 1: ปรับคำนวณเคลมเพิ่มเป็น "เมื่อวาน" ───
-function processLayer1(data) {
-  const total = data.length;
-  document.getElementById('totalBadge').innerText = `รวมทั้งหมด: ${total} รายการ`;
-
-  let dateObjs = data.map(r => parseRowDate(r)).filter(d => d && !isNaN(d.getTime()));
-  datasetRefDate = dateObjs.length > 0 ? new Date(Math.max(...dateObjs.map(d => d.getTime()))) : new Date();
-
-  const targetYear = datasetRefDate.getFullYear();
-  const targetMonth = datasetRefDate.getMonth();
-
-  let dayOfWeek = datasetRefDate.getDay();
-  let diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-  let startOfWeek = new Date(datasetRefDate);
-  startOfWeek.setDate(datasetRefDate.getDate() - diffToMonday);
-  startOfWeek.setHours(0, 0, 0, 0);
-
-  let endOfWeek = new Date(datasetRefDate);
-  endOfWeek.setHours(23, 59, 59, 999);
-
-  // กำหนดช่วงเวลาของ "เมื่อวาน" แบบเป๊ะๆ
-  const yStart = new Date(datasetRefDate.getFullYear(), datasetRefDate.getMonth(), datasetRefDate.getDate() - 1, 0, 0, 0, 0);
-  const yEnd = new Date(datasetRefDate.getFullYear(), datasetRefDate.getMonth(), datasetRefDate.getDate() - 1, 23, 59, 59, 999);
-
-  const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-  const dayNames = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
-
-  document.getElementById('monthSubLabel').innerText = `ข้อมูลเดือน ${monthNames[targetMonth]} ${targetYear}`;
-  document.getElementById('weekSubLabel').innerText = `จันทร์ ${startOfWeek.getDate()} - ${dayNames[datasetRefDate.getDay()]} ${datasetRefDate.getDate()} ${monthNames[datasetRefDate.getMonth()]}`;
-
-  let monthDoneInMonth = 0, inMonthTotal = 0, backlogTotal = 0;
-  let monthDonutStats = { approve: 0, finish: 0, working: 0, pending_ready: 0 };
-  let weekStats = { approve: 0, finish: 0, working: 0, pending_ready: 0 };
-  let weekTotal = 0;
-  let claimAddedYesterdayCount = 0; // เคลมที่เปิดเพิ่มเมื่อวาน
-
-  globalSlaRows = []; globalDoneRows = []; globalUndoneRows = [];
-  let activeAssetMap = {};
-
-  data.forEach(row => {
-    const stType = classifyStatus(row);
-    const d = parseRowDate(row);
-    const isDone = (stType === 'approve' || stType === 'finish');
-    const asset = (row['Asset'] || '').toString().trim();
-    const mediaType = classifyMediaType(asset, row);
-    const sla = parseSlaDetails(row);
-
-    const itemObj = { row, sla, mediaType, date: d };
-    if (isDone) globalDoneRows.push(itemObj); else globalUndoneRows.push(itemObj);
-
-    if (d && d.getFullYear() === targetYear && d.getMonth() === targetMonth) {
-      inMonthTotal++; monthDonutStats[stType]++;
-      if (isDone) monthDoneInMonth++;
-    } else {
-      if (!isDone) { backlogTotal++; monthDonutStats[stType]++; }
-    }
-
-    if (d && d >= startOfWeek && d <= endOfWeek) {
-      weekStats[stType]++; weekTotal++;
-    }
-
-    // นับงานเคลมที่สร้างขึ้น "เมื่อวาน"
-    if (d && d >= yStart && d <= yEnd && isClaimJob(row)) {
-      claimAddedYesterdayCount++;
-    }
-
-    if (stType === 'pending_ready' || stType === 'working') {
-      if (asset) {
-        const tokens = asset.split(/[,;]+/).map(t => t.trim()).filter(Boolean);
-        tokens.forEach(tok => {
-          if (!activeAssetMap[tok]) activeAssetMap[tok] = [];
-          activeAssetMap[tok].push({ row, mediaType: classifyMediaType(tok, row) });
-        });
-      }
-    }
-
-    if (sla.isOverdue) globalSlaRows.push(itemObj);
-  });
-
-  if (backlogTotal > 0) {
-    document.getElementById('monthCenterVal').innerText = `${monthDoneInMonth} / ${inMonthTotal}(${backlogTotal})`;
-  } else {
-    document.getElementById('monthCenterVal').innerText = `${monthDoneInMonth} / ${inMonthTotal}`;
-  }
-
-  const weekDone = weekStats.approve + weekStats.finish;
-  // แสดงผล 73 / 116(ยอดเคลมเปิดเพิ่มเมื่อวาน)
-  document.getElementById('weekCenterVal').innerText = `${weekDone} / ${weekTotal}(${claimAddedYesterdayCount})`;
-
-  monthChartInst = renderSingleDonut('monthChart', 'monthLegend', monthDonutStats, monthChartInst);
-  weekChartInst = renderSingleDonut('weekChart', 'weekLegend', weekStats, weekChartInst);
-
-  globalDupList = [];
-  const dupAssets = Object.keys(activeAssetMap).filter(asset => activeAssetMap[asset].length >= 2).sort();
-  dupAssets.forEach(asset => {
-    const uniqueTickets = Array.from(new Set(activeAssetMap[asset]));
-    uniqueTickets.forEach(item => {
-      globalDupList.push({ asset, ticket: item.row, mediaType: item.mediaType, date: parseRowDate(item.row) });
-    });
-  });
-
-  globalSlaRows.sort((a, b) => a.sla.sortVal - b.sla.sortVal);
-  initAllPopovers('sla', globalSlaRows);
-  executeFilter('sla');
-
-  filterDupTable();
-
-  initAllPopovers('done', globalDoneRows);
-  executeFilter('done');
-
-  globalUndoneRows.sort((a, b) => a.sla.sortVal - b.sla.sortVal);
-  initAllPopovers('undone', globalUndoneRows);
-  executeFilter('undone');
 }
 
 function initAllPopovers(prefix, sourceRows) {
@@ -1480,14 +1517,6 @@ function filterDupTable() {
   const filtered = globalDupList.filter(item => isWithinTimeRangePrefix(item.date, 'dup'));
   renderDupTable(filtered);
   document.getElementById('statDup').innerText = filtered.length;
-
-  const matchSla = globalSlaRows.filter(it => isWithinTimeRangePrefix(it.date, 'dup'));
-  const matchDone = globalDoneRows.filter(it => isWithinTimeRangePrefix(it.date, 'dup'));
-  const matchUndone = globalUndoneRows.filter(it => isWithinTimeRangePrefix(it.date, 'dup'));
-
-  document.getElementById('statSlaOver').innerText = matchSla.length;
-  document.getElementById('statDone').innerText = matchDone.length;
-  document.getElementById('statUndone').innerText = matchUndone.length;
 }
 
 function renderFilteredSlaTable(rows) {
@@ -1586,7 +1615,41 @@ function renderFilteredUndoneTable(rows) {
   });
 }
 
-// ─── การประมวลผล LAYER 2: ป้ายที่มีปัญหาบ่อยขึ้นก่อน + Filter Detail ───
+function renderSingleDonut(canvasId, legendId, stats, chartInstance) {
+  if (chartInstance) chartInstance.destroy();
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  const labels = ['Approve', 'Finish', 'Working On', 'Pending & Ready To Work'];
+  const colors = ['#1E88E5', '#1F9D57', '#FBC02D', '#CB3A3A'];
+  const dataVals = [stats.approve, stats.finish, stats.working, stats.pending_ready];
+
+  const newChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: dataVals.some(v => v > 0) ? dataVals : [1],
+        backgroundColor: dataVals.some(v => v > 0) ? colors : ['#E6E6E6'],
+        borderWidth: 2, borderColor: '#fff'
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false } } }
+  });
+
+  const legendBox = document.getElementById(legendId);
+  legendBox.innerHTML = '';
+  const icons = ['🔵', '🟢', '🟡', '🔴'];
+  labels.forEach((lbl, idx) => {
+    legendBox.innerHTML += `
+      <div class="legend-item">
+        <span class="legend-dot" style="background:${colors[idx]};"></span>
+        <span>${icons[idx]} ${lbl}: <b>${dataVals[idx]}</b></span>
+      </div>
+    `;
+  });
+  return newChart;
+}
+
+// ─── 2. ประมวลผล Layer 2 (จาก ai.html) ───
 function renderLayer2() {
   const probTbody = document.getElementById('frequentProblemsTableBody');
   const probStat = document.getElementById('frequentProblemsStat');
@@ -1606,7 +1669,6 @@ function renderLayer2() {
 
   const layer2Rows = globalData.filter(row => isWithinTimeRangePrefix(parseRowDate(row), 'layer2'));
   
-  // รวบรวมตัวเลือก Detail ใส่ Dropdown
   const detailSet = new Set();
   layer2Rows.forEach(row => {
     let p = getCleanDetail(row, false);
@@ -1629,10 +1691,7 @@ function renderLayer2() {
     let pText = getCleanDetail(row, false);
     if (!pText || pText === '-') pText = cleanSttText(row['Problem Category'] || 'ปัญหาทั่วไป');
 
-    // กรองด้วย Detail Dropdown
-    if (selectedDetail !== 'ALL' && pText !== selectedDetail) {
-      return;
-    }
+    if (selectedDetail !== 'ALL' && pText !== selectedDetail) return;
 
     if (pText && pText !== '-') {
       problemCountMap[pText] = (problemCountMap[pText] || 0) + 1;
@@ -1655,7 +1714,6 @@ function renderLayer2() {
     }
   });
 
-  // 1. ตารางปัญหาพบบ่อย
   const top10Problems = Object.keys(problemCountMap)
     .map(key => ({ name: key, count: problemCountMap[key] }))
     .sort((a, b) => b.count - a.count).slice(0, 10);
@@ -1683,7 +1741,6 @@ function renderLayer2() {
     });
   }
 
-  // 2. ตารางป้ายซ่อมซ้ำ (> 3 ครั้ง)
   currentChronicList = Object.values(assetClaimMap).filter(it => it.totalClaims > 3);
   assetStat.innerText = `พบป้ายซ่อมซ้ำ (>3 ครั้ง): ${currentChronicList.length} ป้าย`;
   renderChronicTable();
@@ -1724,16 +1781,10 @@ function toggleChronicSort(col) {
   renderChronicTable();
 }
 
-// ─── LAYER 3: Tag Input (Paste อัตโนมัติ + Stat Box ออกตั๋วแล้ว/ยังไม่ออกตั๋ว/ตั๋วซ้ำ) ───
-let enteredTags = new Set();
-let l3SearchResults = [];
-let currentL3Sort = { col: 'sched', asc: false };
-
-function focusTagInput() { document.getElementById('tagRealInput').focus(); }
-
+// ─── 3. LAYER 3: Tag Input & ตรวจสอบรหัสป้าย + ตารางตั๋วงาน + KPI Leaderboard ───
 const tagRealInput = document.getElementById('tagRealInput');
+function focusTagInput() { tagRealInput.focus(); }
 
-// พิมพ์ Enter หรือ Comma
 tagRealInput.addEventListener('keydown', function(e) {
   if (e.key === 'Enter' || e.key === ',') {
     e.preventDefault(); addTag(this.value); this.value = '';
@@ -1742,22 +1793,19 @@ tagRealInput.addEventListener('keydown', function(e) {
   }
 });
 
-// วาง (Paste / Ctrl+V) แล้วขึ้น Tag ทันทีอัตโนมัติ
 tagRealInput.addEventListener('paste', function(e) {
   e.preventDefault();
-  const pastedData = (e.clipboardData || window.clipboardData).getData('text');
-  if (!pastedData) return;
-  
-  // แยกคำด้วย Comma, Semicolon หรือขึ้นบรรทัดใหม่
-  const tokens = pastedData.split(/[\r\n,;]+/).map(t => t.trim()).filter(Boolean);
+  const pasted = (e.clipboardData || window.clipboardData).getData('text');
+  if (!pasted) return;
+  const tokens = pasted.split(/[\r\n,;]+/).map(t => t.trim()).filter(Boolean);
   tokens.forEach(tok => addTag(tok));
   this.value = '';
 });
 
 function addTag(text) {
-  const clean = text.trim();
-  if (!clean || enteredTags.has(clean.toUpperCase())) return;
-  enteredTags.add(clean.toUpperCase());
+  const clean = text.trim().toUpperCase();
+  if (!clean || enteredTags.has(clean)) return;
+  enteredTags.add(clean);
   renderTagChips();
 }
 
@@ -1765,9 +1813,9 @@ function removeTag(tag) { enteredTags.delete(tag); renderTagChips(); }
 
 function clearAllTags() {
   enteredTags.clear(); renderTagChips();
-  document.getElementById('statBoxContainer').innerHTML = '';
-  document.getElementById('lookupTableBody').innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--grey); padding:20px;">ยังไม่มีการค้นหาข้อมูล</td></tr>`;
-  document.getElementById('l3BottomStat').innerText = 'ผลการค้นหา: 0 รายการ';
+  document.getElementById('codeStatusList').innerHTML = `<div style="color:var(--grey); padding:10px;">ยังไม่มีการตรวจค้นหา</div>`;
+  l3SearchResults = [];
+  renderL3Table();
 }
 
 function renderTagChips() {
@@ -1781,60 +1829,64 @@ function renderTagChips() {
   });
 }
 
-// 🎯 ฟังก์ชันตรวจเช็คสถานะตั๋ว Layer 3 (นับเฉพาะ Pending, Ready to work, Working on เท่านั้น)
 function searchAssetCodes() {
-  if (globalData.length === 0) { alert('ระบบกำลังดึงข้อมูลจาก Google Sheets หรือยังไม่มีข้อมูล'); return; }
-  if (tagRealInput && tagRealInput.value.trim()) { addTag(tagRealInput.value); tagRealInput.value = ''; }
-  if (enteredTags.size === 0) { alert('กรุณากรอกรหัส Asset Code ที่ต้องการตรวจ'); return; }
+  if (tagRealInput && tagRealInput.value.trim()) {
+    addTag(tagRealInput.value); tagRealInput.value = '';
+  }
+  if (enteredTags.size === 0) { alert('กรุณากรอกรหัสป้าย'); return; }
 
-  const statContainer = document.getElementById('statBoxContainer');
-  statContainer.innerHTML = '';
+  const listContainer = document.getElementById('codeStatusList');
+  listContainer.innerHTML = '';
   l3SearchResults = [];
 
   enteredTags.forEach(code => {
     const searchCode = code.trim().toUpperCase();
-
-    // 1. ค้นหาตั๋วทั้งหมดที่มีรหัสนี้ (ดึงทุกสถานะเพื่อไปโชว์ในตารางด้านล่างให้ดูรายละเอียด)
-    let rows = globalData.filter(row => {
-      const rawA = (row['Asset'] || row['Asset Code'] || row['รหัส'] || '').toString().trim().toUpperCase();
-      const tokens = rawA.split(/[,;]+/).map(t => t.trim());
-      return tokens.includes(searchCode) || rawA === searchCode;
+    const rows = globalData.filter(r => {
+      const a = (r['Asset'] || '').toString().trim().toUpperCase();
+      return a === searchCode || a.includes(searchCode);
     });
 
-    // 2. ⚡ นับเฉพาะตั๋วที่ค้างดำเนินงานจริง (Active Tickets) เท่านั้น!
-    // งานที่ Finish / Approve ตัดทิ้ง ไม่นำมานับว่าออกตั๋วแล้วเด็ดขาด
-    let activeTickets = rows.filter(r => {
-      let st = (r['Status'] || r['Ticket Status'] || r['Ticket'] || r['สถานะ'] || '').toString().toLowerCase().trim();
-      
-      // ถ้าปิดงานแล้ว (Finish / Approve / Close) ให้ตัดออกทันที
-      if (st.includes('finish') || st.includes('approve') || st.includes('close')) {
-        return false;
-      }
-      
-      // ต้องเป็นตั๋วที่ค้างดำเนินงานอยู่จริงเท่านั้น
+    const activeTickets = rows.filter(r => {
+      const st = (r['Status'] || '').toLowerCase();
+      if (st.includes('finish') || st.includes('approve') || st.includes('close')) return false;
       return st.includes('pending') || st.includes('working') || st.includes('ready');
     });
 
-    let statDiv = document.createElement('div');
+    const rowDiv = document.createElement('div');
+    const optionsHtml = MASTER_ASSIGNEES.map(name => `<option value="${name}">${name}</option>`).join('');
 
-    // 3. 🎯 เงื่อนไขการแสดงผล Stat Box ตามจำนวน Active Tickets:
-    if (activeTickets.length === 0) {
-      // ไม่มีตั๋วค้างในระบบเลย (มีแต่ Finished / Approved ถือว่างานจบแล้ว -> พร้อมเคลมใหม่)
-      statDiv.className = 'stat-box stat-red';
-      statDiv.innerHTML = `📌 โค้ด: ${searchCode} — 🔴 ยังไม่ได้ออกตั๋ว`;
-    } else if (activeTickets.length === 1) {
-      // มีตั๋วค้างดำเนินงานอยู่ 1 ใบ
-      statDiv.className = 'stat-box stat-green';
-      statDiv.innerHTML = `📌 โค้ด: ${searchCode} — 🟢 ออกตั๋วแล้ว`;
+    if (activeTickets.length === 1) {
+      rowDiv.className = 'code-status-row status-done';
+      rowDiv.innerHTML = `
+        <div>• <b>${searchCode}</b> : 🟢 ออกตั๋วแล้ว (Ref: ${activeTickets[0]['RefNo'] || '-'})</div>
+        <span class="badge badge-green">มีตั๋วงานแล้ว</span>
+      `;
+    } else if (activeTickets.length >= 2) {
+      // 🟣 กรณีตั๋วซ้ำ: มี Dropdown เลือกคนวิ่ง พร้อมปุ่มตัดแต้มตั๋วซ้ำ
+      rowDiv.className = 'code-status-row status-dup';
+      rowDiv.innerHTML = `
+        <div>• <b>${searchCode}</b> : 🟣 ตั๋วซ้ำ (${activeTickets.length} รายการค้างในระบบ)</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <select class="assignee-select" id="sel_dup_${searchCode}">${optionsHtml}</select>
+          <button class="btn" style="background:#6b21a8; color:#fff;" onclick="submitPenaltyDirect('${searchCode}', 'dup')">
+            ⚠️ ตัดคะแนนตั๋วซ้ำ (-1)
+          </button>
+        </div>
+      `;
     } else {
-      // มีตั๋วค้างดำเนินงานตั้งแต่ 2 ใบขึ้นไป
-      statDiv.className = 'stat-box stat-red';
-      statDiv.innerHTML = `📌 โค้ด: ${searchCode} — 🔴 ตั๋วซ้ำ (${activeTickets.length} รายการ)`;
+      // 🔴 กรณีไม่เปิดตั๋ว: มี Dropdown และปุ่มตัดแต้มไม่เปิดตั๋ว
+      rowDiv.className = 'code-status-row status-pending';
+      rowDiv.innerHTML = `
+        <div>• <b>${searchCode}</b> : 🔴 ยังไม่ได้ออกตั๋ว</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <select class="assignee-select" id="sel_nopop_${searchCode}">${optionsHtml}</select>
+          <button class="btn btn-red" onclick="submitPenaltyDirect('${searchCode}', 'nopop')">
+            ⚠️ ตัดคะแนนไม่เปิดตั๋ว (-1)
+          </button>
+        </div>
+      `;
     }
-    
-    statContainer.appendChild(statDiv);
-
-    // เก็บตั๋วทั้งหมด (รวมประวัติ Finish / Approve) ส่งไปแสดงในตารางตรวจสอบ
+    listContainer.appendChild(rowDiv);
     rows.forEach(r => l3SearchResults.push(r));
   });
 
@@ -1848,11 +1900,10 @@ function renderL3Table() {
 
   document.getElementById('l3BottomStat').innerText = `ผลการค้นหา: ${filtered.length} รายการ`;
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--grey); padding:20px;">ไม่พบรายการที่ตรงกับเงื่อนไข</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--grey); padding:20px;">ไม่พบรายการตั๋วงานที่ค้นหา</td></tr>`;
     return;
   }
 
-  // ระบบ Sort ที่แก้ไขให้ทำงานได้จริง
   filtered.sort((a, b) => {
     if (currentL3Sort.col === 'asset') {
       let aVal = (a['Asset'] || '').toString();
@@ -1891,7 +1942,6 @@ function toggleL3Sort(col) {
   currentL3Sort.asc = (currentL3Sort.col === col) ? !currentL3Sort.asc : true;
   currentL3Sort.col = col;
 
-  // อัปเดตไอคอนลูกศร
   ['asset', 'sched', 'updated'].forEach(k => {
     const icon = document.getElementById(`sortIcon-${k}`);
     if (icon) {
@@ -1903,7 +1953,145 @@ function toggleL3Sort(col) {
   renderL3Table();
 }
 
-// ─── LAYER 4: MAP & ROUTE PLANNER ───
+async function submitPenaltyDirect(assetCode, type) {
+  const isDup = (type === 'dup');
+  const selectId = isDup ? `sel_dup_${assetCode}` : `sel_nopop_${assetCode}`;
+  const selectEl = document.getElementById(selectId);
+  const assigneeName = selectEl ? selectEl.value : 'ไม่ระบุ';
+  const issueText = isDup ? "เปิดตั๋วซ้ำค้างในระบบ" : "ไม่เปิด Claim Ticket จากงาน Fail";
+
+  if (!confirm(`ยืนยันการตัดคะแนน (-1)\nประเภท: ${issueText}\nป้าย: ${assetCode}\nผู้รับผิดชอบ: ${assigneeName}`)) return;
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('th-TH');
+  const timeStr = now.toLocaleTimeString('th-TH');
+  const fullTimestamp = `${dateStr} ${timeStr}`; // เก็บทั้ง วันที่ + เวลา ไว้ใน Timestamp ตัวเดียว
+
+  const payload = {
+    timestamp: fullTimestamp, // คอลัมน์ A (มีวันที่และเวลาเรียบร้อย)
+    asset: assetCode,         // คอลัมน์ B
+    assignee: assigneeName,   // คอลัมน์ C
+    route: "รูทตรวจงาน",     // คอลัมน์ D
+    issue: issueText,         // คอลัมน์ E
+    score: -1,                // คอลัมน์ F
+    auditor: "ผู้ตรวจงาน"     // คอลัมน์ G
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    alert(`✅ บันทึกตัดแต้มสำเร็จ!\n(เวลา: ${fullTimestamp} | ${assigneeName}: ${issueText} -1 คะแนน)`);
+    setTimeout(autoFetchLiveSheetData, 1200);
+  } catch (err) {
+    alert('บันทึกไม่สำเร็จ: ' + err.message);
+  }
+}
+
+// คำนวณคะแนน KPI แยกประเภท: ไม่เปิดตั๋ว (แดง) และ เปิดตั๋วซ้ำ (ม่วง)
+function computeAndRenderKPI() {
+  const penaltyMap = {};
+  
+  kpiLogsData.forEach(row => {
+    const rawName = (row['Assignee (คนรับผิดชอบ)'] || row['Assignee'] || '').trim();
+    if (!rawName) return;
+    
+    const issue = (row['Issue (ความผิดพลาด)'] || row['Issue'] || '').toString();
+    const isDup = issue.includes('ซ้ำ');
+    const pen = Math.abs(parseFloat(row['Score Penalty'] || -1));
+
+    rawName.split(/[,;]+/).map(n => n.trim()).filter(Boolean).forEach(n => {
+      if (!penaltyMap[n]) {
+        penaltyMap[n] = { nopopDeduction: 0, dupDeduction: 0, totalDeduction: 0, count: 0 };
+      }
+      if (isDup) {
+        penaltyMap[n].dupDeduction += pen;
+      } else {
+        penaltyMap[n].nopopDeduction += pen;
+      }
+      penaltyMap[n].totalDeduction += pen;
+      penaltyMap[n].count += 1;
+    });
+  });
+
+  const allNames = Array.from(new Set([...MASTER_ASSIGNEES, ...Object.keys(penaltyMap)]));
+  kpiLeaderboard = allNames.map(name => {
+    const stat = penaltyMap[name] || { nopopDeduction: 0, dupDeduction: 0, totalDeduction: 0, count: 0 };
+    const score = Math.max(0, 100 - stat.totalDeduction);
+    return { 
+      name, 
+      initial: 100, 
+      nopopDeduction: stat.nopopDeduction,
+      dupDeduction: stat.dupDeduction,
+      totalDeduction: stat.totalDeduction,
+      score: score, 
+      count: stat.count 
+    };
+  });
+
+  sortAndRenderKpiTable();
+}
+
+function sortAndRenderKpiTable() {
+  if (isSortDesc) {
+    kpiLeaderboard.sort((a, b) => b.score - a.score || a.count - b.count);
+    document.getElementById('btnSortScore').innerText = '↕ เรียงคะแนน: สูง ➔ ต่ำ';
+  } else {
+    kpiLeaderboard.sort((a, b) => a.score - b.score || b.count - a.count);
+    document.getElementById('btnSortScore').innerText = '↕ เรียงคะแนน: ต่ำ ➔ สูง';
+  }
+
+  const tbody = document.getElementById('kpiTableBody');
+  tbody.innerHTML = '';
+
+  kpiLeaderboard.forEach((item, idx) => {
+    let badgeClass = 'kpi-high';
+    let statusText = 'ปกติ';
+    if (item.score < 95 && item.score >= 80) { badgeClass = 'kpi-mid'; statusText = 'เฝ้าระวัง'; }
+    else if (item.score < 80) { badgeClass = 'kpi-low'; statusText = 'ต้องปรับปรุง'; }
+
+    // คำนวณเปอร์เซ็นต์ความยาวแท่งกราฟจาก 100%
+    const pRem = Math.max(0, item.score);
+    const pNopop = Math.min(100 - pRem, item.nopopDeduction);
+    const pDup = Math.min(100 - pRem - pNopop, item.dupDeduction);
+
+    tbody.innerHTML += `
+      <tr>
+        <td style="text-align:center; font-weight:700;">#${idx + 1}</td>
+        <td><b>${item.name}</b></td>
+        <td style="text-align:center;">${item.initial}</td>
+        <td style="text-align:center; color:var(--red); font-weight:600;">-${item.nopopDeduction}</td>
+        <td style="text-align:center; color:#6b21a8; font-weight:600;">-${item.dupDeduction}</td>
+        <td style="text-align:center;"><span class="kpi-badge ${badgeClass}">${item.score}</span></td>
+        <td>
+          <div class="kpi-bar-wrapper">
+            <div class="kpi-stacked-bar" title="เหลือ: ${item.score} | ไม่เปิดตั๋ว: -${item.nopopDeduction} | ตั๋วซ้ำ: -${item.dupDeduction}">
+              <div class="kpi-bar-rem" style="width: ${pRem}%;"></div>
+              <div class="kpi-bar-nopop" style="width: ${pNopop}%;"></div>
+              <div class="kpi-bar-dup" style="width: ${pDup}%;"></div>
+            </div>
+            <div class="kpi-legend-row">
+              <span style="color:var(--green); font-weight:bold;">${item.score}</span>
+              ${item.nopopDeduction > 0 ? `<span style="color:var(--red);">• ลืมเปิด -${item.nopopDeduction}</span>` : ''}
+              ${item.dupDeduction > 0 ? `<span style="color:#6b21a8;">• ซ้ำ -${item.dupDeduction}</span>` : ''}
+            </div>
+          </div>
+        </td>
+        <td style="text-align:center;"><span class="kpi-badge ${badgeClass}">${statusText}</span></td>
+      </tr>
+    `;
+  });
+}
+
+function toggleScoreSort() {
+  isSortDesc = !isSortDesc;
+  sortAndRenderKpiTable();
+}
+
+// ─── 4. LAYER 4: MAP & ROUTE PLANNER (จาก ai.html) ───
 const MAP_THEMES = {
   osm_hot: {
     url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
@@ -1928,7 +2116,6 @@ function initMap() {
       zoomDelta: 0.5,
       wheelPxPerZoomLevel: 120
     });
-
     changeMapTheme('osm_hot');
   }
   setTimeout(() => mapInstance.invalidateSize(), 200);
@@ -1937,11 +2124,7 @@ function initMap() {
 function changeMapTheme(themeKey) {
   if (!mapInstance) return;
   const theme = MAP_THEMES[themeKey] || MAP_THEMES.osm_hot;
-
-  if (currentTileLayer) {
-    mapInstance.removeLayer(currentTileLayer);
-  }
-
+  if (currentTileLayer) mapInstance.removeLayer(currentTileLayer);
   currentTileLayer = L.tileLayer(theme.url, theme.options).addTo(mapInstance);
 }
 
@@ -1971,9 +2154,8 @@ function renderPinsOnMap() {
     } else {
       let str = finishDateStr.toString().trim().replace('T', ' ');
       let d = new Date(str);
-      if (!isNaN(d.getTime())) {
-        finishDate = d;
-      } else {
+      if (!isNaN(d.getTime())) finishDate = d;
+      else {
         let parts = str.split(' ')[0].split(/[-\/]/);
         if (parts.length === 3) {
           if (parts[0].length === 4) finishDate = new Date(Number(parts[0]), Number(parts[1])-1, Number(parts[2]));
@@ -2000,7 +2182,6 @@ function prepareMapItem(item, isYesterdayDone) {
 
   assetTokens.forEach(rawAsset => {
     const uAsset = rawAsset.toUpperCase();
-    
     let coordInfo = masterSignsMap[uAsset] || masterSignsMap[normalizeCodeKey(uAsset)];
     if (!coordInfo && uAsset.startsWith('FLY')) {
       const letter = uAsset.replace('FLY', '').replace(/[\s\-_]/g, '');
@@ -2086,9 +2267,7 @@ function updateDynamicMediaAndDetailOptions() {
 
   allMapItems.forEach(item => {
     const matchStatus = selectedStatuses.size === 0 || selectedStatuses.has(item.statusCategory);
-    if (matchStatus) {
-      mediaSet.add(item.media);
-    }
+    if (matchStatus) mediaSet.add(item.media);
   });
 
   renderPopoverItems('mapMediaList', 'mapMediaCount', Array.from(mediaSet).sort(), mapFilterStates.media, () => {
@@ -2247,40 +2426,6 @@ function openGoogleMapsRoute() {
   }
   const coords = selectedPins.map(p => `${p.lat},${p.lng}`).join('/');
   window.open(`https://www.google.com/maps/dir/${coords}`, '_blank');
-}
-
-function renderSingleDonut(canvasId, legendId, stats, chartInstance) {
-  if (chartInstance) chartInstance.destroy();
-  const labels = ['Approve', 'Finish', 'Working On', 'Pending & Ready To Work'];
-  const colors = ['#1E88E5', '#1F9D57', '#FBC02D', '#CB3A3A'];
-  const dataVals = [stats.approve, stats.finish, stats.working, stats.pending_ready];
-
-  const ctx = document.getElementById(canvasId).getContext('2d');
-  const newChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: dataVals.some(v => v > 0) ? dataVals : [1],
-        backgroundColor: dataVals.some(v => v > 0) ? colors : ['#E6E6E6'],
-        borderWidth: 3, borderColor: '#ffffff'
-      }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false } } }
-  });
-
-  const legendBox = document.getElementById(legendId);
-  legendBox.innerHTML = '';
-  const icons = ['🔵', '🟢', '🟡', '🔴'];
-  labels.forEach((lbl, idx) => {
-    legendBox.innerHTML += `
-      <div class="legend-item">
-        <span class="legend-dot" style="background:${colors[idx]};"></span>
-        <span>${icons[idx]} ${lbl}: <b>${dataVals[idx]}</b></span>
-      </div>
-    `;
-  });
-  return newChart;
 }
 
 window.addEventListener('DOMContentLoaded', autoFetchLiveSheetData);
