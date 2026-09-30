@@ -917,12 +917,15 @@ function selectLayer(panelId, displayTitle, element) {
   }
 }
 
+// ฟังก์ชันล้างรหัสให้จับคู่เจอกัน 100% (รองรับทั้ง DS044 / DS44, มีวรรค, มีขีด)
 function normalizeCodeKey(str) {
   if (!str) return '';
   let s = str.toString().toUpperCase().trim();
   s = s.replace(/\(.*?\)/g, '');
   s = s.replace(/[-_\s\/]/g, '');
   s = s.replace(/PAC/g, '');
+  // แปลง DS0xx ให้กลายเป็น DSxx หรือรูปแบบมาตรฐานตัวเลข
+  s = s.replace(/^DS0+(\d+)/, 'DS$1');
   return s;
 }
 
@@ -1092,22 +1095,40 @@ async function autoFetchLiveSheetData() {
     kpiLogsData = result.kpiLogs || [];
 
     masterSignsMap = {};
-    if (result.masterSigns && Array.isArray(result.masterSigns)) {
+if (result.masterSigns && Array.isArray(result.masterSigns)) {
       result.masterSigns.forEach(item => {
-        const rawCode = (item['code'] || item['code_raw'] || item['Asset Code'] || item['Asset'] || '').toString().trim().toUpperCase();
-        const lat = parseFloat(item['Latitude'] || item['Lat']);
-        const lng = parseFloat(item['Longitude'] || item['Long'] || item['Lng']);
+        // กวาดชื่อคอลัมน์ทุกแบบที่อาจเป็นไปได้ใน Master_Signs
+        const rawCode = (item['code'] || item['code_raw'] || item['Asset Code'] || item['Asset'] || item['AssetCode'] || item['รหัสป้าย'] || '').toString().trim().toUpperCase();
+        const lat = parseFloat(item['Latitude'] || item['Lat'] || item['lat']);
+        const lng = parseFloat(item['Longitude'] || item['Long'] || item['Lng'] || item['long']);
+        
         if (rawCode && !isNaN(lat) && !isNaN(lng)) {
           const coordData = {
             lat: lat,
             lng: lng,
             mediaType: item['Media Type'] || item['MediaType'] || 'General',
-            location: item['Location Name'] || item['Location'] || item['road'] || ''
+            location: item['Location Name'] || item['Location'] || item['road'] || item['จุดติดตั้ง'] || ''
           };
+
+          // บันทึกคีย์แบบเดิม
           masterSignsMap[rawCode] = coordData;
-          masterSignsMap[normalizeCodeKey(rawCode)] = coordData;
-          if (rawCode.startsWith('FLY')) {
-            const letter = rawCode.replace('FLY', '').replace(/[\s\-_]/g, '');
+          
+          // บันทึกคีย์ที่ล้างแล้ว (ไม่มีช่องว่าง ไม่มีขีด)
+          const cleanKey = rawCode.replace(/[^A-Z0-9]/gi, '');
+          masterSignsMap[cleanKey] = coordData;
+
+          // จัดการกลุ่ม DS: ให้จำทั้ง DS44, DS044, DS0044
+          const dsMatch = cleanKey.match(/^DS0*(\d+)/i);
+          if (dsMatch) {
+            const num = dsMatch[1];
+            masterSignsMap['DS' + num] = coordData;
+            masterSignsMap['DS0' + num] = coordData;
+            masterSignsMap['DS00' + num] = coordData;
+          }
+
+          // จัดการกลุ่ม FLYOVER
+          if (cleanKey.startsWith('FLY')) {
+            const letter = cleanKey.replace('FLY', '');
             if (letter) masterSignsMap[letter] = coordData;
           }
         }
@@ -2133,13 +2154,36 @@ function renderPinsOnMap() {
 
   allMapItems = [];
 
-  // 1. ตั๋ว SLA เกินเวลา (กลุ่มระหว่างดำเนินการ)
-  const slaSourceRows = (typeof globalSlaRows !== 'undefined' && globalSlaRows.length > 0) ? globalSlaRows : [];
-  slaSourceRows.forEach(item => {
+  // 1. ดึงงานระหว่างดำเนินการทั้งหมด (Pending, Working On, Ready to Work)
+  const undoneSourceRows = (typeof globalUndoneRows !== 'undefined' && globalUndoneRows.length > 0) ? globalUndoneRows : [];
+  
+  let missingCoords = [];
+  undoneSourceRows.forEach(item => {
+    const row = item.row || {};
+    const rawAsset = (row['Asset'] || row['Asset Code'] || '').toString().trim();
+    
+    const uAsset = rawAsset.toUpperCase();
+    const cleanKey = uAsset.replace(/[^A-Z0-9]/gi, '');
+    const dsMatch = cleanKey.match(/^DS0*(\d+)/i);
+    const dsKey = dsMatch ? 'DS' + parseInt(dsMatch[1], 10) : cleanKey;
+
+    let coordInfo = masterSignsMap[uAsset] || masterSignsMap[cleanKey] || masterSignsMap[dsKey];
+    if (!coordInfo && dsMatch && masterSignsMap['DS0' + parseInt(dsMatch[1], 10)]) {
+      coordInfo = masterSignsMap['DS0' + parseInt(dsMatch[1], 10)];
+    }
+
+    if (!coordInfo) {
+      missingCoords.push({ asset: rawAsset, refNo: row['RefNo'] || '-', status: row['Status'] || '-' });
+    }
+
     prepareMapItem(item, false);
   });
 
-  // ⚡ 2. คำนวณ "เมื่อวาน" อิงตามวันปัจจุบันจริง (Today = new Date()) ไม่ใช่อิงจากวันที่ในไฟล์
+  if (missingCoords.length > 0) {
+    console.warn("⚠️️ รายการที่ระบบหาพิกัด Lat/Lng ใน Master_Signs ไม่เจอ (" + missingCoords.length + " รายการ):", missingCoords);
+  }
+
+  // 2. คำนวณงานเสร็จเมื่อวาน (อิงตามปฏิทินจริง)
   const today = new Date();
   const yStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1, 0, 0, 0, 0);
   const yEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1, 23, 59, 59, 999);
@@ -2176,31 +2220,64 @@ function renderPinsOnMap() {
       }
     }
 
-    // กรองเฉพาะงานที่มีเวลาจบงานตรงกับ "เมื่อวาน" เป๊ะๆ (00:00:00 - 23:59:59)
     if (finishDate && finishDate >= yStart && finishDate <= yEnd) {
       prepareMapItem(item, true);
     }
   });
 
+  // วาดหมุดและตั้งค่าฟิลเตอร์
   buildMapPinsAndFilters();
+  
+  // อัปเดตชิปสถานะด้านบน
+  const mapChip = document.getElementById('mapStatusChip');
+  if (mapChip) {
+    mapChip.innerText = `📌 หมุดบนแผนที่: ${allMapItems.length} จุด (จากตั๋วค้าง ${undoneSourceRows.length} ใบ)`;
+    mapChip.className = 'badge badge-green';
+    if (missingCoords.length > 0) {
+      mapChip.innerText += ` ⚠️ ไม่พบพิกัด ${missingCoords.length} ใบ`;
+    }
+  }
 }
 
 function prepareMapItem(item, isYesterdayDone) {
   const row = item.row || {};
-  const rawAssetField = (row['Asset'] || '').toString().trim();
+  const rawAssetField = (row['Asset'] || row['Asset Code'] || row['code'] || '').toString().trim();
   const detail = getCleanDetail(row, isYesterdayDone);
   const slaText = item.sla ? item.sla.text : (parseSlaDetails(row).text || '-');
 
-  const assetTokens = rawAssetField.split(/[,;]+/).map(t => t.trim()).filter(Boolean);
+  // แยกกรณีมีหลายป้ายในช่องเดียว เช่น DS116, DS044
+  const assetTokens = rawAssetField.split(/[,;\/\+]+/).map(t => t.trim()).filter(Boolean);
 
   assetTokens.forEach(rawAsset => {
     const uAsset = rawAsset.toUpperCase();
-    let coordInfo = masterSignsMap[uAsset] || masterSignsMap[normalizeCodeKey(uAsset)];
-    if (!coordInfo && uAsset.startsWith('FLY')) {
-      const letter = uAsset.replace('FLY', '').replace(/[\s\-_]/g, '');
-      coordInfo = masterSignsMap[letter] || masterSignsMap[normalizeCodeKey(letter)];
+    const cleanToken = uAsset.replace(/[^A-Z0-9]/gi, '');
+
+    // 1. ลองค้นหาตรงๆ
+    let coordInfo = masterSignsMap[uAsset] || masterSignsMap[cleanToken];
+
+    // 2. ถ้ายังไม่เจอ และเป็นกลุ่ม DS ลองหาเลขแบบตัด 0 หรือเติม 0
+    if (!coordInfo) {
+      const dsMatch = cleanToken.match(/^DS0*(\d+)/i);
+      if (dsMatch) {
+        const num = dsMatch[1];
+        coordInfo = masterSignsMap['DS' + num] || masterSignsMap['DS0' + num] || masterSignsMap['DS00' + num];
+      }
     }
 
+    // 3. ถ้ายังไม่เจอ และเป็นกลุ่ม FLY
+    if (!coordInfo && cleanToken.startsWith('FLY')) {
+      const letter = cleanToken.replace('FLY', '');
+      coordInfo = masterSignsMap[letter];
+    }
+
+    // 4. ถ้ายังไม่เจออีก ให้ลองไล่หาแบบ Partial Match ในฐานข้อมูล Master
+    if (!coordInfo) {
+      const allKeys = Object.keys(masterSignsMap);
+      const matchedKey = allKeys.find(k => k === cleanToken || cleanToken.includes(k) || k.includes(cleanToken));
+      if (matchedKey) coordInfo = masterSignsMap[matchedKey];
+    }
+
+    // เมื่อได้พิกัดแล้ว ปักหมุดลงแผนที่ทันที
     if (coordInfo) {
       const media = classifyMediaType(uAsset, row) || coordInfo.mediaType || item.mediaType || 'อื่นๆ';
       const statusCategory = isYesterdayDone ? 'งานเสร็จเมื่อวาน' : 'ระหว่างดำเนินการ';
@@ -2215,6 +2292,8 @@ function prepareMapItem(item, isYesterdayDone) {
         coordInfo: coordInfo,
         slaText: slaText
       });
+    } else {
+      console.warn("⚠️ ไม่พบพิกัดของป้ายใน Master_Signs:", uAsset);
     }
   });
 }
@@ -2358,7 +2437,7 @@ function addManualAssetPin() {
   }
 
   let issueDetail = 'ป้อนรหัสด้วยตนเอง';
-  const foundTicket = (typeof globalSlaRows !== 'undefined') ? globalSlaRows.find(item => {
+  const foundTicket = (typeof globalUndoneRows !== 'undefined') ? globalUndoneRows.find(item => {
     const a = (item.row && item.row['Asset'] ? item.row['Asset'] : '').toString().trim().toUpperCase();
     return a.includes(code);
   }) : null;
